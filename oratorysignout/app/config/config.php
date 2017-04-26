@@ -14,7 +14,7 @@ return new \Phalcon\Config([
         'host'     => 'localhost',
         'username' => 'root',
         'password' => '',
-        'dbname'   => 'oratorysignout',
+        'dbname'   => 'oratory_sign_out',
         'charset'  => 'utf8',
     ],
 
