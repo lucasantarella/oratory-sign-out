@@ -1,6 +1,6 @@
 <?php
 
-namespace Oratorysignout\Modules\Frontend\Controllers;
+namespace Oratorysignout\Modules\Api\Controllers;
 
 class IndexController extends ControllerBase
 {
