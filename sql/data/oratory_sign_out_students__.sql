@@ -1,0 +1,2 @@
+INSERT INTO oratory_sign_out.students__ (id, first_name, middle_name, last_name, email) VALUES (1, 'Luca', 'Michele', 'Santarella', 'luca.santarella.student@oratoryprep.org');
+INSERT INTO oratory_sign_out.students__ (id, first_name, middle_name, last_name, email) VALUES (2, 'Joseph', '', 'D''Angelo', 'joseph.dangelo.student@oratoryprep.org');
