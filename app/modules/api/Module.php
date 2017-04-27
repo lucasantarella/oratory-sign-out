@@ -2,6 +2,7 @@
 
 namespace Oratorysignout\Modules\Api;
 
+use Oratorysignout\ModuleRoutesDefinitionInterface;
 use Phalcon\DiInterface;
 use Phalcon\Loader;
 use Phalcon\Mvc\View;
@@ -9,69 +10,71 @@ use Phalcon\Mvc\ModuleDefinitionInterface;
 use Phalcon\Config;
 
 
-class Module implements ModuleDefinitionInterface
+class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterface
 {
-    /**
-     * Registers an autoloader related to the module
-     *
-     * @param DiInterface $di
-     */
-    public function registerAutoloaders(DiInterface $di = null)
-    {
-        $loader = new Loader();
+	/**
+	 * Registers an autoloader related to the module
+	 *
+	 * @param DiInterface $di
+	 */
+	public function registerAutoloaders(DiInterface $di = null)
+	{
+		$loader = new Loader();
 
-        $loader->registerNamespaces([
-            'Oratorysignout\Modules\Api\Controllers' => __DIR__ . '/controllers/',
-            'Oratorysignout\Modules\Api\Models'      => __DIR__ . '/models/'
-        ]);
+		$loader->registerNamespaces([
+			'Oratorysignout\Modules\Api\Controllers' => __DIR__ . '/controllers/',
+			'Oratorysignout\Modules\Api\Models' => __DIR__ . '/models/'
+		]);
 
-        $loader->register();
-    }
+		$loader->register();
+	}
 
-    /**
-     * Registers services related to the module
-     *
-     * @param DiInterface $di
-     */
-    public function registerServices(DiInterface $di)
-    {
-        /**
-         * Try to load local configuration
-         */
-        if (file_exists(__DIR__ . '/config/config.php')) {
-            $override = new Config(include __DIR__ . '/config/config.php');;
+	/**
+	 * Registers services related to the module
+	 *
+	 * @param DiInterface $di
+	 */
+	public function registerServices(DiInterface $di)
+	{
+		/**
+		 * Setting up the view component
+		 */
+		$di->set('view', function () {
+			$view = new View();
+			$view->setDI($this);
+			$view->setRenderLevel(View::LEVEL_NO_RENDER);
+			return $view;
+		});
+	}
 
-            if ($config instanceof Config) {
-                $config->merge($override);
-            } else {
-                $config = $override;
-            }
-        }
+	/**
+	 * @return string
+	 */
+	public static function getMountPath()
+	{
+		return '/api';
+	}
 
-        /**
-         * Setting up the view component
-         */
-        $di['view'] = function () {
-            $config = $this->getConfig();
-
-            $view = new View();
-            $view->setViewsDir($config->get('application')->viewsDir);
-
-            return $view;
-        };
-
-        /**
-         * Database connection is created based in the parameters defined in the configuration file
-         */
-        $di['db'] = function () {
-            $config = $this->getConfig();
-
-            $dbConfig = $config->database->toArray();
-
-            $dbAdapter = '\Phalcon\Db\Adapter\Pdo\\' . $dbConfig['adapter'];
-            unset($config['adapter']);
-
-            return new $dbAdapter($dbConfig);
-        };
-    }
+	/**
+	 * @return array
+	 */
+	public static function getRoutes()
+	{
+		return [
+			[
+				'pattern' => '/test',
+				'attr' => [
+					'controller' => 'index',
+					'action' => 'index',
+				]
+			],
+			[
+				'pattern' => '/bugsnag',
+				'attr' => [
+					'controller' => 'index',
+					'action' => 'bugsnag',
+				]
+			],
+		];
+	}
 }
