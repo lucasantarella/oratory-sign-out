@@ -68,6 +68,13 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 					'action' => 'index',
 				]
 			],
+			[
+				'pattern' => '/bugsnag',
+				'attr' => [
+					'controller' => 'index',
+					'action' => 'bugsnag',
+				]
+			],
 		];
 	}
 }

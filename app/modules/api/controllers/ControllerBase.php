@@ -125,11 +125,12 @@ class ControllerBase extends Controller
 	{
 		// Log the request.
 		$message = "";
-		$message .= "[" . $_SERVER['REMOTE_ADDR'] . "]";
+		$message .= "[" . $this->request->getClientAddress(false) . "]";
+		$message .= "[" . $this->request->getUserAgent() . "]";
+		$message .= " ";
 		$message .= "[" . $this->request->getMethod() . "]";
 		$message .= "[" . $this->request->getURI() . "]";
-		if (!$this->request->isGet() && explode(";", $this->request->getContentType())[0] == "application/json")
-			$message .= $this->request->getRawBody();
+		$message .= $this->request->getRawBody();
 		$this->getDI()->getShared('logger')->log(Logger::INFO, $message);
 
 		// If the request is anything but a GET or DELETE, make sure the requestBody is JSON.
