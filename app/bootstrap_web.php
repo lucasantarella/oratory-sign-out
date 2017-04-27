@@ -63,8 +63,8 @@ $bugsnag->setReleaseStage(getenv('RELEASE_STAGE'));
 $adminIps = explode(',', getenv("ADMIN_IPS"));
 
 define('IS_ADMIN', in_array($_SERVER['REMOTE_ADDR'], $adminIps));
-define('SHOW_ERRORS', filter_var(getenv('ERRORS'), FILTER_VALIDATE_BOOLEAN) && IS_ADMIN && (!isset($_GET['errors']) || (isset($_GET['errors']) && filter_var($_GET['errors'], FILTER_VALIDATE_BOOLEAN))));
-define('SHOW_DEBUG', filter_var(getenv('DEBUG'), FILTER_VALIDATE_BOOLEAN) && IS_ADMIN && (!isset($_GET['debug']) || (isset($_GET['debug']) && filter_var($_GET['debug'], FILTER_VALIDATE_BOOLEAN))));
+define('SHOW_ERRORS', filter_var(getenv('ERRORS'), FILTER_VALIDATE_BOOLEAN) && IS_ADMIN && (isset($_GET['errors']) && filter_var($_GET['errors'], FILTER_VALIDATE_BOOLEAN)));
+define('SHOW_DEBUG', filter_var(getenv('DEBUG'), FILTER_VALIDATE_BOOLEAN) && IS_ADMIN && (isset($_GET['debug']) && filter_var($_GET['debug'], FILTER_VALIDATE_BOOLEAN)));
 
 function exceptionHandler($e)
 {
