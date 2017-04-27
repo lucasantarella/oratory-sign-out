@@ -2,6 +2,7 @@
 
 namespace Oratorysignout\Modules\Api;
 
+use Oratorysignout\ModuleRoutesDefinitionInterface;
 use Phalcon\DiInterface;
 use Phalcon\Loader;
 use Phalcon\Mvc\View;
@@ -9,7 +10,7 @@ use Phalcon\Mvc\ModuleDefinitionInterface;
 use Phalcon\Config;
 
 
-class Module implements ModuleDefinitionInterface
+class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterface
 {
 	/**
 	 * Registers an autoloader related to the module
@@ -51,10 +52,35 @@ class Module implements ModuleDefinitionInterface
 		/**
 		 * Setting up the view component
 		 */
-		$di['view'] = function () {
+		$di->set('view', function () {
 			$view = new View();
+			$view->setDI($this);
 			$view->setRenderLevel(View::LEVEL_NO_RENDER);
 			return $view;
-		};
+		});
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function getMountPath()
+	{
+		return 'api';
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getRoutes()
+	{
+		return [
+			[
+				'pattern' => '/test',
+				'attr' => [
+					'controller' => 'index',
+					'action' => 'index',
+				]
+			],
+		];
 	}
 }

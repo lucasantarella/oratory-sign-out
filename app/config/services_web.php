@@ -12,10 +12,10 @@ use Phalcon\Flash\Direct as Flash;
  * Registering a router
  */
 $di->setShared('router', function () {
-	$router = new Router();
+	$router = new Router(false);
 
-	$router->setDefaultModule('frontend');
-	$router->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
+//	$router->setDefaultModule('frontend');
+//	$router->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
 
 	return $router;
 });
@@ -58,7 +58,49 @@ $di->set('flash', function () {
  * Set the default namespace for dispatcher
  */
 $di->setShared('dispatcher', function () {
-	$dispatcher = new Dispatcher();
+	$dispatcher = new \Phalcon\Mvc\Dispatcher();
+
+	// Create an EventsManager
+	$eventsManager = new \Phalcon\Events\Manager();
+
+	// Attach a listener
+	$eventsManager->attach("dispatch:beforeException", function ($event, $dispatcher, $exception) {
+
+		// Handle 404 exceptions
+		if ($exception instanceof Dispatcher\Exception) {
+			$dispatcher->forward(
+				array(
+					'module' => 'frontend',
+					'namespace' => 'Oratorysignout\Modules\Frontend\Controllers',
+					'controller' => 'errors',
+					'action' => 'notFound'
+				)
+			);
+
+			return false;
+		}
+
+		// Alternative way, controller or action doesn't exist
+		switch ($exception->getCode()) {
+			case Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
+			case Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
+				$dispatcher->forward(
+					array(
+						'module' => 'frontend',
+						'namespace' => 'Oratorysignout\Modules\Frontend\Controllers',
+						'controller' => 'errors',
+						'action' => 'notFound'
+					)
+				);
+
+				return false;
+		}
+
+		return true;
+
+	});
+
+	$dispatcher->setEventsManager($eventsManager);
 	$dispatcher->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
 	return $dispatcher;
 });

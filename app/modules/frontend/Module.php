@@ -2,13 +2,14 @@
 
 namespace Oratorysignout\Modules\Frontend;
 
+use Oratorysignout\ModuleRoutesDefinitionInterface;
 use Phalcon\DiInterface;
 use Phalcon\Loader;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\View\Engine\Php as PhpEngine;
 use Phalcon\Mvc\ModuleDefinitionInterface;
 
-class Module implements ModuleDefinitionInterface
+class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterface
 {
 	/**
 	 * Registers an autoloader related to the module
@@ -49,5 +50,29 @@ class Module implements ModuleDefinitionInterface
 
 			return $view;
 		});
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function getMountPath()
+	{
+		return '';
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getRoutes()
+	{
+		return [
+//			[
+//				'pattern' => '/base',
+//				'attr' => [
+//					'controller' => 'index',
+//					'action' => 'index',
+//				]
+//			],
+		];
 	}
 }
