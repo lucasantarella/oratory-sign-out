@@ -53,34 +53,20 @@ $dotenv->required('RELEASE_STAGE')->allowedValues(['production', 'staging', 'dev
 $dotenv->required('ERRORS')->allowedValues(['true', 'false']);
 $dotenv->required('DEBUG')->allowedValues(['true', 'false']);
 $dotenv->required('ABS_DOMAIN_URL')->notEmpty();
+
 // Set default timezone to UTC
-date_default_timezone_set('UTC');
+date_default_timezone_set('America/New_York');
 
 // Initialize Bugsnag
-$bugsnag = Bugsnag\Client::make('0ae0ad999f88cffc1fbef36621a54aa9');
+$bugsnag = Bugsnag\Client::make('8c9bdbc65cc43175fe0d50abe819ca76');
 $bugsnag->setReleaseStage(getenv('RELEASE_STAGE'));
+Bugsnag\Handler::register($bugsnag);
 
 $adminIps = explode(',', getenv("ADMIN_IPS"));
 
 define('IS_ADMIN', in_array($_SERVER['REMOTE_ADDR'], $adminIps));
 define('SHOW_ERRORS', filter_var(getenv('ERRORS'), FILTER_VALIDATE_BOOLEAN) && IS_ADMIN && (isset($_GET['errors']) && filter_var($_GET['errors'], FILTER_VALIDATE_BOOLEAN)));
 define('SHOW_DEBUG', filter_var(getenv('DEBUG'), FILTER_VALIDATE_BOOLEAN) && IS_ADMIN && (isset($_GET['debug']) && filter_var($_GET['debug'], FILTER_VALIDATE_BOOLEAN)));
-
-function exceptionHandler($e)
-{
-	if (SHOW_ERRORS) {
-		echo $e->getMessage() . '<br>';
-		echo '<pre>' . $e->getTraceAsString() . '</pre>';
-	} else {
-		header("Content-Type: application/json");
-		echo json_encode(['status' => 'Error', 'status_details' => 'Page not found.']);
-	}
-	$bugsnag = Bugsnag\Client::make("0ae0ad999f88cffc1fbef36621a54aa9");
-	$bugsnag->setReleaseStage(getenv('RELEASE_STAGE'));
-	$bugsnag->notifyException($e);
-}
-
-//set_exception_handler("exceptionHandler");
 
 if (SHOW_ERRORS) {
 	error_reporting(E_ALL);
@@ -92,54 +78,54 @@ if (SHOW_ERRORS) {
 	ini_set('display_startup_errors', false);
 }
 
-//try {
+try {
 
-/**
- * The FactoryDefault Dependency Injector automatically registers the services that
- * provide a full stack framework. These default services can be overidden with custom ones.
- */
-$di = new FactoryDefault();
+	/**
+	 * The FactoryDefault Dependency Injector automatically registers the services that
+	 * provide a full stack framework. These default services can be overidden with custom ones.
+	 */
+	$di = new FactoryDefault();
 
-/**
- * Include general services
- */
-require APP_PATH . '/config/services.php';
+	/**
+	 * Include general services
+	 */
+	require APP_PATH . '/config/services.php';
 
-/**
- * Include web environment specific services
- */
-require APP_PATH . '/config/services_web.php';
+	/**
+	 * Include web environment specific services
+	 */
+	require APP_PATH . '/config/services_web.php';
 
-/**
- * Get config service for use in inline setup below
- */
-$config = $di->getConfig();
+	/**
+	 * Get config service for use in inline setup below
+	 */
+	$config = $di->getConfig();
 
-/**
- * Include Autoloader
- */
-include APP_PATH . '/config/loader.php';
+	/**
+	 * Include Autoloader
+	 */
+	include APP_PATH . '/config/loader.php';
 
-/**
- * Handle the request
- */
-$application = new Application($di);
+	/**
+	 * Handle the request
+	 */
+	$application = new Application($di);
 
-/**
- * Register application modules
- */
-$application->registerModules([
-	'api' => ['className' => 'Oratorysignout\Modules\Api\Module'],
-	'frontend' => ['className' => 'Oratorysignout\Modules\Frontend\Module'],
-]);
+	/**
+	 * Register application modules
+	 */
+	$application->registerModules([
+		'api' => ['className' => 'Oratorysignout\Modules\Api\Module'],
+		'frontend' => ['className' => 'Oratorysignout\Modules\Frontend\Module'],
+	]);
 
-/**
- * Include routes
- */
-require APP_PATH . '/config/routes.php';
+	/**
+	 * Include routes
+	 */
+	require APP_PATH . '/config/routes.php';
 
-echo $application->handle()->getContent();
+	echo $application->handle()->getContent();
 
-//} catch (\Exception $e) {
-//	exceptionHandler($e);
-//}
+} catch (\Exception $e) {
+	$bugsnag->notifyException($e);
+}
