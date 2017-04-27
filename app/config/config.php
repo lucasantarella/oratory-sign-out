@@ -11,10 +11,10 @@ return new \Phalcon\Config([
 
 	'database' => [
 		'adapter' => 'Mysql',
-		'host' => 'localhost',
-		'username' => 'root',
-		'password' => '',
-		'dbname' => 'oratory_sign_out',
+		'host' => getenv('DB_HOST'),
+		'username' => getenv('DB_USER'),
+		'password' => getenv('DB_PASS'),
+		'dbname' => getenv('DB_NAME'),
 		'charset' => 'utf8',
 	],
 

@@ -5,7 +5,7 @@ namespace Oratorysignout\Modules\Frontend\Controllers;
 class IndexController extends ControllerBase
 {
 
-	public function indextwoAction()
+	public function indexAction()
 	{
 
 	}

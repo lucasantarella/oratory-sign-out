@@ -1,5 +1,7 @@
 <?php
 
+use Phalcon\Events\Manager;
+use Phalcon\Http\Response\Cookies;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Url as UrlResolver;
@@ -14,8 +16,8 @@ use Phalcon\Flash\Direct as Flash;
 $di->setShared('router', function () {
 	$router = new Router(false);
 
-//	$router->setDefaultModule('frontend');
-//	$router->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
+	$router->setDefaultModule('frontend');
+	$router->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
 
 	return $router;
 });
@@ -42,26 +44,20 @@ $di->setShared('session', function () {
 	return $session;
 });
 
-/**
- * Register the session flash service with the Twitter Bootstrap classes
- */
-$di->set('flash', function () {
-	return new Flash([
-		'error' => 'alert alert-danger',
-		'success' => 'alert alert-success',
-		'notice' => 'alert alert-info',
-		'warning' => 'alert alert-warning'
-	]);
+$di->set('cookies', function () {
+	$cookies = new Cookies();
+	$cookies->useEncryption(true);
+	return $cookies;
 });
 
 /**
  * Set the default namespace for dispatcher
  */
-$di->setShared('dispatcher', function () {
-	$dispatcher = new \Phalcon\Mvc\Dispatcher();
+$di->setShared('dispatcher', function () use ($di) {
+	$dispatcher = new Phalcon\Mvc\Dispatcher();
 
 	// Create an EventsManager
-	$eventsManager = new \Phalcon\Events\Manager();
+	$eventsManager = new Manager();
 
 	// Attach a listener
 	$eventsManager->attach("dispatch:beforeException", function ($event, $dispatcher, $exception) {
@@ -103,4 +99,5 @@ $di->setShared('dispatcher', function () {
 	$dispatcher->setEventsManager($eventsManager);
 	$dispatcher->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
 	return $dispatcher;
+
 });

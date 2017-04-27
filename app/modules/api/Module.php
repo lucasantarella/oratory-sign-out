@@ -37,19 +37,6 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 	public function registerServices(DiInterface $di)
 	{
 		/**
-		 * Try to load local configuration
-		 */
-		if (file_exists(__DIR__ . '/config/config.php')) {
-			$override = new Config(include __DIR__ . '/config/config.php');;
-
-			if ($config instanceof Config) {
-				$config->merge($override);
-			} else {
-				$config = $override;
-			}
-		}
-
-		/**
 		 * Setting up the view component
 		 */
 		$di->set('view', function () {
@@ -65,7 +52,7 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 	 */
 	public static function getMountPath()
 	{
-		return 'api';
+		return '/api';
 	}
 
 	/**

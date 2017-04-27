@@ -66,13 +66,13 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 	public static function getRoutes()
 	{
 		return [
-//			[
-//				'pattern' => '/base',
-//				'attr' => [
-//					'controller' => 'index',
-//					'action' => 'index',
-//				]
-//			],
+			[
+				'pattern' => '/base',
+				'attr' => [
+					'controller' => 'index',
+					'action' => 'index',
+				]
+			],
 		];
 	}
 }
