@@ -131,6 +131,13 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 					'action' => 'periodToday',
 				]
 			],
+			[
+				'pattern' => '/rooms/{name:[a-zA-Z0-9]+}',
+				'attr' => [
+					'controller' => 'rooms',
+					'action' => 'room',
+				]
+			],
 		];
 	}
 

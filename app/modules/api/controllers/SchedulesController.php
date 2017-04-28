@@ -105,7 +105,7 @@ class SchedulesController extends ControllerBase
 	 * @param int $date
 	 * @return bool|Schedules
 	 */
-	protected static function getSchedule($date)
+	public static function getSchedule($date)
 	{
 		$exception = SchedulesExceptions::findFirst("ignored = 0 AND date = {$date}");
 		if ($exception !== false)
