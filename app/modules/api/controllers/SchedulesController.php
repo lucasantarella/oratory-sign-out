@@ -92,10 +92,7 @@ class SchedulesController extends ControllerBase
 
 	public function periodTodayAction($num = 0)
 	{
-		$date = date('YmdHis');
-
-		$schedule = self::getSchedule($date);
-
+		$schedule = self::getSchedule(date('Ymd'));
 		$period = $schedule->getPeriods("period = {$num}");
 		if (count($period) > 0)
 			return $this->sendResponse($period[0]);
