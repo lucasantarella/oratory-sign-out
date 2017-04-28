@@ -21,15 +21,7 @@ class SchedulesController extends ControllerBase
 		if (is_null($date))
 			$date = date('Ymd');
 
-		$schedule = null;
-
-		$exception = SchedulesExceptions::findFirst("ignored = 0 AND date = {$date}");
-		if ($exception !== false)
-			$schedule = $exception->getSchedule();
-		else
-			$schedule = Schedules::getDefault();
-
-		return $this->sendResponse(array_merge($schedule->jsonSerialize(), ['date' => (int)$date]));
+		return $this->sendResponse(array_merge(self::getSchedule($date)->jsonSerialize(), ['date' => (int)$date]));
 	}
 
 	public function schedulesAction($id = 0)
@@ -56,6 +48,18 @@ class SchedulesController extends ControllerBase
 		return $this->sendResponse($schedule->getPeriods());
 	}
 
+	public function periodsByDayAction($date = null)
+	{
+		if (is_null($date))
+			$date = date('Ymd');
+
+		$schedule = self::getSchedule($date);
+		if ($schedule === false)
+			return $this->sendNotFound();
+
+		return $this->sendResponse($schedule->getPeriods());
+	}
+
 	public function periodAction($schedule_id = 0, $num = 0)
 	{
 		if ($schedule_id <= 0 || ($num <= 0 || $num > 7))
@@ -70,6 +74,49 @@ class SchedulesController extends ControllerBase
 			return $this->sendResponse($period[0]);
 		else
 			return $this->sendNotFound();
+	}
+
+	public function periodByDayAction($date = null, $num = 0)
+	{
+		if ($num <= 0 || $num > 7)
+			return $this->sendNotFound();
+
+		$schedule = self::getSchedule($date);
+
+		$period = $schedule->getPeriods("period = {$num}");
+		if (count($period) > 0)
+			return $this->sendResponse($period[0]);
+		else
+			return $this->sendNotFound();
+	}
+
+	public function periodTodayAction($num = 0)
+	{
+		$date = date('YmdHis');
+
+		$schedule = self::getSchedule($date);
+
+		$period = $schedule->getPeriods("period = {$num}");
+		if (count($period) > 0)
+			return $this->sendResponse($period[0]);
+		else
+			return $this->sendNotFound();
+	}
+
+	/**
+	 * Returns the schedule for a specified date, if possible.
+	 * @param int $date
+	 * @return bool|Schedules
+	 */
+	protected static function getSchedule($date)
+	{
+		$exception = SchedulesExceptions::findFirst("ignored = 0 AND date = {$date}");
+		if ($exception !== false)
+			$schedule = $exception->getSchedule();
+		else
+			$schedule = Schedules::getDefault();
+
+		return $schedule;
 	}
 
 }

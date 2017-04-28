@@ -75,4 +75,5 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 			],
 		];
 	}
+
 }

@@ -17,8 +17,6 @@ foreach ($application->getModules() as $key => $module) {
 		'namespace' => $controllerNamespace,
 	]);
 
-	header("X-{$key}: \"" . $controllerNamespace . " - " . $module["className"]::getMountPath() . "\"");
-
 	$group->setPrefix($module["className"]::getMountPath());
 
 	foreach ($module["className"]::getRoutes() as $route) {
@@ -26,11 +24,9 @@ foreach ($application->getModules() as $key => $module) {
 			$group->add($route['pattern'], $route['attr']);
 	}
 
-	if (count($group->getRoutes()) > 0) {
+	if (count($group->getRoutes()) > 0)
 		$router->mount($group);
-		header("X-{$key}-routes: " . json_encode($module["className"]::getRoutes()));
 
-	}
 }
 
 

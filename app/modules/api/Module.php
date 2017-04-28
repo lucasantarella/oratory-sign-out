@@ -97,12 +97,41 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				]
 			],
 			[
+				'pattern' => '/schedule/{date:[0-9]+}/periods',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'periodsByDay',
+				]
+			],
+			[
+				'pattern' => '/schedule/periods',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'periodsByDay',
+				]
+			],
+			[
 				'pattern' => '/schedules/{schedule_id:[0-9]+}/periods/{num:[0-9]+}',
 				'attr' => [
 					'controller' => 'schedules',
 					'action' => 'period',
 				]
 			],
+			[
+				'pattern' => '/schedule/{date:[0-9]+}/periods/{num:[0-9]+}',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'periodByDay',
+				]
+			],
+			[
+				'pattern' => '/schedule/periods/{num:[0-9]+}',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'periodToday',
+				]
+			],
 		];
 	}
+
 }
