@@ -1,3 +1,35 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 4541
+#
+# http://www.sequelpro.com/
+# https://github.com/sequelpro/sequelpro
+#
+# Host: localhost (MySQL 5.7.17)
+# Database: oratory_sign_out
+# Generation Time: 2017-04-28 17:12:34 +0000
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table rooms__
+# ------------------------------------------------------------
+
+CREATE TABLE `rooms__` (
+  `name` varchar(20) NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 # Dump of table schedules__
 # ------------------------------------------------------------
 
@@ -75,6 +107,18 @@ CREATE TABLE `students__schedules` (
   `room` varchar(20) NOT NULL DEFAULT '',
   KEY `students__schedules_student_id_period_index` (`student_id`,`period`),
   KEY `students__schedules_schedules__quarters_quarter_num_fk` (`quarter`),
+  KEY `students__schedules_rooms___name_fk` (`room`),
+  CONSTRAINT `students__schedules_rooms___name_fk` FOREIGN KEY (`room`) REFERENCES `rooms__` (`name`),
   CONSTRAINT `students__schedules_schedules__quarters_quarter_num_fk` FOREIGN KEY (`quarter`) REFERENCES `schedules__quarters` (`quarter_num`),
   CONSTRAINT `students__schedules_students___id_fk` FOREIGN KEY (`student_id`) REFERENCES `students__` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

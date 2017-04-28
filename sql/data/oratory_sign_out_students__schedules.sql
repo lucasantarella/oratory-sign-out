@@ -99,7 +99,7 @@ INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day
 INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 1, '109');
 INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 2, '103');
 INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 3, '301');
-INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 4, 'Lunch');
+INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 4, 'Cafeteria');
 INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 5, '203');
 INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 6, '203');
 INSERT INTO oratory_sign_out.students__schedules (student_id, quarter, cycle_day, period, room) VALUES (2, 4, 7, 7, '105');
