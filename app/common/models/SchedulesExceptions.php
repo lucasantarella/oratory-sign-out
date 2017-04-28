@@ -2,6 +2,9 @@
 
 namespace Oratorysignout\Models;
 
+use Phalcon\Db\Column;
+use Phalcon\Mvc\Model\MetaData;
+
 /**
  * SchedulesExceptions
  *
@@ -40,6 +43,75 @@ class SchedulesExceptions extends \Phalcon\Mvc\Model
 	public function initialize()
 	{
 		$this->belongsTo('schedule_id', 'Oratorysignout\Models\Schedules', 'id', ['alias' => 'Schedule']);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function metaData()
+	{
+		return [
+			MetaData::MODELS_ATTRIBUTES => [
+				"date",
+				"ignored",
+				"schedule_id",
+			],
+
+			MetaData::MODELS_PRIMARY_KEY => [
+			],
+
+			MetaData::MODELS_NON_PRIMARY_KEY => [
+				"date",
+				"ignored",
+				"schedule_id",
+			],
+
+			// Every column that doesn't allows null values
+			MetaData::MODELS_NOT_NULL => [
+				"date",
+				"ignored",
+				"schedule_id",
+			],
+
+			// Every column and their data types
+			MetaData::MODELS_DATA_TYPES => [
+				"date" => Column::TYPE_BIGINTEGER,
+				"ignored" => Column::TYPE_BOOLEAN,
+				"schedule_id" => Column::TYPE_BIGINTEGER,
+			],
+
+			// The columns that have numeric data types
+			MetaData::MODELS_DATA_TYPES_NUMERIC => [
+				"date" => true,
+				"schedule_id" => true,
+			],
+
+			// The identity column, use boolean false if the model doesn't have
+			// an identity column
+			MetaData::MODELS_IDENTITY_COLUMN => false,
+
+			// How every column must be bound/casted
+			MetaData::MODELS_DATA_TYPES_BIND => [
+				"date" => Column::BIND_PARAM_INT,
+				"ignored" => Column::BIND_PARAM_BOOL,
+				"schedule_id" => Column::BIND_PARAM_INT,
+			],
+
+			// Fields that must be ignored from INSERT SQL statements
+			MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
+
+			// Fields that must be ignored from UPDATE SQL statements
+			MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
+
+			// Default values for columns
+			MetaData::MODELS_DEFAULT_VALUES => [
+				"ignored" => false,
+			],
+
+			// Fields that allow empty strings
+			MetaData::MODELS_EMPTY_STRING_VALUES => [
+			],
+		];
 	}
 
 	/**

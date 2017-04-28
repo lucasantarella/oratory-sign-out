@@ -2,6 +2,9 @@
 
 namespace Oratorysignout\Models;
 
+use Phalcon\Db\Column;
+use Phalcon\Mvc\Model\MetaData;
+
 /**
  * SchedulesPeriods
  *
@@ -46,6 +49,79 @@ class SchedulesPeriods extends \Phalcon\Mvc\Model
 	public function initialize()
 	{
 		$this->belongsTo('schedule_id', 'Oratorysignout\Models\Schedules', 'id', ['alias' => 'Schedules']);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function metaData()
+	{
+		return [
+			MetaData::MODELS_ATTRIBUTES => [
+				"schedule_id",
+				"period",
+				"start_time",
+				"end_time",
+			],
+
+			MetaData::MODELS_PRIMARY_KEY => [
+			],
+
+			MetaData::MODELS_NON_PRIMARY_KEY => [
+				"schedule_id",
+				"period",
+				"start_time",
+				"end_time",
+			],
+
+			// Every column that doesn't allows null values
+			MetaData::MODELS_NOT_NULL => [
+				"schedule_id",
+				"period",
+				"start_time",
+				"end_time",
+			],
+
+			// Every column and their data types
+			MetaData::MODELS_DATA_TYPES => [
+				"schedule_id" => Column::TYPE_BIGINTEGER,
+				"period" => Column::TYPE_INTEGER,
+				"start_time" => Column::TYPE_BIGINTEGER,
+				"end_time" => Column::TYPE_BIGINTEGER,
+			],
+
+			// The columns that have numeric data types
+			MetaData::MODELS_DATA_TYPES_NUMERIC => [
+				"schedule_id" => true,
+				"period" => true,
+				"start_time" => true,
+				"end_time" => true,
+			],
+
+			// The identity column, use boolean false if the model doesn't have
+			// an identity column
+			MetaData::MODELS_IDENTITY_COLUMN => false,
+
+			// How every column must be bound/casted
+			MetaData::MODELS_DATA_TYPES_BIND => [
+				"schedule_id" => Column::BIND_PARAM_INT,
+				"period" => Column::BIND_PARAM_INT,
+				"start_time" => Column::BIND_PARAM_INT,
+				"end_time" => Column::BIND_PARAM_INT,
+			],
+
+			// Fields that must be ignored from INSERT SQL statements
+			MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
+
+			// Fields that must be ignored from UPDATE SQL statements
+			MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
+
+			// Default values for columns
+			MetaData::MODELS_DEFAULT_VALUES => [],
+
+			// Fields that allow empty strings
+			MetaData::MODELS_EMPTY_STRING_VALUES => [],
+		];
 	}
 
 	/**

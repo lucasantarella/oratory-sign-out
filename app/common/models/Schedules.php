@@ -2,6 +2,9 @@
 
 namespace Oratorysignout\Models;
 
+use Phalcon\Db\Column;
+use Phalcon\Mvc\Model\MetaData;
+
 /**
  * Schedules
  *
@@ -41,6 +44,78 @@ class Schedules extends \Phalcon\Mvc\Model
 	{
 		$this->hasMany('id', 'Oratorysignout\Models\SchedulesExceptions', 'schedule_id', ['alias' => 'SchedulesExceptions']);
 		$this->hasMany('id', 'Oratorysignout\Models\SchedulesPeriods', 'schedule_id', ['alias' => 'Periods']);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function metaData()
+	{
+		return [
+			MetaData::MODELS_ATTRIBUTES => [
+				"id",
+				"name",
+				"default",
+			],
+
+			MetaData::MODELS_PRIMARY_KEY => [
+				"id",
+			],
+
+			MetaData::MODELS_NON_PRIMARY_KEY => [
+				"name",
+				"default",
+			],
+
+			// Every column that doesn't allows null values
+			MetaData::MODELS_NOT_NULL => [
+				"name",
+				"default",
+			],
+
+			// Every column and their data types
+			MetaData::MODELS_DATA_TYPES => [
+				"id" => Column::TYPE_BIGINTEGER,
+				"name" => Column::TYPE_VARCHAR,
+				"default" => Column::TYPE_BOOLEAN,
+			],
+
+			// The columns that have numeric data types
+			MetaData::MODELS_DATA_TYPES_NUMERIC => [
+				"id" => true,
+				"default" => true,
+			],
+
+			// The identity column, use boolean false if the model doesn't have
+			// an identity column
+			MetaData::MODELS_IDENTITY_COLUMN => "id",
+
+			// How every column must be bound/casted
+			MetaData::MODELS_DATA_TYPES_BIND => [
+				"id" => Column::BIND_PARAM_INT,
+				"name" => Column::BIND_PARAM_STR,
+				"default" => Column::BIND_PARAM_BOOL,
+			],
+
+			// Fields that must be ignored from INSERT SQL statements
+			MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [
+				'id'
+			],
+
+			// Fields that must be ignored from UPDATE SQL statements
+			MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
+
+			// Default values for columns
+			MetaData::MODELS_DEFAULT_VALUES => [
+				"name" => '',
+				"default" => false,
+			],
+
+			// Fields that allow empty strings
+			MetaData::MODELS_EMPTY_STRING_VALUES => [
+				'name'
+			],
+		];
 	}
 
 	/**
