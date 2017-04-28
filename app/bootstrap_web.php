@@ -49,6 +49,7 @@ $dotenv->required('DB_HOST');
 $dotenv->required('DB_NAME');
 $dotenv->required('DB_USER');
 $dotenv->required('DB_PASS');
+$dotenv->required('CYCLE_START_DATE');
 $dotenv->required('RELEASE_STAGE')->allowedValues(['production', 'staging', 'development', 'local_dev']);
 $dotenv->required('ERRORS')->allowedValues(['true', 'false']);
 $dotenv->required('DEBUG')->allowedValues(['true', 'false']);

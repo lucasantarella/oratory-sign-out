@@ -69,10 +69,38 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				]
 			],
 			[
-				'pattern' => '/bugsnag',
+				'pattern' => '/schedule',
 				'attr' => [
-					'controller' => 'index',
-					'action' => 'bugsnag',
+					'controller' => 'schedules',
+					'action' => 'schedule',
+				]
+			],
+			[
+				'pattern' => '/schedule/{date:[0-9]+}',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'schedule',
+				]
+			],
+			[
+				'pattern' => '/schedules/{id:[0-9]+}',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'schedules',
+				]
+			],
+			[
+				'pattern' => '/schedules/{schedule_id:[0-9]+}/periods',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'periods',
+				]
+			],
+			[
+				'pattern' => '/schedules/{schedule_id:[0-9]+}/periods/{num:[0-9]+}',
+				'attr' => [
+					'controller' => 'schedules',
+					'action' => 'period',
 				]
 			],
 		];
