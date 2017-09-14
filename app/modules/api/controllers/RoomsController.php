@@ -44,28 +44,30 @@ class RoomsController extends ControllerBase
 			return $this->sendNotFound();
 
 		// Get users in room, minus those that are signed out
-		$builder = $this->modelsManager->createBuilder()
-			->from(["StudentsSchedules" => "\\Oratorysignout\\Models\\StudentsSchedules", "Students" => "\\Oratorysignout\\Models\\Students"])
-			->columns("Students.*")
-			->innerJoin("Students", "Students.id = StudentsSchedules.student_id")
-			->where("StudentsSchedules.quarter = :quarter:")
-			->andWhere("StudentsSchedules.cycle_day = :cycleDay:")
-			->andWhere("StudentsSchedules.schedule_id = :schedule_id:")
-			->andWhere("StudentsSchedules.period = :period:")
-			->andWhere("StudentsSchedules.room = :room:");
+		// Setup Phalcon Query
+		$phql = "SELECT
+                \\Oratorysignout\\Models\\Students.*
+            FROM \\Oratorysignout\\Models\\StudentsSchedules
+            INNER JOIN \\Oratorysignout\\Models\\Students
+                ON \\Oratorysignout\\Models\\StudentsSchedules.student_id = \\Oratorysignout\\Models\\Students.id
+            WHERE
+                \\Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter: AND
+                \\Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day: AND
+                \\Oratorysignout\\Models\\StudentsSchedules.period = :period: AND
+                \\Oratorysignout\\Models\\StudentsSchedules.room = :room:
+            GROUP BY \\Oratorysignout\\Models\\Students.id
+        ";
 
-		$query = $this->modelsManager->createQuery($builder->getPhql())->execute([
+		$query = $this->modelsManager->executeQuery($phql, [
 			'quarter' => $info['quarter'],
-			'cycleDay' => $info['cycleDay'],
-			'schedule_id' => $info['schedule']->id,
-			'period' => $info['period'],
+			'cycle_day' => $info['cycleDay'],
+			'period' => $info['period']->period,
 			'room' => $room->name,
 		]);
 
 		if (count($query) == 0 || $query === false)
 			return $this->sendBadRequest();
 
-		var_dump($query);
 		return $this->sendResponse($query);
 	}
 
