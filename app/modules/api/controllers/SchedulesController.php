@@ -25,7 +25,7 @@ class SchedulesController extends ControllerBase
 		if (is_null($date))
 			$date = date('Ymd');
 
-		return $this->sendResponse(array_merge(self::getSchedule($date)->jsonSerialize(), ['date' => (int)$date]));
+		return $this->sendResponse(array_merge(self::getSchedule($date)->jsonSerialize(), ['date' => (int)$date, 'cycle_day' => $cycleDay = self::getCycleDay($date)]));
 	}
 
 	public function schedulesAction($id = 0)
