@@ -2,12 +2,12 @@
 
 namespace Oratorysignout\Modules\Api;
 
-use Oratorysignout\ModuleRoutesDefinitionInterface;
 use Phalcon\DiInterface;
 use Phalcon\Loader;
-use Phalcon\Mvc\View;
 use Phalcon\Mvc\ModuleDefinitionInterface;
-use Phalcon\Config;
+use Phalcon\Mvc\View;
+use Phalcon\Mvc\View\Engine\Php as PhpEngine;
+use Oratorysignout\ModuleRoutesDefinitionInterface;
 
 
 class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterface
@@ -41,7 +41,6 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 		 */
 		$di->set('view', function () {
 			$view = new View();
-			$view->setDI($this);
 			$view->setRenderLevel(View::LEVEL_NO_RENDER);
 			return $view;
 		});
@@ -136,6 +135,13 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				'attr' => [
 					'controller' => 'rooms',
 					'action' => 'room',
+				]
+			],
+			[
+				'pattern' => '/rooms/{name:[a-zA-Z0-9]+}/students',
+				'attr' => [
+					'controller' => 'rooms',
+					'action' => 'currentStudents',
 				]
 			],
 		];

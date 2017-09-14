@@ -168,4 +168,28 @@ class SchedulesPeriods extends \Phalcon\Mvc\Model
 		];
 	}
 
+	/**
+	 * @param $time
+	 * @param bool $schedule_id
+	 * @return bool|SchedulesPeriods
+	 */
+	public static function findAtTime($time, $schedule_id = false)
+	{
+		if ($schedule_id instanceof Schedules)
+			$schedule = $schedule_id;
+		else
+			if ($schedule_id <= 0)
+				$schedule = Schedules::getDefault();
+			else
+				$schedule = Schedules::findFirst($schedule_id);
+
+		if ($schedule === false)
+			return false;
+
+		$period = $schedule->getPeriods("start_time <= {$time} AND end_time >= {$time}");
+		if (count($period) > 0)
+			return $period[0];
+		else return false;
+	}
+
 }

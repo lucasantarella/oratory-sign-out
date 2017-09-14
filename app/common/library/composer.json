@@ -1,9 +1,10 @@
 {
-  "require-dev": {
-    "phalcon/devtools": "^3.1"
-  },
-  "require": {
-    "vlucas/phpdotenv": "^2.4",
-    "bugsnag/bugsnag": "^3.5"
-  }
+    "require-dev": {
+        "phalcon/ide-stubs": "^3.2",
+        "phalcon/devtools": "^3.2"
+    },
+    "require": {
+        "vlucas/phpdotenv": "^2.4",
+        "bugsnag/bugsnag": "^3.6"
+    }
 }

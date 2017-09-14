@@ -9,9 +9,13 @@
 namespace Oratorysignout\Modules\Api\Controllers;
 
 
+use DateTime;
+use DateTimeZone;
+use Oratorysignout\CommonLibrary;
 use Oratorysignout\Models\Schedules;
 use Oratorysignout\Models\SchedulesExceptions;
 use Oratorysignout\Models\SchedulesPeriods;
+use Oratorysignout\Models\SchedulesQuarters;
 
 class SchedulesController extends ControllerBase
 {
@@ -114,6 +118,74 @@ class SchedulesController extends ControllerBase
 			$schedule = Schedules::getDefault();
 
 		return $schedule;
+	}
+
+	/**
+	 * @param $monthDay
+	 * @return bool|int
+	 */
+	public static function getQuarter($monthDay)
+	{
+		$quarter = SchedulesQuarters::findFirst("start_date <= {$monthDay} AND end_date >= {$monthDay}");
+		if ($quarter !== false)
+			return (int)$quarter->quarter_num;
+		else return false;
+	}
+
+
+	/**
+	 * @param string $datetime YmdHis formatted timestamp.
+	 * @return array|bool
+	 */
+	public static function getDateTimeInfo($datetime)
+	{
+		$date = DateTime::createFromFormat('YmdHis', $datetime, new DateTimeZone('America/New_York'));
+		if ($date === false)
+			return false;
+
+		$yearMonthDay = $date->format('Ymd');
+		$monthDay = $date->format('md');
+		$hourMinute = $date->format('Hi');
+		$quarter = self::getQuarter($monthDay);
+		$cycleDay = self::getCycleDay($yearMonthDay);
+		$schedule = self::getSchedule($yearMonthDay);
+		$period = SchedulesPeriods::findAtTime($hourMinute, $schedule);
+
+		return [
+			'quarter' => $quarter,
+			'cycleDay' => $cycleDay,
+			'schedule' => $schedule,
+			'period' => $period,
+		];
+	}
+
+	/**
+	 * @param string $fromDate
+	 * @return array
+	 */
+	public static function getNonCycleDays($fromDate = null)
+	{
+		if (is_null($fromDate))
+			$fromDate = getenv('CYCLE_START_DATE');
+
+		$ignored = SchedulesExceptions::find("ignored = 1 AND date >= " . $fromDate);
+		$ignoredArray = [];
+		foreach ($ignored as $date) {
+			$ignoredArray[] = (int)$date->date;
+		}
+
+		return $ignoredArray;
+	}
+
+	/**
+	 * @param $day
+	 * @return int
+	 */
+	public static function getCycleDay($day)
+	{
+		$ignored = self::getNonCycleDays();
+		$result = CommonLibrary::getWorkingDays(getenv('CYCLE_START_DATE'), $day, $ignored) % 8;
+		return ($result === 0) ? 8 : $result;
 	}
 
 }

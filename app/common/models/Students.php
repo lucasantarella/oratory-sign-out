@@ -196,4 +196,17 @@ class Students extends \Phalcon\Mvc\Model
 		return parent::findFirst($parameters);
 	}
 
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize()
+	{
+		return [
+			'id' => (int)$this->id,
+			'first_name' => $this->first_name,
+			'last_name' => $this->last_name,
+			'email' => $this->email,
+		];
+	}
+
 }

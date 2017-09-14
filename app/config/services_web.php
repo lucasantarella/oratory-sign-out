@@ -1,23 +1,18 @@
 <?php
 
-use Phalcon\Events\Manager;
-use Phalcon\Http\Response\Cookies;
+use Phalcon\Flash\Direct as Flash;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Url as UrlResolver;
 use Phalcon\Session\Adapter\Files as SessionAdapter;
-use Phalcon\Mvc\View;
-use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
-use Phalcon\Flash\Direct as Flash;
 
 /**
  * Registering a router
  */
 $di->setShared('router', function () {
-	$router = new Router(false);
+	$router = new Router();
 
 	$router->setDefaultModule('frontend');
-	$router->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
 
 	return $router;
 });
@@ -44,60 +39,23 @@ $di->setShared('session', function () {
 	return $session;
 });
 
-$di->set('cookies', function () {
-	$cookies = new Cookies();
-	$cookies->useEncryption(true);
-	return $cookies;
+/**
+ * Register the session flash service with the Twitter Bootstrap classes
+ */
+$di->set('flash', function () {
+	return new Flash([
+		'error' => 'alert alert-danger',
+		'success' => 'alert alert-success',
+		'notice' => 'alert alert-info',
+		'warning' => 'alert alert-warning'
+	]);
 });
 
 /**
  * Set the default namespace for dispatcher
  */
-$di->setShared('dispatcher', function () use ($di) {
-	$dispatcher = new Phalcon\Mvc\Dispatcher();
-
-	// Create an EventsManager
-	$eventsManager = new Manager();
-
-	// Attach a listener
-	$eventsManager->attach("dispatch:beforeException", function ($event, $dispatcher, $exception) {
-
-		// Handle 404 exceptions
-		if ($exception instanceof Dispatcher\Exception) {
-			$dispatcher->forward(
-				array(
-					'module' => 'frontend',
-					'namespace' => 'Oratorysignout\Modules\Frontend\Controllers',
-					'controller' => 'errors',
-					'action' => 'notFound'
-				)
-			);
-
-			return false;
-		}
-
-		// Alternative way, controller or action doesn't exist
-		switch ($exception->getCode()) {
-			case Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
-			case Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
-				$dispatcher->forward(
-					array(
-						'module' => 'frontend',
-						'namespace' => 'Oratorysignout\Modules\Frontend\Controllers',
-						'controller' => 'errors',
-						'action' => 'notFound'
-					)
-				);
-
-				return false;
-		}
-
-		return true;
-
-	});
-
-	$dispatcher->setEventsManager($eventsManager);
+$di->setShared('dispatcher', function () {
+	$dispatcher = new Dispatcher();
 	$dispatcher->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
 	return $dispatcher;
-
 });

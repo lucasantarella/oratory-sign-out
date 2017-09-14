@@ -2,12 +2,12 @@
 
 namespace Oratorysignout\Modules\Frontend;
 
-use Oratorysignout\ModuleRoutesDefinitionInterface;
 use Phalcon\DiInterface;
 use Phalcon\Loader;
+use Phalcon\Mvc\ModuleDefinitionInterface;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\View\Engine\Php as PhpEngine;
-use Phalcon\Mvc\ModuleDefinitionInterface;
+use Oratorysignout\ModuleRoutesDefinitionInterface;
 
 class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterface
 {
@@ -67,11 +67,20 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 	{
 		return [
 			[
-				'pattern' => '/base',
+				'pattern' => '/404',
+				'attr' => [
+					'controller' => 'errors',
+					'action' => 'notFound'
+				],
+				'method' => ['GET', 'POST', 'PUT', 'DELETE'],
+			],
+			[
+				'pattern' => '/home',
 				'attr' => [
 					'controller' => 'index',
-					'action' => 'index',
-				]
+					'action' => 'index'
+				],
+				'method' => 'GET',
 			],
 		];
 	}
