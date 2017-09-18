@@ -17,7 +17,7 @@ class SchedulesExceptions extends \Phalcon\Mvc\Model
 
 	/**
 	 *
-	 * @var string
+	 * @var integer
 	 * @Primary
 	 * @Column(type="string", length=8, nullable=false)
 	 */
@@ -25,17 +25,31 @@ class SchedulesExceptions extends \Phalcon\Mvc\Model
 
 	/**
 	 *
-	 * @var integer
+	 * @var boolean
 	 * @Column(type="integer", length=1, nullable=true)
 	 */
-	public $ignored;
+	public $ignored_from_cycle;
 
 	/**
 	 *
-	 * @var string
+	 * @var integer|null
 	 * @Column(type="string", length=20, nullable=true)
 	 */
 	public $schedule_id;
+
+	/**
+	 *
+	 * @var integer|null
+	 * @Column(type="integer", length=1, nullable=true)
+	 */
+	public $cycle_day_override;
+
+	/**
+	 *
+	 * @var boolean
+	 * @Column(type="integer", length=1, nullable=false, default=0)
+	 */
+	public $ignore_day;
 
 	/**
 	 * Initialize method for model.
@@ -53,37 +67,45 @@ class SchedulesExceptions extends \Phalcon\Mvc\Model
 		return [
 			MetaData::MODELS_ATTRIBUTES => [
 				"date",
-				"ignored",
+				"ignored_from_cycle",
 				"schedule_id",
+				"cycle_day_override",
+				"ignore_day",
 			],
 
 			MetaData::MODELS_PRIMARY_KEY => [
+				"date"
 			],
 
 			MetaData::MODELS_NON_PRIMARY_KEY => [
 				"date",
-				"ignored",
+				"ignored_from_cycle",
 				"schedule_id",
+				"cycle_day_override",
+				"ignore_day",
 			],
 
 			// Every column that doesn't allows null values
 			MetaData::MODELS_NOT_NULL => [
 				"date",
-				"ignored",
-				"schedule_id",
+				"ignored_from_cycle",
+				"ignore_day",
 			],
 
 			// Every column and their data types
 			MetaData::MODELS_DATA_TYPES => [
 				"date" => Column::TYPE_BIGINTEGER,
-				"ignored" => Column::TYPE_BOOLEAN,
+				"ignored_from_cycle" => Column::TYPE_BOOLEAN,
 				"schedule_id" => Column::TYPE_BIGINTEGER,
+				"cycle_day_override" => Column::TYPE_INTEGER,
+				"ignore_day" => Column::TYPE_BOOLEAN,
 			],
 
 			// The columns that have numeric data types
 			MetaData::MODELS_DATA_TYPES_NUMERIC => [
 				"date" => true,
 				"schedule_id" => true,
+				"cycle_day_override" => true,
 			],
 
 			// The identity column, use boolean false if the model doesn't have
@@ -93,8 +115,10 @@ class SchedulesExceptions extends \Phalcon\Mvc\Model
 			// How every column must be bound/casted
 			MetaData::MODELS_DATA_TYPES_BIND => [
 				"date" => Column::BIND_PARAM_INT,
-				"ignored" => Column::BIND_PARAM_BOOL,
+				"ignored_from_cycle" => Column::BIND_PARAM_BOOL,
 				"schedule_id" => Column::BIND_PARAM_INT,
+				"cycle_day_override" => Column::BIND_PARAM_INT,
+				"ignore_day" => Column::BIND_PARAM_BOOL,
 			],
 
 			// Fields that must be ignored from INSERT SQL statements
@@ -105,13 +129,32 @@ class SchedulesExceptions extends \Phalcon\Mvc\Model
 
 			// Default values for columns
 			MetaData::MODELS_DEFAULT_VALUES => [
-				"ignored" => false,
+				"ignored_from_cycle" => false,
+				"ignore_day" => false,
 			],
 
 			// Fields that allow empty strings
 			MetaData::MODELS_EMPTY_STRING_VALUES => [
 			],
 		];
+	}
+
+	public function beforeSave()
+	{
+		$this->date = (int)$this->date;
+		$this->ignored_from_cycle = (int)$this->ignored_from_cycle;
+		$this->schedule_id = is_null($this->schedule_id) ? null : (int)$this->schedule_id;
+		$this->cycle_day_override = is_null($this->cycle_day_override) ? null : (int)$this->cycle_day_override;
+		$this->ignore_day = (int)$this->ignore_day;
+	}
+
+	public function afterFetch()
+	{
+		$this->date = (int)$this->date;
+		$this->ignored_from_cycle = (bool)$this->ignored_from_cycle;
+		$this->schedule_id = is_null($this->schedule_id) ? null : (int)$this->schedule_id;
+		$this->cycle_day_override = is_null($this->cycle_day_override) ? null : (int)$this->cycle_day_override;
+		$this->ignore_day = (bool)$this->ignore_day;
 	}
 
 	/**

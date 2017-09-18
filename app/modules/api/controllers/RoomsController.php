@@ -9,13 +9,29 @@
 namespace Oratorysignout\Modules\Api\Controllers;
 
 
-use \Oratorysignout\Models\Rooms as Rooms;
-use \Oratorysignout\Models\Students as Students;
-use \Oratorysignout\Models\StudentsSchedules as StudentsSchedules;
+use Oratorysignout\Models\Rooms as Rooms;
 use Phalcon\Filter;
+use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 class RoomsController extends ControllerBase
 {
+
+	public function roomsAction()
+	{
+		$builder = $this->modelsManager->createBuilder()
+			->from('Oratorysignout\\Models\\Rooms');
+
+		$paginator = new PaginatorQueryBuilder(
+			[
+				"builder" => $builder,
+				"limit"   => $this->request->getQuery("limit", Filter::FILTER_INT_CAST, 20),
+				"page"    => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
+			]
+		);
+
+		return $this->sendResponse($paginator->getPaginate()->items);
+
+	}
 
 	public function roomAction($name = '')
 	{
@@ -34,14 +50,14 @@ class RoomsController extends ControllerBase
 		if (strlen($name) == 0)
 			return $this->sendNotFound();
 
-		$room = Rooms::findFirst($name);
+		$room = Rooms::findFirst("name = '{$name}'");
 		if ($room === false)
 			return $this->sendNotFound();
 
 		$info = SchedulesController::getDateTimeInfo($this->request->getQuery('date', Filter::FILTER_ABSINT, (int)date('YmdHis')));
 
 		if ($info === false || $info['period'] === false)
-			return $this->sendNotFound();
+			return $this->sendBadRequest();
 
 		// Get users in room, minus those that are signed out
 		// Setup Phalcon Query
@@ -66,7 +82,7 @@ class RoomsController extends ControllerBase
 		]);
 
 		if (count($query) == 0 || $query === false)
-			return $this->sendBadRequest();
+			return $this->sendResponse([]);
 
 		return $this->sendResponse($query);
 	}

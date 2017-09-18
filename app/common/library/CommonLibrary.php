@@ -67,7 +67,20 @@ class CommonLibrary
 			if ($startDate <= $time_stamp && $time_stamp <= $endDate && date("N", $time_stamp) != 6 && date("N", $time_stamp) != 7)
 				$workingDays--;
 		}
-		return $workingDays - 1;
+
+		return $workingDays;
+	}
+
+	/**
+	 * @param null|string|int $date
+	 * @return bool
+	 */
+	public static function isWeekend($date = null)
+	{
+		if (is_null($date))
+			$date = date('Ymd');
+
+		return date('w', strtotime($date)) % 6 == 0;
 	}
 
 }
