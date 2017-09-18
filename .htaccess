@@ -2,6 +2,7 @@
 	RewriteEngine on
 
 	RewriteRule  ^web/(.*) web/$1 [L,QSA]
+	RewriteRule  ^web/$ web/index.html [L,QSA]
 
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
