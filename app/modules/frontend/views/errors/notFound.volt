@@ -1,60 +1,47 @@
-<!doctype html>
-<html ng-app="wixErrorPagesApp">
+<html>
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title ng-bind="'page_title' | translate"></title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
-    <meta name="robots" content="noindex, nofollow">
-    <link type="image/png" href="//www.wix.com/favicon.ico" rel="shortcut icon">
-    <link href="//static.parastorage.com/services/third-party/fonts/Helvetica/fontFace.css" rel="stylesheet"
-          type="text/css"/>
-    <!--  -->
-    <link rel="stylesheet"
-          href="//static.parastorage.com/services/wix-public/libs-releases-GA-local/styles/error-pages/styles.css">
-    <!--  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>404 Not Found</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAxMC8yOS8xMiKqq3kAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzVxteM2AAABHklEQVRIib2Vyw6EIAxFW5idr///Qx9sfG3pLEyJ3tAwi5EmBqRo7vHawiEEERHS6x7MTMxMVv6+z3tPMUYSkfTM/R0fEaG2bbMv+Gc4nZzn+dN4HAcREa3r+hi3bcuu68jLskhVIlW073tWaYlQ9+F9IpqmSfq+fwskhdO/AwmUTJXrOuaRQNeRkOd5lq7rXmS5InmERKoER/QMvUAPlZDHcZRhGN4CSeGY+aHMqgcks5RrHv/eeh455x5KrMq2yHQdibDO6ncG/KZWL7M8xDyS1/MIO0NJqdULLS81X6/X6aR0nqBSJcPeZnlZrzN477NKURn2Nus8sjzmEII0TfMiyxUuxphVWjpJkbx0btUnshRihVv70Bv8ItXq6Asoi/ZiCbU6YgAAAABJRU5ErkJggg==);
+        }
+
+        .error-template {
+            padding: 40px 15px;
+            text-align: center;
+        }
+
+        .error-actions {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .error-actions .btn {
+            margin-right: 10px;
+        }
+    </style>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript"></script>
 </head>
-<body lang="en" ng-controller="ErrorPageController as errorPageCtrl" class="error-page-app"
-      ng-class="{'secondary-background': isSecondaryBackground}">
-<!--[if lt IE 9]>
-<script src="//static.parastorage.com/services/third-party/es5-shim/2.1.0/es5-shim.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<![endif]-->
-<!--[if gte IE 9]><!-->
-<script src="//static.parastorage.com/services/third-party/jquery/2.0.3/jquery.min.js"></script>
-<!--<![endif]-->
-
-<script src="//static.parastorage.com/services/third-party/angularjs/1.2.28/angular.min.js"></script>
-<!--  -->
-<script src="//static.parastorage.com/services/third-party/angularjs/1.2.28/i18n/angular-locale_en.js"></script>
-<script src="//static.parastorage.com/services/third-party/angular-translate/1.1.1/angular-translate.min.js"></script>
-<script src="//static.parastorage.com/services/wix-public/libs-releases-GA-local/bower_components/wix-bi-logger/dist/scripts/bi-logger/wix-bi-angular.js"></script>
-
-<script src="//static.parastorage.com/services/wix-public/libs-releases-GA-local/scripts/error-pages/locale/messages_en.js"></script>
-<!--  -->
-<script src="//static.parastorage.com/services/wix-public/libs-releases-GA-local/scripts/error-pages/app.js"></script>
-<!--  -->
-
-<script>
-    angular.module('wixErrorPagesApp').constant('staticsUrl', '//static.parastorage.com/services/wix-public/libs-releases-GA-local/');
-    angular.module('wixErrorPagesApp').constant('baseDomain', 'wix.com');
-    angular.module('wixErrorPagesApp').constant('language', 'en');
-    angular.module('wixErrorPagesApp').constant('errorCode', {code: 'NotBranded'});
-    angular.module('wixErrorPagesApp').constant('data', {});
-    angular.module('wixErrorPagesApp').constant('exceptionName', '');
-    angular.module('wixErrorPagesApp').constant('serverErrorCode', '404');
-</script>
-<div ng-cloak ng-include="errorPageCtrl.errorPageUrl">
-    <div class="non-angular-supported-browser-wrapper">
-        <h1 class="non-angular-supported-browser-header">Error NotBranded occurred</h1>
-        <div class="non-angular-supported-browser-link">
-            <span>Regardless, we recommend you to <a href="http://browsehappy.com/">update your browser.</a></span>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>
+                    Oops!</h1>
+                <h2>
+                    404 Not Found</h2>
+                <div class="error-details">
+                    Sorry, an error has occurred, Requested page not found!
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<!-- verification -->
-<!-- end verification -->
 </body>
 </html>

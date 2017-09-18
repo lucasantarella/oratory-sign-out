@@ -11,11 +11,5 @@ class IndexController extends ControllerBase
 		$this->sendResponse(['test' => 'test']);
 	}
 
-	public function bugsnagAction()
-	{
-		throw new \Exception('Testing Bugsnag!');
-		$this->sendResponse(['success' => true]);
-	}
-
 }
 

@@ -2,6 +2,11 @@
 
 use Phalcon\Loader;
 
+/**
+ * Composer Autoloader
+ */
+require_once APP_PATH . '/common/library/vendor/autoload.php';
+
 $loader = new Loader();
 
 /**

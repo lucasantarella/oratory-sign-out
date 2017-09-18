@@ -46,9 +46,6 @@ class ControllerBase extends Controller
 	{
 		$timestamp = new DateTime('now');
 
-		if (!is_array($response))
-			$response = [$response];
-
 		if (SHOW_DEBUG) {
 			$debug = [];
 

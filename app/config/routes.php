@@ -4,9 +4,11 @@ use Phalcon\Mvc\Router;
 
 $router = $di->get('router');
 
+$router = new Router(false);
+
 $router->setDefaultModule('frontend');
 $router->setDefaultNamespace('Oratorysignout\Modules\Frontend\Controllers');
-$router->removeExtraSlashes(true);
+$router->removeExtraSlashes(false);
 
 foreach ($application->getModules() as $key => $module) {
 
@@ -17,22 +19,16 @@ foreach ($application->getModules() as $key => $module) {
 		'namespace' => $controllerNamespace,
 	]);
 
-	header("X-{$key}: \"" . $controllerNamespace . " - " . $module["className"]::getMountPath() . "\"");
-
 	$group->setPrefix($module["className"]::getMountPath());
 
 	foreach ($module["className"]::getRoutes() as $route) {
 		if (is_array($route))
-			$group->add($route['pattern'], $route['attr']);
+			$group->add($route['pattern'], $route['attr'], (isset($route['method'])) ? $route['method'] : 'GET');
 	}
 
-	if (count($group->getRoutes()) > 0) {
+	if (count($group->getRoutes()) > 0)
 		$router->mount($group);
-		header("X-{$key}-routes: " . json_encode($module["className"]::getRoutes()));
-
-	}
 }
-
 
 $router->setDefaults(array(
 	'module' => 'frontend',
