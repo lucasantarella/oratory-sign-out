@@ -1,11 +1,15 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine on
 
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule  ^$ public/    [L]
+	RewriteRule  ^web/(.*) web/$1 [QSA]
 
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule  (.*) public/$1 [L]
+	RewriteRule  ^$ public/    [QSA]
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule  (.*) public/$1 [QSA]
 </IfModule>
+
+Header set Access-Control-Allow-Origin "*"

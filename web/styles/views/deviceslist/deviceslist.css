@@ -1,0 +1,5 @@
+#view-devices-list-container {
+  max-height: calc(100vh);
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
