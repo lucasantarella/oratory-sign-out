@@ -75,6 +75,20 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				]
 			],
 			[
+				'pattern' => '/students/{id:[0-9]+}',
+				'attr' => [
+					'controller' => 'students',
+					'action' => 'student',
+				]
+			],
+			[
+				'pattern' => '/students/{id:[0-9]+}/schedule',
+				'attr' => [
+					'controller' => 'students',
+					'action' => 'studentSchedule',
+				]
+			],
+			[
 				'pattern' => '/schedule',
 				'attr' => [
 					'controller' => 'schedules',
@@ -95,13 +109,6 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 					'action' => 'schedule',
 				]
 			],
-//			[
-//				'pattern' => '/schedule/{date:[0-9]+}',
-//				'attr' => [
-//					'controller' => 'schedules',
-//					'action' => 'schedule',
-//				]
-//			],
 			[
 				'pattern' => '/schedules/{id:[0-9]+}',
 				'attr' => [
@@ -117,7 +124,7 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				]
 			],
 			[
-				'pattern' => '/schedule/{date:[0-9]+}/periods',
+				'pattern' => '/schedule/{date:[0-9]{8}}/periods',
 				'attr' => [
 					'controller' => 'schedules',
 					'action' => 'periodsByDay',
@@ -138,7 +145,7 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				]
 			],
 			[
-				'pattern' => '/schedule/{date:[0-9]+}/periods/{num:[0-9]+}',
+				'pattern' => '/schedule/{date:[0-9]{8}}/periods/{num:[0-9]+}',
 				'attr' => [
 					'controller' => 'schedules',
 					'action' => 'periodByDay',
