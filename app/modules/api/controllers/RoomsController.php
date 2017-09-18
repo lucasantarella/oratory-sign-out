@@ -29,9 +29,12 @@ class RoomsController extends ControllerBase
 				"page"    => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
 			]
 		);
+		$paginate = $paginator->getPaginate();
 
-		return $this->sendResponse($paginator->getPaginate()->items);
-
+		$this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
+		$this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
+		$this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
+		return $this->sendResponse($paginate->items);
 	}
 
 	public function roomAction($name = '')
