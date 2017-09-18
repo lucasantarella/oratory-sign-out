@@ -5,7 +5,6 @@ namespace Oratorysignout\Models;
 use DateTime;
 use DateTimeZone;
 use Oratorysignout\CommonLibrary;
-use Oratorysignout\Modules\Api\Controllers\SchedulesController;
 use Phalcon\Db\Column;
 use Phalcon\Mvc\Model\MetaData;
 

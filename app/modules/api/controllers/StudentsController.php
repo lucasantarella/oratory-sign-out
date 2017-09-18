@@ -14,7 +14,7 @@ use Oratorysignout\Models\SchedulesPeriods;
 use Oratorysignout\Models\Students;
 use Oratorysignout\Models\StudentsSchedules;
 use Phalcon\Filter;
-use Phalcon\Paginator\Adapter\QueryBuilder AS PaginatorQueryBuilder;
+use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 class StudentsController extends ControllerBase
 {

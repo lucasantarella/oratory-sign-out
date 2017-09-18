@@ -9,8 +9,7 @@
 namespace Oratorysignout\Modules\Api\Controllers;
 
 
-use Oratorysignout\Models\Rooms as Rooms;
-use Oratorysignout\Models\Schedules;
+use Oratorysignout\Models\Rooms;
 use Phalcon\Filter;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 

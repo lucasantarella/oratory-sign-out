@@ -9,13 +9,7 @@
 namespace Oratorysignout\Modules\Api\Controllers;
 
 
-use DateTime;
-use DateTimeZone;
-use Oratorysignout\CommonLibrary;
 use Oratorysignout\Models\Schedules;
-use Oratorysignout\Models\SchedulesExceptions;
-use Oratorysignout\Models\SchedulesPeriods;
-use Oratorysignout\Models\SchedulesQuarters;
 use Phalcon\Filter;
 
 class SchedulesController extends ControllerBase
