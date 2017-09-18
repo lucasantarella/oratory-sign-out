@@ -104,8 +104,8 @@ class StudentsController extends ControllerBase
 
 			$response[] = [
 				'period' => (int)$period->period,
-				'start_time' => (int)$period->start_time,
-				'end_time' => (int)$period->end_time,
+				'start_time' => $period->start_time,
+				'end_time' => $period->end_time,
 				'room' => $studentSchedule->room
 			];
 		}

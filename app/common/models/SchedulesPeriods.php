@@ -163,8 +163,8 @@ class SchedulesPeriods extends \Phalcon\Mvc\Model
 	{
 		return [
 			'period' => (int)$this->period,
-			'start_time' => (int)$this->start_time,
-			'end_time' => (int)$this->end_time,
+			'start_time' => $this->start_time,
+			'end_time' => $this->end_time,
 		];
 	}
 
