@@ -5,11 +5,11 @@
 
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule  ^$ public/    [QSA]
+	RewriteRule  ^$ public/    [L,QSA]
 
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule  (.*) public/$1 [QSA]
+	RewriteRule  (.*) public/$1 [L,QSA]
 </IfModule>
 
 Header set Access-Control-Allow-Origin "*"
