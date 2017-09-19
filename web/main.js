@@ -4,8 +4,8 @@ require.config({
         vendor: './vendor',
 
         jquery: 'vendor/jquery/jquery',
-        underscore: 'vendor/underscore/underscore',
-        lodash: 'vendor/underscore/underscore',
+        underscore: 'vendor/lodash/lodash.min',
+        lodash: 'vendor/lodash/lodash.min',
         backbone: 'vendor/backbone/backbone',
         'backbone.radio': 'vendor/backbone-radio/backbone.radio',
         'backbone.paginator': 'vendor/backbone-paginator/backbone.paginator',
