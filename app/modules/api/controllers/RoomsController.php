@@ -10,6 +10,7 @@ namespace Oratorysignout\Modules\Api\Controllers;
 
 
 use Oratorysignout\Models\Rooms;
+use Oratorysignout\Models\Schedules;
 use Phalcon\Filter;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
@@ -57,7 +58,7 @@ class RoomsController extends ControllerBase
 		if ($room === false)
 			return $this->sendNotFound();
 
-		$info = PaginatorQueryBuilder::getDateTimeInfo($this->request->getQuery('date', Filter::FILTER_ABSINT, (int)date('YmdHis')));
+		$info = Schedules::getDateTimeInfo($this->request->getQuery('date', Filter::FILTER_ABSINT, (int)date('YmdHis')));
 
 		if ($info === false || $info['period'] === false)
 			return $this->sendBadRequest();
