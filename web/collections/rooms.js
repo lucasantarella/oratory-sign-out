@@ -11,10 +11,6 @@ define([
 
         url: '/api/rooms',
 
-        state: {
-            pageSize: 5
-        },
-
         parseState: function (resp, queryParams, state, options) {
             return {
                 currentPage: parseInt(options.xhr.getResponseHeader('x-paginate-current-page')),
