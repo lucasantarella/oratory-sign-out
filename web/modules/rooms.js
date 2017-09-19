@@ -3,10 +3,9 @@
 define([
     'marionette',
     'views/rooms/rooms',
-    'views/instance/instance',
     'models/room',
     'collections/rooms',
-], function (Marionette, RoomsView, InstanceView, RoomModel, RoomsCollection) {
+], function (Marionette, RoomsView, RoomModel, RoomsCollection) {
 
     return Marionette.AppRouter.extend({
 
