@@ -57,6 +57,9 @@ gulp.task('copy', function () {
   gulp.src(['node_modules/backbone.radio/build/backbone.radio.js', 'node_modules/backbone.radio/build/backbone.radio.min.js'])
     .pipe(gulp.dest('vendor/backbone-radio'));
 
+  gulp.src(['node_modules/backbone.paginator/lib/backbone.paginator.js', 'node_modules/backbone.paginator/lib/backbone.paginator.min.js'])
+    .pipe(gulp.dest('vendor/backbone-paginator'));
+
   gulp.src(['node_modules/backbone.marionette/lib/backbone.marionette.js', 'node_modules/backbone.marionette/lib/backbone.marionette.min.js'])
     .pipe(gulp.dest('vendor/backbone-marionette'));
 

@@ -1,8 +1,11 @@
 <IfModule mod_rewrite.c>
         RewriteEngine on
-        RewriteRule  ^$ web/index.html    [L,QSA]
-        RewriteRule  ^api/(.*) public/index.php?_url=/api/$1 [L,QSA]
-        RewriteRule  ^web/(.*) web/$1 [L,QSA]
+        RewriteBase /
+        RewriteRule ^api/(.*) public/index.php?_url=/api/$1 [L,QSA]
+
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule  ^/(.*)$ web/index.html [L,QSA]
 </IfModule>
 
 Header set Access-Control-Allow-Origin "*"
