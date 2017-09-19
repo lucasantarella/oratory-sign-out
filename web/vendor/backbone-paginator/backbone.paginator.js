@@ -54,9 +54,9 @@
   var _clone = _.clone;
   var _each = _.each;
   var _pick = _.pick;
-  var _contains = _.contains;
+  var _contains = _.includes;
   var _isEmpty = _.isEmpty;
-  var _pairs = _.pairs;
+  var _pairs = _.toPairs;
   var _invert = _.invert;
   var _isArray = _.isArray;
   var _isFunction = _.isFunction;

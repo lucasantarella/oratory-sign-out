@@ -4,8 +4,8 @@
         vendor: './vendor',
 
         jquery: 'vendor/jquery/jquery.min',
-        underscore: 'vendor/underscore/underscore.min',
-        lodash: 'vendor/underscore/underscore.min',
+        underscore: 'vendor/lodash/lodash.min',
+        lodash: 'vendor/lodash/lodash.min',
         backbone: 'vendor/backbone/backbone.min',
         'backbone.radio': 'vendor/backbone-radio/backbone.radio.min',
         'backbone.paginator': 'vendor/backbone-paginator/backbone.paginator.min',

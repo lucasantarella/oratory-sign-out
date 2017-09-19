@@ -21,8 +21,8 @@ define([
             '</div>' +
             '<div id="main"></div>' +
             '<div class="footer w-100" style="height: calc(10vh) !important;"><div class="container no-gutters-xs no-gutters-sm no-gutters-md no-gutters-lg no-gutters-xl h-100 w-100 bg-faded py-3 d-flex align-items-center">' +
-            '<div class="w-100 text-center text-muted"><p>Designed and Created by <a href="https://github.com/lucasantarella" class="btn btn-link p-0">@LucaSantarella</a>' +
-            '</p>' +
+            '<div class="w-100 text-center text-muted"><span>Designed and Created by <a href="https://github.com/lucasantarella" class="btn btn-link p-0">@LucaSantarella</a>' +
+            '</span>' +
             '</div>' +
             '</div>' +
             '</div>' +
