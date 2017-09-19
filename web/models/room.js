@@ -1,13 +1,11 @@
-// Filename: /models/location.js
+// Filename: /models/room.js
 
 define([
   'backbone'
 ], function (Backbone) {
   return Backbone.Model.extend({
 
-    defaults: {
-      timestamp: 0
-    }
+    idAttribute: 'name'
 
   });
 });

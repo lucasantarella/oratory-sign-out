@@ -1,18 +1,17 @@
-// Filename: /views/devices/deviceinfo/deviceinfo.js
+// Filename: /views/rooms/roominfo/roominfo.js
 
 define([
   'underscore',
   'marionette',
-  'views/devices/deviceinfo/deviceinstancelistentry'
-], function (_, Marionette, DeviceInstanceListEntry) {
-  return Marionette.CompositeView.extend({
+], function (_, Marionette) {
+  return Marionette.View.extend({
     tagName: 'div',
 
     className: 'card',
 
     template: _.template('' +
       '<div class="card-header">' +
-      'Device: <%- installation_id %>' +
+      'Room: <%- installation_id %>' +
       '</div>' +
       '<div class="card-body">' +
       '<h4 class="card-title">Instances</h4>\n' +
@@ -21,30 +20,12 @@ define([
       '  </div>\n' +
       '</div>' +
       '<br />' +
-      '<div class="d-flex">' +
-      '<a href="#" class="btn btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;Provision Device</a>' +
-      '<a href="#" class="btn btn-warning ml-auto"><i class="fa fa-warning"></i>&nbsp;&nbsp;Re-Provision Device</a>' +
-      '</div>' +
       '</div>' +
       ''),
 
-    childView: DeviceInstanceListEntry,
+    // childView: RoomInstanceListEntry,
 
-    childViewContainer: '.list-group',
-
-    ui: {
-      'createInstanceButton': '.btn-success',
-      'reprovisionButton': '.btn-warning'
-    },
-
-    events: {
-      'click @ui.createInstanceButton': 'onClickCreateInstance',
-      'click @ui.reprovisionButton': 'onClickReprovision'
-    },
-
-    childViewTriggers: {
-      'click:instance': 'child:click:instance'
-    },
+    // childViewContainer: '.list-group',
 
     hasLoaded: false,
 
@@ -53,7 +34,7 @@ define([
         return Marionette.View.extend({
           tagName: 'li',
           className: 'list-group-item',
-          template: _.template('<div class="d-flex flex-column align-items-center"><p>No instances...<br /><p class="small">Provision the device below.</p></div>')
+          template: _.template('<div class="d-flex flex-column align-items-center"><p>No instances...<br /><p class="small">Provision the room below.</p></div>')
         });
       else
         return Marionette.View.extend({

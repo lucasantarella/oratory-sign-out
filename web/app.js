@@ -7,7 +7,7 @@ define(function (require) {
   const AppView = require('views/AppView');
 
   // Modules
-  const DevicesModule = require('modules/devices');
+  const RoomsModule = require('modules/rooms');
 
   return Marionette.Application.extend({
 
@@ -23,11 +23,11 @@ define(function (require) {
     },
 
     // Define the element where the application will exist
-    region: 'body',
+    region: 'main',
 
     onStart: function () {
       // Init modules
-      new DevicesModule({app: this});
+      new RoomsModule({app: this});
 
       // Show the root view
       this.showView(new AppView());

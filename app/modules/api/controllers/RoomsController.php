@@ -24,8 +24,8 @@ class RoomsController extends ControllerBase
 		$paginator = new PaginatorQueryBuilder(
 			[
 				"builder" => $builder,
-				"limit"   => $this->request->getQuery("limit", Filter::FILTER_INT_CAST, 20),
-				"page"    => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
+				"limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 25),
+				"page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
 			]
 		);
 		$paginate = $paginator->getPaginate();
