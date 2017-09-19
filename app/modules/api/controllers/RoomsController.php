@@ -64,31 +64,29 @@ class RoomsController extends ControllerBase
 			return $this->sendBadRequest();
 
 		// Get users in room, minus those that are signed out
-		// Setup Phalcon Query
-		$phql = "SELECT
-                \\Oratorysignout\\Models\\Students.*
-            FROM \\Oratorysignout\\Models\\StudentsSchedules
-            INNER JOIN \\Oratorysignout\\Models\\Students
-                ON \\Oratorysignout\\Models\\StudentsSchedules.student_id = \\Oratorysignout\\Models\\Students.id
-            WHERE
-                \\Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter: AND
-                \\Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day: AND
-                \\Oratorysignout\\Models\\StudentsSchedules.period = :period: AND
-                \\Oratorysignout\\Models\\StudentsSchedules.room = :room:
-            GROUP BY \\Oratorysignout\\Models\\Students.id
-        ";
+		$builder = $this->modelsManager->createBuilder()
+			->from('Oratorysignout\\Models\\StudentsSchedules')
+			->columns(['Oratorysignout\\Models\\Students.*'])
+			->where('Oratorysignout\\Models\\StudentsSchedules.room = :room:', ['room' => $room->name])
+			->andWhere('Oratorysignout\\Models\\StudentsSchedules.period = :period:', ['period' => $info['period']->period])
+			->andWhere('Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter:', ['quarter' => $info['quarter']])
+			->andWhere('Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day:', ['cycle_day' => $info['cycleDay']])
+			->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\StudentsSchedules.student_id')
+			->groupBy('Oratorysignout\\Models\\Students.id');
 
-		$query = $this->modelsManager->executeQuery($phql, [
-			'quarter' => $info['quarter'],
-			'cycle_day' => $info['cycleDay'],
-			'period' => $info['period']->period,
-			'room' => $room->name,
-		]);
+		$paginator = new PaginatorQueryBuilder(
+			[
+				"builder" => $builder,
+				"limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 25),
+				"page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
+			]
+		);
+		$paginate = $paginator->getPaginate();
 
-		if (count($query) == 0 || $query === false)
-			return $this->sendResponse([]);
-
-		return $this->sendResponse($query);
+		$this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
+		$this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
+		$this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
+		return $this->sendResponse($paginate->items);
 	}
 
 }
