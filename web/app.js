@@ -8,6 +8,7 @@ define(function (require) {
 
   // Modules
   const RoomsModule = require('modules/rooms');
+  const StudentsModule = require('modules/students');
 
   return Marionette.Application.extend({
 
@@ -28,6 +29,7 @@ define(function (require) {
     onStart: function () {
       // Init modules
       new RoomsModule({app: this});
+      new StudentsModule({app: this});
 
       // Show the root view
       this.showView(new AppView());
