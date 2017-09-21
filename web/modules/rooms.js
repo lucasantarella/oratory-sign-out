@@ -1,4 +1,4 @@
-//Filename: /modules/authentication.js
+//Filename: /modules/rooms.js
 
 define([
     'marionette',
