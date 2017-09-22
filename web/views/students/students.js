@@ -30,6 +30,7 @@ define([
 
         initialize: function (options) {
             this.collection = (options.collection) ? options.collection : new StudentsCollection();
+            this.collection.getFirstPage();
         },
 
         childViewContainer: 'tbody',

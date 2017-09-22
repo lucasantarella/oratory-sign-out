@@ -12,7 +12,7 @@ define([
         initialize: function (options) {
             this.app = (options.app) ? options.app : null;
             this.rooms = new RoomsCollection();
-            this.rooms.getFirstPage();
+            // this.rooms.getFirstPage();
         },
 
         routes: {
@@ -25,6 +25,12 @@ define([
         listRooms: function (room) {
             let view = new RoomsView({collection: this.rooms});
             this.app.getView().showChildView('main', view);
+            if (room) {
+                let model = new RoomModel({name: room});
+                this.rooms.add(model);
+                model.fetch();
+                view.showPanelInfo(model);
+            }
         },
 
     });

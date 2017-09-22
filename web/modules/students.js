@@ -12,7 +12,7 @@ define([
         initialize: function (options) {
             this.app = (options.app) ? options.app : null;
             this.students = new StudentsCollection();
-            this.students.getFirstPage();
+            // this.students.getFirstPage();
         },
 
         routes: {
