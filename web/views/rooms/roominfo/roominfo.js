@@ -1,94 +1,91 @@
 // Filename: /views/rooms/roominfo/roominfo.js
 
 define([
-  'underscore',
-  'marionette',
-], function (_, Marionette) {
-  return Marionette.View.extend({
-    tagName: 'div',
+    'underscore',
+    'marionette',
+    'views/rooms/roominfo/roominfostudentslistitem',
+], function (_, Marionette, StudentItem) {
+    return Marionette.View.extend({
 
-    className: 'card',
+        tagName: 'div',
 
-    template: _.template('' +
-      '<div class="card-header">' +
-      'Room: <%- installation_id %>' +
-      '</div>' +
-      '<div class="card-body">' +
-      '<h4 class="card-title">Instances</h4>\n' +
-      '  <div class="card">\n' +
-      '  <div class="list-group list-group-flush">\n' +
-      '  </div>\n' +
-      '</div>' +
-      '<br />' +
-      '</div>' +
-      ''),
+        className: 'card',
 
-    // childView: RoomInstanceListEntry,
+        template: _.template('' +
+            '<div class="card-header">' +
+            'Room: <%- name %>' +
+            '</div>' +
+            '<div class="card-body">' +
+            '<h4 class="card-title">Students</h4>' +
+            '<table class="table">' +
+            '  <thead class="thead-default">' +
+            '    <tr>' +
+            '      <th>#</th>' +
+            '      <th>First Name</th>' +
+            '      <th>Last Name</th>' +
+            '      <th>Email</th>' +
+            '    </tr>' +
+            '  </thead>' +
+            '  <tbody id="view-rooms-students-container">' +
+            '  </tbody>' +
+            '</table>' +
+            '</div>' +
+            ''),
 
-    // childViewContainer: '.list-group',
+        childView: StudentItem,
 
-    hasLoaded: false,
+        childViewContainer: '#view-rooms-students-container',
 
-    emptyView: function () {
-      if (this.hasLoaded)
-        return Marionette.View.extend({
-          tagName: 'li',
-          className: 'list-group-item',
-          template: _.template('<div class="d-flex flex-column align-items-center"><p>No instances...<br /><p class="small">Provision the room below.</p></div>')
-        });
-      else
-        return Marionette.View.extend({
-          tagName: 'li',
-          className: 'list-group-item',
-          template: _.template('<div class="d-flex align-items-center">Loading...</div>')
-        });
-    },
+        hasLoaded: false,
 
-    initialize: function (options) {
-      this.model = options.model;
+        emptyView: function () {
+            if (this.hasLoaded)
+                return Marionette.View.extend({
+                    tagName: 'tr',
+                    attributes: {
+                        colspan: '4'
+                    },
+                    template: _.template('<p>No students...<br /><p class="small">Provision the room below.</p>')
+                });
+            else
+                return Marionette.View.extend({
+                    tagName: 'tr',
+                    attributes: {
+                        colspan: '4'
+                    },
+                    template: _.template('<p>Loading...</p>')
+                });
+        },
 
-      let context = this;
-      this.collection = options.model.get('instances');
+        initialize: function (options) {
+            this.model = options.model;
 
-      this.collection.on('sync', function () {
-        context.hasLoaded = true;
-        context.render();
-      });
+            let context = this;
+            this.collection = options.model.get('students');
 
-      this.collection.fetch();
-    },
+            this.collection.on('sync', function () {
+                context.hasLoaded = true;
+                context.render();
+            });
 
-    isEmpty: function () {
-      return this.collection.length === 0 || !this.hasLoaded;
-    },
+            // this.collection.getFirstPage();
+            this.collection.fetch();
+        },
 
-    onRender: function () {
-      if (this.collection.findWhere({active: true}))
-        this.getUI('createInstanceButton').hide();
-      else
-        this.getUI('reprovisionButton').hide();
-    },
+        isEmpty: function () {
+            return this.collection.length === 0 || !this.hasLoaded;
+        },
 
-    onClickCreateInstance: function (event) {
-      event.preventDefault();
-      this.collection.create({
-        installation_id: this.model.get('installation_id')
-      });
-    },
+        onRender: function () {
+            // if (this.collection.findWhere({active: true}))
+            //   this.getUI('createInstanceButton').hide();
+            // else
+            //   this.getUI('reprovisionButton').hide();
+        },
 
-    onClickReprovision: function (event) {
-      event.preventDefault();
-      let model = this.collection.findWhere({active: true});
-      model.set('active', false);
-      model.save();
-      this.collection.create({
-        installation_id: this.model.get('installation_id')
-      });
-    },
+        onChildClickInstance: function (childView) {
+            // Backbone.history.navigate('installations/' + this.model.get('installation_id') + '/instances/' + childView.model.get('uuid'), {trigger: true});
+        },
 
-    onChildClickInstance: function (childView) {
-      Backbone.history.navigate('installations/' + this.model.get('installation_id') + '/instances/' + childView.model.get('uuid'), {trigger: true});
-    },
-
-  });
+    });
 });

@@ -23,9 +23,7 @@ define([
 
     initialize: function (options) {
       this.collection = (options.collection) ? options.collection : new RoomsCollection();
-
-      if (!(options.collection))
-        this.collection.fetch();
+      this.collection.getFirstPage();
     },
 
     onRender: function () {
@@ -43,10 +41,10 @@ define([
       this.showPanelInfo(childView.model);
     },
 
-    showPanelInfo: function (installation) {
-      // Backbone.history.navigate('installations/' + installation.get('installation_id'));
-      this.showChildView('roomInfo', new RoomInfoView({model: installation}));
-      this._setChildSelected(installation)
+    showPanelInfo: function (room) {
+      Backbone.history.navigate('rooms/' + room.get('name'));
+      this.showChildView('roomInfo', new RoomInfoView({model: room}));
+      this._setChildSelected(room)
     },
 
     _setChildSelected: function (model) {
