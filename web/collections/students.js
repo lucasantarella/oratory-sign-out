@@ -5,7 +5,7 @@ define([
     'backbone.paginator',
     'models/student',
 ], function (Backbone, PageableCollection, Student) {
-    return Backbone.Collection.extend({
+    return PageableCollection.extend({
 
         model: Student,
 

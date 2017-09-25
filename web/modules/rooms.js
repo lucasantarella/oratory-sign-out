@@ -3,9 +3,10 @@
 define([
     'marionette',
     'views/rooms/rooms',
+    'views/students/students',
     'models/room',
     'collections/rooms',
-], function (Marionette, RoomsView, RoomModel, RoomsCollection) {
+], function (Marionette, RoomsView, StudentsView, RoomModel, RoomsCollection) {
 
     return Marionette.AppRouter.extend({
 
@@ -19,7 +20,7 @@ define([
             '': 'listRooms',
             'rooms': 'listRooms',
             'rooms/:room': 'listRooms',
-            // 'rooms/:room/students/:instance_id': 'viewInstance',
+            'rooms/:room/students': 'students',
         },
 
         listRooms: function (room) {
@@ -31,6 +32,14 @@ define([
                 model.fetch();
                 view.showPanelInfo(model);
             }
+        },
+
+        students: function (room) {
+            let model = new RoomModel({name: room});
+            model.fetch();
+            this.rooms.add(model);
+            let view = new StudentsView({collection: model.get('students')});
+            this.app.getView().showChildView('main', view);
         },
 
     });
