@@ -9,84 +9,153 @@
 namespace Oratorysignout\Modules\Api\Controllers;
 
 
+use Oratorysignout\Models\LogsStudents;
 use Oratorysignout\Models\Rooms;
 use Oratorysignout\Models\Schedules;
+use Oratorysignout\Models\SchedulesPeriods;
+use Oratorysignout\Models\Students;
 use Phalcon\Filter;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 class RoomsController extends ControllerBase
 {
 
-	public function roomsAction()
-	{
-		$builder = $this->modelsManager->createBuilder()
-			->from('Oratorysignout\\Models\\Rooms');
+    public function roomsAction()
+    {
+        $builder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\Rooms');
 
-		$paginator = new PaginatorQueryBuilder(
-			[
-				"builder" => $builder,
-				"limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 25),
-				"page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
-			]
-		);
-		$paginate = $paginator->getPaginate();
+        $paginator = new PaginatorQueryBuilder(
+            [
+                "builder" => $builder,
+                "limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 25),
+                "page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
+            ]
+        );
+        $paginate = $paginator->getPaginate();
 
-		$this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
-		$this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
-		$this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
-		return $this->sendResponse($paginate->items);
-	}
+        $this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
+        $this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
+        $this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
+        return $this->sendResponse($paginate->items);
+    }
 
-	public function roomAction($name = '')
-	{
-		if (strlen($name) == 0)
-			return $this->sendNotFound();
+    public function roomAction($name = '')
+    {
+        if (strlen($name) == 0)
+            return $this->sendNotFound();
 
-		$room = Rooms::findFirst($name);
-		if ($room === false)
-			return $this->sendNotFound();
-		else
-			return $this->sendResponse($room);
-	}
+        $room = Rooms::findFirst($name);
+        if ($room === false)
+            return $this->sendNotFound();
+        else
+            return $this->sendResponse($room);
+    }
 
-	public function currentStudentsAction($name = '')
-	{
-		if (strlen($name) == 0)
-			return $this->sendNotFound();
+    public function presentStudentsAction($name = '')
+    {
+        if (strlen($name) == 0)
+            return $this->sendNotFound();
 
-		$room = Rooms::findFirst("name = '{$name}'");
-		if ($room === false)
-			return $this->sendNotFound();
+        $room = Rooms::findFirst("name = '{$name}'");
+        if ($room === false)
+            return $this->sendNotFound();
 
-		$info = Schedules::getDateTimeInfo($this->request->getQuery('date', Filter::FILTER_ABSINT, (int)date('YmdHis')));
+        $date = $this->request->getQuery('date', Filter::FILTER_ABSINT, (int)date('YmdHis'));
 
-		if ($info === false || $info['period'] === false)
-			return $this->sendBadRequest();
+        $info = Schedules::getDateTimeInfo($date);
 
-		// Get users in room, minus those that are signed out
-		$builder = $this->modelsManager->createBuilder()
-			->from('Oratorysignout\\Models\\StudentsSchedules')
-			->columns(['Oratorysignout\\Models\\Students.*'])
-			->where('Oratorysignout\\Models\\StudentsSchedules.room = :room:', ['room' => $room->name])
-			->andWhere('Oratorysignout\\Models\\StudentsSchedules.period = :period:', ['period' => $info['period']->period])
-			->andWhere('Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter:', ['quarter' => $info['quarter']])
-			->andWhere('Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day:', ['cycle_day' => $info['cycleDay']])
-			->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\StudentsSchedules.student_id')
-			->groupBy('Oratorysignout\\Models\\Students.id');
+        if ($info === false || $info['period'] === false)
+            return $this->sendBadRequest();
 
-		$paginator = new PaginatorQueryBuilder(
-			[
-				"builder" => $builder,
-				"limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 25),
-				"page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
-			]
-		);
-		$paginate = $paginator->getPaginate();
+        /** @var SchedulesPeriods $period */
+        $period = $info['period'];
 
-		$this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
-		$this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
-		$this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
-		return $this->sendResponse($paginate->items);
-	}
+        $periodStartTime = (int)(substr($date, 0, 8) . $period->start_time . '00');
+        $periodEndTime = (int)(substr($date, 0, 8) . $period->end_time . '00');
+
+        // Get users in room, minus those that are signed out
+        $scheduledStudentsBuilder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\Rooms')
+            ->columns(['Oratorysignout\\Models\\Rooms.*', 'Oratorysignout\\Models\\Students.*', 'Oratorysignout\\Models\\LogsStudents.*'])
+            ->where('Oratorysignout\\Models\\Rooms.name = :room:', ['room' => $room->name])
+            ->innerJoin('Oratorysignout\\Models\\StudentsSchedules', 'Oratorysignout\\Models\\Rooms.name = Oratorysignout\\Models\\StudentsSchedules.room AND Oratorysignout\\Models\\StudentsSchedules.period = ' . $period->period . ' AND Oratorysignout\\Models\\StudentsSchedules.quarter = ' . $info['quarter'] . ' AND Oratorysignout\\Models\\StudentsSchedules.cycle_day = ' . $info['cycleDay'])
+            ->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\StudentsSchedules.student_id')
+            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ') AND Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id AND Oratorysignout\\Models\\LogsStudents.room_from = "' . $room->name . '"')
+            ->having('Oratorysignout\\Models\\LogsStudents.id IS NULL');
+
+        // Get users signed into a room
+        $signedInStudentsBuilder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\Rooms')
+            ->columns(['Oratorysignout\\Models\\Rooms.*', 'Oratorysignout\\Models\\Students.*', 'Oratorysignout\\Models\\LogsStudents.*'])
+            ->where('Oratorysignout\\Models\\Rooms.name = :room:', ['room' => $room->name])
+            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ')  AND Oratorysignout\\Models\\LogsStudents.room_to = "' . $room->name . '"')
+            ->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id');
+
+        /** @var array $response */
+        $response = [];
+
+        foreach ($scheduledStudentsBuilder->getQuery()->execute() as $row) {
+            /** @var Students $student */
+            $student = $row['oratorysignout\\Models\\Students'];
+
+            $response[] = array_merge($student->jsonSerialize(), ['status' => 'scheduled']);
+        }
+
+        foreach ($signedInStudentsBuilder->getQuery()->execute() as $row) {
+            /** @var Students $student */
+            $student = $row['oratorysignout\\Models\\Students'];
+
+            /** @var LogsStudents $log */
+            $log = $row['oratorysignout\\Models\\LogsStudents'];
+
+            $response[] = array_merge($student->jsonSerialize(), ['status' => ($log->confirmed) ? 'signedin_confirmed' : 'signedin_unconfirmed']);
+        }
+
+        return $this->sendResponse($response);
+    }
+
+    public function signedOutStudentsAction($name = '')
+    {
+        if (strlen($name) == 0)
+            return $this->sendNotFound();
+
+        $room = Rooms::findFirst("name = '{$name}'");
+        if ($room === false)
+            return $this->sendNotFound();
+
+        $date = $this->request->getQuery('date', Filter::FILTER_ABSINT, (int)date('YmdHis'));
+
+        $info = Schedules::getDateTimeInfo($date);
+
+        if ($info === false || $info['period'] === false)
+            return $this->sendBadRequest();
+
+        /** @var SchedulesPeriods $period */
+        $period = $info['period'];
+
+        $periodStartTime = (int)(substr($date, 0, 8) . $period->start_time . '00');
+        $periodEndTime = (int)(substr($date, 0, 8) . $period->end_time . '00');
+
+        // Get users in room, minus those that are signed out
+        $scheduledStudentsBuilder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\StudentsSchedules')
+            ->columns(['Oratorysignout\\Models\\Students.*', 'Oratorysignout\\Models\\LogsStudents.*'])
+            ->where('Oratorysignout\\Models\\StudentsSchedules.room = :room:', ['room' => $room->name])
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.period = :period:', ['period' => $info['period']->period])
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter:', ['quarter' => $info['quarter']])
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day:', ['cycle_day' => $info['cycleDay']])
+            ->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\StudentsSchedules.student_id')
+            ->leftJoin('Oratorysignout\\Models\\LogsStudents', 'Oratorysignout\\Models\\LogsStudents.student_id = Oratorysignout\\Models\\StudentsSchedules.student_id AND Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime)
+            ->having('Oratorysignout\\Models\\LogsStudents.id IS NULL')
+            ->groupBy('Oratorysignout\\Models\\Students.id');
+
+        $response = [];
+        foreach ($scheduledStudentsBuilder->getQuery()->execute() as $row) {
+            $response[] = $row['oratorysignout\\Models\\Students'];
+        }
+
+        return $this->sendResponse($response);
+    }
 
 }

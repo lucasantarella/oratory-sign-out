@@ -2,6 +2,9 @@
 
 namespace Oratorysignout\Models;
 
+use Phalcon\Db\Column;
+use Phalcon\Mvc\Model\MetaData;
+
 /**
  * SchedulesQuarters
  *
@@ -12,66 +15,133 @@ namespace Oratorysignout\Models;
 class SchedulesQuarters extends \Phalcon\Mvc\Model
 {
 
-	/**
-	 *
-	 * @var integer
-	 * @Primary
-	 * @Column(type="integer", length=1, nullable=false)
-	 */
-	public $quarter_num;
+    /**
+     *
+     * @var integer
+     * @Primary
+     * @Column(type="integer", length=1, nullable=false)
+     */
+    public $quarter_num;
 
-	/**
-	 *
-	 * @var integer
-	 * @Column(type="integer", length=4, nullable=false)
-	 */
-	public $start_date;
+    /**
+     *
+     * @var integer
+     * @Column(type="integer", length=4, nullable=false)
+     */
+    public $start_date;
 
-	/**
-	 *
-	 * @var integer
-	 * @Column(type="integer", length=4, nullable=false)
-	 */
-	public $end_date;
+    /**
+     *
+     * @var integer
+     * @Column(type="integer", length=4, nullable=false)
+     */
+    public $end_date;
 
-	/**
-	 * Initialize method for model.
-	 */
-	public function initialize()
-	{
-		$this->hasMany('quarter_num', 'Oratorysignout\Models\StudentsSchedules', 'quarter', ['alias' => 'StudentsSchedules']);
-	}
+    /**
+     * Initialize method for model.
+     */
+    public function initialize()
+    {
+        $this->hasMany('quarter_num', 'Oratorysignout\Models\StudentsSchedules', 'quarter', ['alias' => 'StudentsSchedules']);
+    }
 
-	/**
-	 * Returns table name mapped in the model.
-	 *
-	 * @return string
-	 */
-	public function getSource()
-	{
-		return 'schedules__quarters';
-	}
+    /**
+     * @return array
+     */
+    public function metaData()
+    {
+        return [
+            MetaData::MODELS_ATTRIBUTES => [
+                "quarter_num",
+                "start_date",
+                "end_date"
+            ],
 
-	/**
-	 * Allows to query a set of records that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return SchedulesQuarters[]
-	 */
-	public static function find($parameters = null)
-	{
-		return parent::find($parameters);
-	}
+            MetaData::MODELS_PRIMARY_KEY => [
+                "quarter_num",
+            ],
 
-	/**
-	 * Allows to query the first record that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return SchedulesQuarters
-	 */
-	public static function findFirst($parameters = null)
-	{
-		return parent::findFirst($parameters);
-	}
+            MetaData::MODELS_NON_PRIMARY_KEY => [
+                "start_date",
+                "end_date"
+            ],
+
+            // Every column that doesn't allows null values
+            MetaData::MODELS_NOT_NULL => [
+                "quarter_num",
+                "start_date",
+                "end_date"
+            ],
+
+            // Every column and their data types
+            MetaData::MODELS_DATA_TYPES => [
+                "quarter_num" => Column::TYPE_INTEGER,
+                "start_date" => Column::TYPE_INTEGER,
+                "end_date" => Column::TYPE_INTEGER
+            ],
+
+            // The columns that have numeric data types
+            MetaData::MODELS_DATA_TYPES_NUMERIC => [
+                "quarter_num" => true,
+                "start_date" => true,
+                "end_date" => true
+            ],
+
+            // The identity column, use boolean false if the model doesn't have
+            // an identity column
+            MetaData::MODELS_IDENTITY_COLUMN => "quarter_num",
+
+            // How every column must be bound/casted
+            MetaData::MODELS_DATA_TYPES_BIND => [
+                "quarter_num" => Column::BIND_PARAM_INT,
+                "start_date" => Column::BIND_PARAM_INT,
+                "end_date" => Column::BIND_PARAM_INT
+            ],
+
+            // Fields that must be ignored from INSERT SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
+
+            // Fields that must be ignored from UPDATE SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
+
+            // Default values for columns
+            MetaData::MODELS_DEFAULT_VALUES => [],
+
+            // Fields that allow empty strings
+            MetaData::MODELS_EMPTY_STRING_VALUES => [],
+        ];
+    }
+
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'schedules__quarters';
+    }
+
+    /**
+     * Allows to query a set of records that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return SchedulesQuarters[]
+     */
+    public static function find($parameters = null)
+    {
+        return parent::find($parameters);
+    }
+
+    /**
+     * Allows to query the first record that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return SchedulesQuarters
+     */
+    public static function findFirst($parameters = null)
+    {
+        return parent::findFirst($parameters);
+    }
 
 }
