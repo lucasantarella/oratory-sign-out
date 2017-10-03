@@ -176,7 +176,14 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				'pattern' => '/rooms/{name:[a-zA-Z0-9]+}/students',
 				'attr' => [
 					'controller' => 'rooms',
-					'action' => 'currentStudents',
+					'action' => 'presentStudents',
+				]
+			],
+			[
+				'pattern' => '/rooms/{name:[a-zA-Z0-9]+}/students/present',
+				'attr' => [
+					'controller' => 'rooms',
+					'action' => 'presentStudents',
 				]
 			],
 		];
