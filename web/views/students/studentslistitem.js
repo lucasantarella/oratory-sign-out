@@ -1,4 +1,4 @@
-// Filename: /views/rooms/rooms.js
+// Filename: /views/students/studentslistitem.js
 
 define([
     'underscore',

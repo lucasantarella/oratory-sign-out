@@ -3,7 +3,7 @@
 define([
     'marionette',
     'views/rooms/rooms',
-    'views/students/students',
+    'views/rooms/roomstudents/students',
     'models/room',
     'collections/rooms',
 ], function (Marionette, RoomsView, StudentsView, RoomModel, RoomsCollection) {
