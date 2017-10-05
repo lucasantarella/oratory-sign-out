@@ -1,11 +1,11 @@
-// Filename: /views/students/students.js
+// Filename: /views/rooms/roomstudents/students.js
 
 define([
     'underscore',
     'backbone',
     'marionette',
     'collections/students',
-    'views/students/studentslistitem'
+    'views/rooms/roomstudents/studentslistitem'
 ], function (_, Backbone, Marionette, StudentsCollection, StudentListItem) {
     return Marionette.CompositeView.extend({
 
@@ -21,6 +21,7 @@ define([
             '      <th>First Name</th>' +
             '      <th>Last Name</th>' +
             '      <th>Email</th>' +
+            '      <th></th>' +
             '    </tr>' +
             '  </thead>' +
             '  <tbody>' +
@@ -30,7 +31,7 @@ define([
 
         initialize: function (options) {
             this.collection = (options.collection) ? options.collection : new StudentsCollection();
-            this.collection.getFirstPage();
+            this.collection.fetch();
         },
 
         childViewContainer: 'tbody',
