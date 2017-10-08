@@ -22,8 +22,8 @@ define([
             confirmSigninButton: '.btn-confirm-sign-in',
         },
 
-        events: {
-            'click @ui.signOutButton': 'signOut'
+        triggers: {
+            'click @ui.signOutButton': 'click:sign:out'
         },
 
         onRender: function () {
@@ -54,8 +54,5 @@ define([
             this.$el.addClass('bg-danger').addClass('text-white');
         },
 
-        signOut: function () {
-            this.model.signOut(null, '101', {}, this);
-        }
     });
 });

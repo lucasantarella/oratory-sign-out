@@ -5,50 +5,58 @@ define([
     'backbone',
     'marionette',
     'collections/students',
-    'views/rooms/roomstudents/studentslistitem'
-], function (_, Backbone, Marionette, StudentsCollection, StudentListItem) {
-    return Marionette.CompositeView.extend({
+    'views/rooms/roomstudents/studentslist',
+    'views/rooms/roomstudents/roompickermodal'
+], function (_, Backbone, Marionette, StudentsCollection, StudentList, RoomsModalView) {
+    return Marionette.View.extend({
 
         tagName: 'div',
 
         className: 'container no-gutters-sm no-gutters-md',
 
         template: _.template('' +
-            '<table class="table">' +
-            '  <thead class="thead-default">' +
-            '    <tr>' +
-            '      <th>#</th>' +
-            '      <th>First Name</th>' +
-            '      <th>Last Name</th>' +
-            '      <th>Email</th>' +
-            '      <th></th>' +
-            '    </tr>' +
-            '  </thead>' +
-            '  <tbody>' +
-            '  </tbody>' +
-            '</table>' +
+            '<div class="students-list"></div>' +
+            '<div class="modal-holder"></div>' +
             ''),
 
-        initialize: function (options) {
-            this.collection = (options.collection) ? options.collection : new StudentsCollection();
-            this.collection.fetch();
+        regions: {
+            modal: {
+                el: '.modal-holder',
+                replaceElement: true
+            },
+            list: {
+                el: '.students-list',
+                replaceElement: true
+            },
         },
 
-        childViewContainer: 'tbody',
+        initialize: function (options) {
+            this.room = options.room;
+            this.collection = (options.collection) ? options.collection : new StudentsCollection();
+            if (!options.collection)
+                this.collection.fetch();
+        },
 
-        childView: StudentListItem,
+        onRender: function () {
+            this.showChildView('list', new StudentList({room: this.room, collection: this.collection}));
+            this.showChildView('modal', new RoomsModalView({collection: this.collection}));
+        },
 
         childViewEvents: {
-            // 'child:click:room': 'onRoomSelected',
-            //'child:click:instance': 'onInstanceSelected'
+            'child:click:sign:out': 'onChildviewClickSignOut'
         },
 
-        _setChildSelected: function (model) {
-            let roomsView = this.getChildView('roomsList');
-            roomsView.children.each(function (e) {
-                e.setInactive();
-            });
-            roomsView.children.findByModel(roomsView.collection.findWhere({installation_id: model.get('installation_id')})).setActive();
+        onChildviewClickSignOut: function (childView) {
+            return this.getChildView('modal').showModal({
+                submit: function (value) {
+                    childView.model.signOut(this.room.get('name'), value, {
+                        success: function () {
+                            this.collection.fetch();
+                        }
+                    }, this);
+                }
+            }, this);
+
         }
 
     });

@@ -180,12 +180,20 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				]
 			],
 			[
-				'pattern' => '/rooms/{name:[a-zA-Z0-9]+}/students/{student_id:[0-9]+}/log',
+				'pattern' => '/rooms/{name_from:[a-zA-Z0-9]+}/students/{student_id:[0-9]+}/logs',
 				'attr' => [
-					'controller' => 'rooms',
-					'action' => 'signOut',
-					'method' => 'POST'
-				]
+					'controller' => 'students',
+					'action' => 'signOut'
+				],
+				'method' => 'POST'
+			],
+			[
+				'pattern' => '/students/{student_id:[0-9]+}/logs',
+				'attr' => [
+					'controller' => 'students',
+					'action' => 'signOut'
+				],
+				'method' => 'POST'
 			],
 		];
 	}

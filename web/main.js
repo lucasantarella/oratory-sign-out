@@ -12,6 +12,9 @@ require.config({
         marionette: 'vendor/backbone-marionette/backbone.marionette',
         text: 'vendor/require-text/text',
 
+        bootstrap: 'vendor/bootstrap/js/bootstrap',
+        tether: 'vendor/tether/js/tether',
+
         // require plugins
         async: 'vendor/require-plugins/dist/async',
         // font: 'vendor/require-plugins/dist/font',
@@ -32,6 +35,11 @@ require.config({
         views: './views',
         styles: './styles'
     },
+    shim: {
+        /* Set bootstrap dependencies (just jQuery) */
+        'tether': ['jquery'],
+        'bootstrap': ['jquery', 'tether'],
+    },
     map: {
         '*': {
             css: 'vendor/require-css/css' // Or whatever the path to require-css is
@@ -42,8 +50,11 @@ require.config({
 require([
     'backbone',
     'app',
+    'tether',
+    'bootstrap',
     'css!styles/bootstrap.css',
     'css!vendor/font-awesome/scss/font-awesome.css',
+    'css!vendor/tether/css/tether.min.css',
     'css!styles/main.css'
 ], function (Backbone, App) {
     // Init the app

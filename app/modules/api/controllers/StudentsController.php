@@ -9,6 +9,8 @@
 namespace Oratorysignout\Modules\Api\Controllers;
 
 
+use Oratorysignout\Models\LogsStudents;
+use Oratorysignout\Models\Rooms;
 use Oratorysignout\Models\Schedules;
 use Oratorysignout\Models\SchedulesPeriods;
 use Oratorysignout\Models\Students;
@@ -115,6 +117,66 @@ class StudentsController extends ControllerBase
 		}
 
 		return $this->sendResponse($response);
+	}
+
+	public function signOutAction($student_id, $name_from = '')
+	{
+		$filter = new Filter();
+
+		$requestBody = $this->request->getJsonRawBody(true);
+
+		if (strlen($name_from) == 0 && isset($requestBody['room_from']))
+			$room_from = $filter->sanitize($requestBody['room_from'], Filter::FILTER_STRING);
+		else
+			return $this->sendNotFound();
+
+		if (!isset($requestBody['room_to']))
+			return $this->sendNotFound();
+		else
+			$room_to = $filter->sanitize($requestBody['room_to'], Filter::FILTER_STRING);
+
+		$student = Students::findFirst($student_id);
+		if ($student === false)
+			return $this->sendNotFound();
+
+		$room_from = Rooms::findFirst("name = '{$room_from}'");
+		if ($room_from === false)
+			return $this->sendNotFound();
+
+		$room_to = Rooms::findFirst("name = '{$room_to}'");
+		if ($room_to === false)
+			return $this->sendNotFound();
+
+		// Begin transaction
+		$this->db->begin();
+
+		$log = new LogsStudents();
+		$log->student_id = $student_id;
+		$log->timestamp = (isset($requestBody['timestamp']) ? $requestBody['timestamp'] : (int)date('YmdHis'));
+		$log->room_from = $room_from->name;
+		$log->room_to = $room_to->name;
+
+		if (!$log->create()) {
+			// Revert transaction
+			$this->db->rollback();
+			$errors = [];
+			foreach ($log->getMessages() as $message) {
+				$error = [];
+				$error['message'] = $message->getMessage();
+				$error['field'] = $message->getField();
+				$error['type'] = $message->getType();
+				array_push($errors, $error);
+			}
+			return $this->sendBadRequest([
+				"errors" => $errors
+			]);
+		}
+
+		// Commit transaction
+		$this->db->commit();
+
+		// Send response
+		return $this->sendResponse($log);
 	}
 
 }
