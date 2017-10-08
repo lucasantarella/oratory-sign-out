@@ -17,7 +17,7 @@ try {
 	 */
 	include APP_PATH . '/config/loader.php';
 
-	timecop_freeze(mktime(12,6,0,10,3,2017));
+//	timecop_freeze(mktime(12,6,0,10,3,2017));
 
 	/**
 	 * The FactoryDefault Dependency Injector automatically registers the services that
