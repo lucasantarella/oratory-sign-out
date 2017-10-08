@@ -21,6 +21,7 @@ define([
                 context: (context) ? context : this,
                 url: this.url() + "/logs",
                 data: JSON.stringify({room_from: roomFrom, room_to: roomTo}),
+                contentType:"application/json; charset=utf-8",
                 success: (callback.success) ? callback.success : null,
                 error: (callback.error) ? callback.error : null,
             });

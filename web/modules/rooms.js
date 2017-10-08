@@ -13,7 +13,7 @@ define([
         initialize: function (options) {
             this.app = (options.app) ? options.app : null;
             this.rooms = new RoomsCollection();
-            // this.rooms.getFirstPage();
+            this.rooms.getFirstPage();
         },
 
         routes: {
@@ -38,7 +38,7 @@ define([
             let model = new RoomModel({name: room});
             model.fetch();
             this.rooms.add(model);
-            let view = new StudentsView({collection: model.get('students')});
+            let view = new StudentsView({collection: model.get('students'), room: model});
             this.app.getView().showChildView('main', view);
         },
 

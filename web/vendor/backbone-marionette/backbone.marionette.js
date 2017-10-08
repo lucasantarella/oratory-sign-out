@@ -1,11 +1,14 @@
-// MarionetteJS (Backbone.Marionette)
-// ----------------------------------
-// v3.4.1
-//
-// Copyright (c)2017 Derick Bailey, Muted Solutions, LLC.
-// Distributed under MIT license
-//
-// http://marionettejs.com
+/**
+* @license
+* MarionetteJS (Backbone.Marionette)
+* ----------------------------------
+* v3.4.4
+*
+* Copyright (c)2017 Derick Bailey, Muted Solutions, LLC.
+* Distributed under MIT license
+*
+* http://marionettejs.com
+*/
 
 
 (function (global, factory) {
@@ -18,7 +21,7 @@ Backbone = Backbone && Backbone.hasOwnProperty('default') ? Backbone['default'] 
 _ = _ && _.hasOwnProperty('default') ? _['default'] : _;
 Radio = Radio && Radio.hasOwnProperty('default') ? Radio['default'] : Radio;
 
-var version = "3.4.1";
+var version = "3.4.4";
 
 //Internal utility for creating context style global utils
 var proxy = function proxy(method) {
@@ -1028,6 +1031,7 @@ function _getEl(el) {
 // Static setter
 function setDomApi(mixin) {
   this.prototype.Dom = _.extend({}, this.prototype.Dom, mixin);
+  return this;
 }
 
 var DomApi = {
@@ -1129,7 +1133,7 @@ var DomApi = {
 
   // Does the el have child nodes
   hasContents: function hasContents(el) {
-    return el.hasChildNodes();
+    return !!el && el.hasChildNodes();
   },
 
 
@@ -1551,6 +1555,8 @@ var Region = MarionetteObject.extend({
     if (!_.isObject(this.el)) {
       this.$el = this.getEl(this.el);
       this.el = this.$el[0];
+      // Make sure the $el contains only the el
+      this.$el = this.Dom.getEl(this.el);
     }
 
     if (!this.$el || this.$el.length === 0) {
@@ -1614,10 +1620,7 @@ var Region = MarionetteObject.extend({
     var context = _.result(this, 'parentEl');
 
     if (context && _.isString(el)) {
-      var $el = this.Dom.findEl(context, el);
-      if ($el.length) {
-        return $el;
-      }
+      return this.Dom.findEl(context, el);
     }
 
     return this.Dom.getEl(el);
@@ -2135,14 +2138,10 @@ var View = Backbone.View.extend({
   // if an el was previously defined. If so, the view might be
   // rendered or attached on setElement.
   setElement: function setElement() {
-    var hasEl = !!this.el;
-
     Backbone.View.prototype.setElement.apply(this, arguments);
 
-    if (hasEl) {
-      this._isRendered = this.Dom.hasContents(this.el);
-      this._isAttached = isNodeAttached(this.el);
-    }
+    this._isRendered = this.Dom.hasContents(this.el);
+    this._isAttached = isNodeAttached(this.el);
 
     if (this._isRendered) {
       this.bindUIElements();
@@ -2260,6 +2259,7 @@ var View = Backbone.View.extend({
   // Sets the renderer for the Marionette.View class
   setRenderer: function setRenderer(renderer) {
     this.prototype._renderHtml = renderer;
+    return this;
   },
 
 
@@ -2586,13 +2586,9 @@ var CollectionView = Backbone.View.extend({
   // if an el was previously defined. If so, the view might be
   // attached on setElement.
   setElement: function setElement() {
-    var hasEl = !!this.el;
-
     Backbone.View.prototype.setElement.apply(this, arguments);
 
-    if (hasEl) {
-      this._isAttached = isNodeAttached(this.el);
-    }
+    this._isAttached = isNodeAttached(this.el);
 
     return this;
   },
@@ -3380,7 +3376,8 @@ var CollectionView$2 = Backbone.View.extend({
     args[0] = this.options;
     Backbone.View.prototype.constructor.apply(this, args);
 
-    this._initEmptyRegion();
+    // Init empty region
+    this.getEmptyRegion();
 
     this.delegateEntityEvents();
 
@@ -3395,10 +3392,16 @@ var CollectionView$2 = Backbone.View.extend({
 
 
   // Create an region to show the emptyView
-  _initEmptyRegion: function _initEmptyRegion() {
-    this.emptyRegion = new Region({ el: this.el, replaceElement: false });
+  getEmptyRegion: function getEmptyRegion() {
+    if (this._emptyRegion && !this._emptyRegion.isDestroyed()) {
+      return this._emptyRegion;
+    }
 
-    this.emptyRegion._parentView = this;
+    this._emptyRegion = new Region({ el: this.el, replaceElement: false });
+
+    this._emptyRegion._parentView = this;
+
+    return this._emptyRegion;
   },
 
 
@@ -3414,24 +3417,17 @@ var CollectionView$2 = Backbone.View.extend({
 
   // Internal method. This checks for any changes in the order of the collection.
   // If the index of any view doesn't match, it will re-sort.
-  _onCollectionSort: function _onCollectionSort() {
-    var _this = this;
+  _onCollectionSort: function _onCollectionSort(collection, _ref) {
+    var add = _ref.add,
+        merge = _ref.merge,
+        remove = _ref.remove;
 
     if (!this.sortWithCollection || this.viewComparator === false) {
       return;
     }
 
-    // If the data is changing we will handle the sort later
-    if (this.collection.length !== this.children.length) {
-      return;
-    }
-
-    // Additional check if the data is changing
-    var hasAddedModel = this.collection.some(function (model) {
-      return !_this.children.findByModel(model);
-    });
-
-    if (hasAddedModel) {
+    // If the data is changing we will handle the sort later in `_onCollectionUpdate`
+    if (add || remove || merge) {
       return;
     }
 
@@ -3448,9 +3444,9 @@ var CollectionView$2 = Backbone.View.extend({
     var changes = options.changes;
 
     // Remove first since it'll be a shorter array lookup.
-    var removedViews = this._removeChildModels(changes.removed);
+    var removedViews = changes.removed.length && this._removeChildModels(changes.removed);
 
-    this._addedViews = this._addChildModels(changes.added);
+    this._addedViews = changes.added.length && this._addChildModels(changes.added);
 
     this._detachChildren(removedViews);
 
@@ -3460,12 +3456,24 @@ var CollectionView$2 = Backbone.View.extend({
     this._removeChildViews(removedViews);
   },
   _removeChildModels: function _removeChildModels(models) {
-    return _.map(models, _.bind(this._removeChildModel, this));
+    var _this = this;
+
+    return _.reduce(models, function (views, model) {
+      var removeView = _this._removeChildModel(model);
+
+      if (removeView) {
+        views.push(removeView);
+      }
+
+      return views;
+    }, []);
   },
   _removeChildModel: function _removeChildModel(model) {
     var view = this.children.findByModel(model);
 
-    this._removeChild(view);
+    if (view) {
+      this._removeChild(view);
+    }
 
     return view;
   },
@@ -3581,13 +3589,9 @@ var CollectionView$2 = Backbone.View.extend({
   // if an el was previously defined. If so, the view might be
   // attached on setElement.
   setElement: function setElement() {
-    var hasEl = !!this.el;
-
     Backbone.View.prototype.setElement.apply(this, arguments);
 
-    if (hasEl) {
-      this._isAttached = isNodeAttached(this.el);
-    }
+    this._isAttached = isNodeAttached(this.el);
 
     return this;
   },
@@ -3660,7 +3664,9 @@ var CollectionView$2 = Backbone.View.extend({
 
     var options = this._getEmptyViewOptions();
 
-    this.emptyRegion.show(new EmptyView(options));
+    var emptyRegion = this.getEmptyRegion();
+
+    emptyRegion.show(new EmptyView(options));
   },
 
 
@@ -3678,11 +3684,11 @@ var CollectionView$2 = Backbone.View.extend({
 
   // Remove the emptyView
   _destroyEmptyView: function _destroyEmptyView() {
-
+    var emptyRegion = this.getEmptyRegion();
     // Only empty if a view is show so the region
     // doesn't detach any other unrelated HTML
-    if (this.emptyRegion.hasView()) {
-      this.emptyRegion.empty();
+    if (emptyRegion.hasView()) {
+      emptyRegion.empty();
     }
   },
 
@@ -3701,13 +3707,13 @@ var CollectionView$2 = Backbone.View.extend({
 
   // Sorts views by viewComparator and sets the children to the new order
   _sortChildren: function _sortChildren() {
-    if (this.viewComparator === false) {
+    var viewComparator = this.getComparator();
+
+    if (!viewComparator) {
       return;
     }
 
     this.triggerMethod('before:sort', this);
-
-    var viewComparator = this.getComparator();
 
     if (_.isFunction(viewComparator)) {
       // Must use native bind to preserve length
@@ -3723,8 +3729,8 @@ var CollectionView$2 = Backbone.View.extend({
   // Sets the view's `viewComparator` and applies the sort if the view is ready.
   // To prevent the render pass `{ preventRender: true }` as the 2nd argument.
   setComparator: function setComparator(comparator) {
-    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        preventRender = _ref.preventRender;
+    var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        preventRender = _ref2.preventRender;
 
     var comparatorChanged = this.viewComparator !== comparator;
     var shouldSort = comparatorChanged && !preventRender;
@@ -3749,16 +3755,21 @@ var CollectionView$2 = Backbone.View.extend({
   // Additionally override this function to provide custom
   // viewComparator logic
   getComparator: function getComparator() {
-    return this.viewComparator || this._viewComparator;
+    if (this.viewComparator) {
+      return this.viewComparator;
+    }
+
+    if (!this.sortWithCollection || this.viewComparator === false || !this.collection) {
+      return false;
+    }
+
+    return this._viewComparator;
   },
 
 
   // Default internal view comparator that order the views by
   // the order of the collection
   _viewComparator: function _viewComparator(view) {
-    if (!this.collection) {
-      return;
-    }
     return this.collection.indexOf(view.model);
   },
 
@@ -3790,7 +3801,7 @@ var CollectionView$2 = Backbone.View.extend({
     delete this._addedViews;
 
     if (!viewFilter) {
-      if (addedViews && _.every(addedViews, _.bind(this._isAddedAtEnd, this))) {
+      if (!this.sortWithCollection && addedViews && _.every(addedViews, _.bind(this._isAddedAtEnd, this))) {
         return addedViews;
       }
 
@@ -3853,8 +3864,8 @@ var CollectionView$2 = Backbone.View.extend({
   // Sets the view's `viewFilter` and applies the filter if the view is ready.
   // To prevent the render pass `{ preventRender: true }` as the 2nd argument.
   setFilter: function setFilter(filter) {
-    var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        preventRender = _ref2.preventRender;
+    var _ref3 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        preventRender = _ref3.preventRender;
 
     var filterChanged = this.viewFilter !== filter;
     var shouldRender = filterChanged && !preventRender;
@@ -4020,8 +4031,8 @@ var CollectionView$2 = Backbone.View.extend({
     _.each(views, _.bind(this._removeChildView, this));
   },
   _removeChildView: function _removeChildView(view) {
-    var _ref3 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        shouldDetach = _ref3.shouldDetach;
+    var _ref4 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        shouldDetach = _ref4.shouldDetach;
 
     view.off('destroy', this.removeChildView, this);
 
@@ -4046,7 +4057,8 @@ var CollectionView$2 = Backbone.View.extend({
   // called by ViewMixin destroy
   _removeChildren: function _removeChildren() {
     this._destroyChildren();
-    this.emptyRegion.destroy();
+    var emptyRegion = this.getEmptyRegion();
+    emptyRegion.destroy();
     delete this._addedViews;
   },
 

@@ -81,7 +81,8 @@ class RoomsController extends ControllerBase
 			->where('Oratorysignout\\Models\\Rooms.name = :room:', ['room' => $room->name])
 			->innerJoin('Oratorysignout\\Models\\StudentsSchedules', 'Oratorysignout\\Models\\Rooms.name = Oratorysignout\\Models\\StudentsSchedules.room AND Oratorysignout\\Models\\StudentsSchedules.period = ' . $period->period . ' AND Oratorysignout\\Models\\StudentsSchedules.quarter = ' . $info['quarter'] . ' AND Oratorysignout\\Models\\StudentsSchedules.cycle_day = ' . $info['cycleDay'])
 			->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\StudentsSchedules.student_id')
-			->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ') AND Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id AND Oratorysignout\\Models\\LogsStudents.room_from = "' . $room->name . '"');
+			->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ') AND Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id AND Oratorysignout\\Models\\LogsStudents.room_from = "' . $room->name . '"')
+			->groupBy(['Oratorysignout\\Models\\Students.id']);
 
 		// Get users signed into a room
 		$signedInStudentsBuilder = $this->modelsManager->createBuilder()
@@ -89,7 +90,8 @@ class RoomsController extends ControllerBase
 			->columns(['Oratorysignout\\Models\\Rooms.*', 'Oratorysignout\\Models\\Students.*', 'Oratorysignout\\Models\\LogsStudents.*'])
 			->where('Oratorysignout\\Models\\Rooms.name = :room:', ['room' => $room->name])
 			->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ')  AND Oratorysignout\\Models\\LogsStudents.room_to = "' . $room->name . '"')
-			->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id');
+			->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id')
+			->groupBy(['Oratorysignout\\Models\\Students.id']);
 
 		/** @var array $response */
 		$response = [];
@@ -117,53 +119,6 @@ class RoomsController extends ControllerBase
 		}
 
 		return $this->sendResponse($response);
-	}
-
-	public function signOutAction($name = '', $student_id)
-	{
-		$requestBody = $this->request->getJsonRawBody(true);
-
-		if (strlen($name) == 0)
-			return $this->sendNotFound();
-
-		$room = Rooms::findFirst("name = '{$name}'");
-		if ($room === false)
-			return $this->sendNotFound();
-
-		$room_to = Rooms::findFirst("name = '{$requestBody['room_to']}'");
-		if ($room_to === false)
-			return $this->sendNotFound();
-
-		// Begin transaction
-		$this->db->begin();
-
-		$log = new LogsStudents();
-		$log->student_id = $student_id;
-		$log->timestamp = (int)date('YmdHis');
-		$log->room_from = $name;
-		$log->room_to = $requestBody['room_to'];
-
-		if (!$log->create()) {
-			// Revert transaction
-			$this->db->rollback();
-			$errors = [];
-			foreach ($log->getMessages() as $message) {
-				$error = [];
-				$error['message'] = $message->getMessage();
-				$error['field'] = $message->getField();
-				$error['type'] = $message->getType();
-				array_push($errors, $error);
-			}
-			return $this->sendBadRequest([
-				"errors" => $errors
-			]);
-		}
-
-		// Commit transaction
-		$this->db->commit();
-
-		// Send response
-		return $this->sendResponse($log);
 	}
 
 }

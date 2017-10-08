@@ -1,7 +1,8 @@
 {
     "require-dev": {
         "phalcon/ide-stubs": "^3.2",
-        "phalcon/devtools": "^3.2"
+        "phalcon/devtools": "^3.2",
+        "tomk/php-timecop-stubs": "^0.0.2"
     },
     "require": {
         "vlucas/phpdotenv": "^2.4",

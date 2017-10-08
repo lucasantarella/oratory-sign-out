@@ -12,6 +12,9 @@
         marionette: 'vendor/backbone-marionette/backbone.marionette.min',
         text: 'vendor/require-text/text.min',
 
+        bootstrap: 'vendor/bootstrap/js/bootstrap.min',
+        tether: 'vendor/tether/js/tether.min',
+
         // require plugins
         async: 'vendor/require-plugins/dist/async',
         // font: 'vendor/require-plugins/dist/font',
