@@ -22,6 +22,10 @@ define([
             confirmSigninButton: '.btn-confirm-sign-in',
         },
 
+        events: {
+            'click @ui.signOutButton': 'signOut'
+        },
+
         onRender: function () {
             switch (this.model.get('status')) {
                 case 'signedin_unconfirmed':
@@ -50,5 +54,8 @@ define([
             this.$el.addClass('bg-danger').addClass('text-white');
         },
 
+        signOut: function () {
+            this.model.signOut(null, '101', {}, this);
+        }
     });
 });
