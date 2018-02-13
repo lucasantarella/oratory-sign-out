@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "87e88f1a6f0103e0052d70c406e0681a",
+    "content-hash": "cfe10fa08dc68fbb77c1d9e0fd6c2864",
     "packages": [
         {
             "name": "bugsnag/bugsnag",
@@ -1007,6 +1007,28 @@
                 "dump"
             ],
             "time": "2018-01-29T09:06:29+00:00"
+        },
+        {
+            "name": "tomk/php-timecop-stubs",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TomK/php-timecop-stubs.git",
+                "reference": "c12bd62b5ea2bb8d10f8bde2dfc5b6ab701d1d58"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TomK/php-timecop-stubs/zipball/c12bd62b5ea2bb8d10f8bde2dfc5b6ab701d1d58",
+                "reference": "c12bd62b5ea2bb8d10f8bde2dfc5b6ab701d1d58",
+                "shasum": ""
+            },
+            "require": {
+                "ext-timecop": "*"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Stubs for hnw/php-timecop",
+            "time": "2016-09-13T10:51:08+00:00"
         }
     ],
     "aliases": [],
