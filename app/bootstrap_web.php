@@ -17,8 +17,6 @@ try {
 	 */
 	include APP_PATH . '/config/loader.php';
 
-//	timecop_freeze(mktime(12,6,0,10,3,2017));
-
 	/**
 	 * The FactoryDefault Dependency Injector automatically registers the services that
 	 * provide a full stack framework. These default services can be overidden with custom ones.
@@ -29,6 +27,11 @@ try {
 	 * Include general services
 	 */
 	require APP_PATH . '/config/services.php';
+
+	if(getenv('TIME_OVERRIDE') !== false && extension_loaded('timecop')) {
+		$time = DateTime::createFromFormat('YmdHis', getenv('TIME_OVERRIDE'));
+		timecop_freeze(mktime($time->format('H'), $time->format('i'), $time->format('s'), $time->format('m'), $time->format('d'), $time->format('Y')));
+	}
 
 	/**
 	 * Get config service for use in inline setup below
