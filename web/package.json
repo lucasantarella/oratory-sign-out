@@ -29,6 +29,7 @@
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "popper.js": "^1.11.1",
+    "r.js": "^1.0.3",
     "require-css": "latest",
     "requirejs": "^2.3.4",
     "requirejs-plugins": "^1.0.2",
