@@ -33,9 +33,6 @@ define(function (require) {
       new StudentsModule({app: this});
       new SignInModule({app: this});
 
-      // Check if logged in...
-      Backbone.history.navigate('signin', {trigger: true});
-
       // Show the root view
       this.showView(new AppView());
 
@@ -44,6 +41,13 @@ define(function (require) {
         // PushState: true,
         // root: '/',
       });
+
+      // Check if logged in...
+      let auth = window.localStorage.getItem('gauth');
+      if (auth !== undefined) {
+
+        Backbone.history.navigate('signin', {trigger: true});
+      }
     }
 
   });
