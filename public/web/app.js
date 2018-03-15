@@ -9,6 +9,7 @@ define(function (require) {
   // Modules
   const RoomsModule = require('modules/rooms');
   const StudentsModule = require('modules/students');
+  const SignInModule = require('modules/signin');
 
   return Marionette.Application.extend({
 
@@ -30,6 +31,10 @@ define(function (require) {
       // Init modules
       new RoomsModule({app: this});
       new StudentsModule({app: this});
+      new SignInModule({app: this});
+
+      // Check if logged in...
+      Backbone.history.navigate('signin', {trigger: true});
 
       // Show the root view
       this.showView(new AppView());
