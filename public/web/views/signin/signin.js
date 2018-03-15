@@ -34,9 +34,10 @@ define([
         'height': 50,
         'longtitle': true,
         'onsuccess': function (googleUser) {
-
           console.log(googleUser);
-        },
+          window.localStorage.setItem('gauth', googleUser);
+          Backbone.history.navigate('/', {trigger: true});
+        }
       });
     },
 

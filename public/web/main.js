@@ -66,25 +66,9 @@ require([
   'css!styles/main.css'
 ], function (Backbone, App, auth2) {
   // Init the app
-  var app = new App();
+  let app = new App();
 
   // Start the app
   app.start();
 
-  auth2.init({client_id: '439961432476-ut57l874jf5n3al6r2magm69vejnqg14'});
-  auth2.authorize({
-    client_id: 'CLIENT_ID.apps.googleusercontent.com',
-    scope: 'email profile openid',
-    response_type: 'id_token permission'
-  }, function (response) {
-    if (response.error) {
-      // An error happened!
-      return;
-    }
-    // The user authorized the application for the scopes requested.
-    let accessToken = response.access_token;
-    let idToken = response.id_token;
-    console.log(response);
-    // You can also now use gapi.client to perform authenticated requests.
-  });
 });
