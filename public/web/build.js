@@ -9,11 +9,15 @@
         backbone: 'vendor/backbone/backbone.min',
         'backbone.radio': 'vendor/backbone-radio/backbone.radio.min',
         'backbone.paginator': 'vendor/backbone-paginator/backbone.paginator.min',
+        'backbone.localStorage': 'vendor/backbone-localstorage/backbone.localStorage.min',
         marionette: 'vendor/backbone-marionette/backbone.marionette.min',
         text: 'vendor/require-text/text.min',
 
         bootstrap: 'vendor/bootstrap/js/bootstrap.min',
         tether: 'vendor/tether/js/tether.min',
+
+        gapijs: "https://apis.google.com/js/platform",
+        gapi: "gapi",
 
         // require plugins
         async: 'vendor/require-plugins/dist/async',
