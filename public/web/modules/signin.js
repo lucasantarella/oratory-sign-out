@@ -16,7 +16,7 @@ define([
     },
 
     signin: function () {
-      let view = new SignInView();
+      let view = new SignInView({app: this.app, module: this});
       this.app.getView().showChildView('main', view);
     },
 

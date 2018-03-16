@@ -11,6 +11,7 @@ require.config({
     'backbone.paginator': 'vendor/backbone-paginator/backbone.paginator',
     'backbone.localStorage': 'vendor/backbone-localstorage/backbone.localStorage',
     marionette: 'vendor/backbone-marionette/backbone.marionette',
+    cookie: 'vendor/cookie/cookie.min',
     text: 'vendor/require-text/text',
 
     bootstrap: 'vendor/bootstrap/js/bootstrap',

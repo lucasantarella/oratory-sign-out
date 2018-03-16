@@ -68,6 +68,13 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 				]
 			],
 			[
+				'pattern' => '/profile',
+				'attr' => [
+					'controller' => 'index',
+					'action' => 'profile',
+				]
+			],
+			[
 				'pattern' => '/students',
 				'attr' => [
 					'controller' => 'students',
