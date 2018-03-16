@@ -5,6 +5,8 @@ define(function (require) {
   const Backbone = require('backbone');
   const Marionette = require('marionette');
   const AppView = require('views/AppView');
+  const Cookies = require('cookie');
+  const auth2 = require('gapi!signin2');
 
   // Modules
   const RoomsModule = require('modules/rooms');
@@ -27,7 +29,10 @@ define(function (require) {
     // Define the element where the application will exist
     region: 'main',
 
+    session: null,
+
     onStart: function () {
+
       // Init modules
       new RoomsModule({app: this});
       new StudentsModule({app: this});
@@ -44,11 +49,29 @@ define(function (require) {
 
       // Check if logged in...
       let auth = window.localStorage.getItem('gauth');
-      if (auth !== undefined) {
-
+      let token = Cookies.get('gtoken');
+      if (auth == undefined || token == undefined) {
         Backbone.history.navigate('signin', {trigger: true});
       }
-    }
+
+      // Init user session
+      this.session = new Backbone.Model();
+
+      token = atob(token);
+      auth = JSON.parse(atob(auth));
+      if (Date.now() >= auth.Zi.expires_at) {
+        Backbone.history.navigate('signin', {trigger: true});
+      }
+
+      this.initializeSession(auth, token, this);
+    },
+
+    initializeSession: function (gauth, gtoken, appContext) {
+      let context = (appContext) ? appContext : this;
+      context.session.set('gauth', gauth);
+      context.session.set('gtoken', gtoken);
+      return context.session;
+    },
 
   });
 });

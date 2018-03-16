@@ -4,8 +4,10 @@ define([
   'underscore',
   'backbone',
   'marionette',
+  'models/profile',
+  'cookie',
   'gapi!signin2'
-], function (_, Backbone, Marionette, signin2) {
+], function (_, Backbone, Marionette, ProfileModel, Cookies, signin2) {
   return Marionette.View.extend({
 
     tagName: 'div',
@@ -27,6 +29,11 @@ define([
       profileInfo: '#profileView'
     },
 
+    initialize: function (options) {
+      this.app = (options.app) ? options.app : null;
+      this.module = (options.module) ? options.module : null;
+    },
+
     onAttach: function () {
       let context = this;
       signin2.render('signInButton', {
@@ -34,8 +41,9 @@ define([
         'height': 50,
         'longtitle': true,
         'onsuccess': function (googleUser) {
-          console.log(googleUser);
-          window.localStorage.setItem('gauth', googleUser);
+          let session = context.app.initializeSession(googleUser, googleUser.getAuthResponse().id_token, context.app);
+          window.localStorage.setItem('gauth', btoa(JSON.stringify(session.get('gauth'))));
+          Cookies.set('gtoken', btoa(session.get('gtoken')));
           Backbone.history.navigate('/', {trigger: true});
         }
       });
