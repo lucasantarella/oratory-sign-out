@@ -66,7 +66,7 @@ class RoomsController extends ControllerBase
 		$info = Schedules::getDateTimeInfo($date);
 
 		if ($info === false || $info['period'] === false)
-			return $this->sendBadRequest();
+			return $this->sendResponse([]);
 
 		/** @var SchedulesPeriods $period */
 		$period = $info['period'];

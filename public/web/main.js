@@ -13,6 +13,8 @@ require.config({
     marionette: 'vendor/backbone-marionette/backbone.marionette',
     cookie: 'vendor/cookie/cookie.min',
     text: 'vendor/require-text/text',
+    jwtdecode: 'vendor/jwt-decode/jwt-decode',
+    pace: 'vendor/pace/pace.min',
 
     bootstrap: 'vendor/bootstrap/js/bootstrap',
     tether: 'vendor/tether/js/tether',
@@ -56,20 +58,29 @@ require.config({
 });
 
 require([
+  'jquery',
   'backbone',
   'app',
-  'gapi!auth2',
+  'pace',
   'tether',
   'bootstrap',
   'css!styles/bootstrap.css',
   'css!vendor/font-awesome/scss/font-awesome.css',
   'css!vendor/tether/css/tether.min.css',
   'css!styles/main.css'
-], function (Backbone, App, auth2) {
+], function ($, Backbone, App, pace) {
+
+  pace.start({
+    document: true,
+  });
+
+  $(document).ajaxStart(function () {
+    pace.restart();
+  });
+
   // Init the app
   let app = new App();
 
-  // Start the app
-  app.start();
+  app.setupSession()
 
 });

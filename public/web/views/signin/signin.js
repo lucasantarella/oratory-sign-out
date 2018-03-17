@@ -31,7 +31,9 @@ define([
 
     initialize: function (options) {
       this.app = (options.app) ? options.app : null;
-      this.module = (options.module) ? options.module : null;
+      this.callback = (options.callback) ? options.callback : function () {
+        console.log('no callback');
+      };
     },
 
     onAttach: function () {
@@ -40,11 +42,8 @@ define([
         'width': 240,
         'height': 50,
         'longtitle': true,
-        'onsuccess': function (googleUser) {
-          let session = context.app.initializeSession(googleUser, googleUser.getAuthResponse().id_token, context.app);
-          window.localStorage.setItem('gauth', btoa(JSON.stringify(session.get('gauth'))));
-          Cookies.set('gtoken', btoa(session.get('gtoken')));
-          Backbone.history.navigate('/', {trigger: true});
+        'onsuccess': function(googleUser) {
+          context.callback(googleUser, context.app);
         }
       });
     },

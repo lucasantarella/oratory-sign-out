@@ -54,7 +54,7 @@ define([
             roomsView.children.each(function (e) {
                 e.setInactive();
             });
-            roomsView.children.findByModel(roomsView.collection.findWhere({installation_id: model.get('installation_id')})).setActive();
+            roomsView.children.findByModel(roomsView.collection.findWhere({name: model.get('name')})).setActive();
         },
 
     });

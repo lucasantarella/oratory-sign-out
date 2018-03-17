@@ -19,6 +19,7 @@
 
     gapijs: "https://apis.google.com/js/platform",
     gapi: "gapi",
+    jwtdecode: 'vendor/jwt-decode/jwt-decode.min',
 
     // require plugins
     async: 'vendor/require-plugins/dist/async',

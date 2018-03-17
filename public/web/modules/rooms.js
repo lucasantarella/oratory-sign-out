@@ -17,6 +17,7 @@ define([
         },
 
         routes: {
+            // '': 'listRooms',
             '': 'listRooms',
             'rooms': 'listRooms',
             'rooms/:room': 'listRooms',
