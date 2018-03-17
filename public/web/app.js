@@ -2,16 +2,17 @@
 
 define(function (require) {
 
+  const $ = require('jquery');
   const Backbone = require('backbone');
   const Marionette = require('marionette');
   const AppView = require('views/AppView');
+  const SpinnerView = require('views/spinnerview');
+  const SignInView = require('views/signin/signin');
   const Cookies = require('cookie');
-  const auth2 = require('gapi!signin2');
 
   // Modules
   const RoomsModule = require('modules/rooms');
   const StudentsModule = require('modules/students');
-  const SignInModule = require('modules/signin');
 
   return Marionette.Application.extend({
 
@@ -31,15 +32,55 @@ define(function (require) {
 
     session: null,
 
+    signedIn: false,
+
+    setupSession: function (callback) {
+      callback = (callback) ? callback : function() {
+
+      };
+
+      // Check if logged in...
+      this.session = new Backbone.Model();
+
+      let auth = window.localStorage.getItem('gauth');
+      let token = Cookies.get('gtoken');
+      if (auth !== undefined && token !== undefined) {
+        try {
+          token = atob(token);
+          auth = JSON.parse(atob(auth));
+        } catch (e) {
+          // Invalid JSON...
+          this.showSignIn(this);
+          return;
+        }
+
+        if (Date.now() < auth.Zi.expires_at) {
+          $.ajax({
+            url: "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + token,
+            context: this,
+            success: function (response) {
+              if (response.error_description === undefined) {
+                this.signedIn = true;
+                this.start();
+              }
+            },
+            complete: function () {
+              this.showSignIn(this);
+            }
+          });
+        } else
+          this.showSignIn(this);
+      } else
+        this.showSignIn(this);
+    },
+
     onStart: function () {
+      // Show the loading spinner
+      this.showView(new AppView());
 
       // Init modules
       new RoomsModule({app: this});
       new StudentsModule({app: this});
-      new SignInModule({app: this});
-
-      // Show the root view
-      this.showView(new AppView());
 
       // Start history
       Backbone.history.start({
@@ -47,30 +88,29 @@ define(function (require) {
         // root: '/',
       });
 
-      // Check if logged in...
-      let auth = window.localStorage.getItem('gauth');
-      let token = Cookies.get('gtoken');
-      if (auth == undefined || token == undefined) {
-        Backbone.history.navigate('signin', {trigger: true});
-      }
-
-      // Init user session
-      this.session = new Backbone.Model();
-
-      token = atob(token);
-      auth = JSON.parse(atob(auth));
-      if (Date.now() >= auth.Zi.expires_at) {
-        Backbone.history.navigate('signin', {trigger: true});
-      }
-
-      this.initializeSession(auth, token, this);
+      Backbone.history.navigate(Backbone.history.getFragment(), {trigger: true});
     },
 
-    initializeSession: function (gauth, gtoken, appContext) {
-      let context = (appContext) ? appContext : this;
-      context.session.set('gauth', gauth);
-      context.session.set('gtoken', gtoken);
-      return context.session;
+    initializeSession: function (googleUser, appContext) {
+      appContext = (appContext) ? appContext : this;
+      window.localStorage.setItem('gauth', btoa(JSON.stringify(appContext.session.get('gauth'))));
+      Cookies.set('gtoken', btoa(appContext.session.get('gtoken')));
+      appContext.session.set('gauth', googleUser);
+      appContext.session.set('gtoken', googleUser.getAuthResponse().id_token);
+      appContext.start();
+    },
+
+    showSignIn: function (context, callback) {
+      context = (context) ? context : this;
+
+      if (!context.signedIn) {
+        let view = context.getView();
+        if (view === undefined)
+          context.showView(new SignInView({app: context, callback: context.initializeSession}));
+        else
+          view.showChildView('main', new SignInView({app: context, callback: context.initializeSession}));
+      }
+
     },
 
   });
