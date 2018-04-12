@@ -20,15 +20,14 @@ require.config({
     gapi: "gapi",
 
     // require plugins
-    async: 'vendor/require-plugins/dist/async',
-    // font: 'vendor/require-plugins/dist/font',
-    // goog: 'vendor/require-plugins/dist/goog',
-    // image: 'vendor/require-plugins/dist/image',
-    // json: 'vendor/require-plugins/dist/json',
-    // noext: 'vendor/require-plugins/dist/noext',
-    // mdown: 'vendor/require-plugins/dist/mdown',
-    // propertyParser : 'vendor/require-plugins/lib/propertyParser',
-    // markdownConverter : 'vendor/require-plugins/lib/Markdown.Converter',
+    async: 'vendor/require-plugins/async',
+    font: 'vendor/require-plugins/font',
+    goog: 'vendor/require-plugins/goog',
+    image: 'vendor/require-plugins/image',
+    json: 'vendor/require-plugins/json',
+    noext: 'vendor/require-plugins/noext',
+    mdown: 'vendor/require-plugins/mdown',
+    propertyParser : 'vendor/require-plugins/propertyParser',
 
     layouts: './layouts',
     app: './app',

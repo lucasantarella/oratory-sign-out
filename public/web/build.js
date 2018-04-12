@@ -13,24 +13,25 @@
     marionette: 'vendor/backbone-marionette/backbone.marionette.min',
     cookie: 'vendor/cookie/cookie.min',
     text: 'vendor/require-text/text.min',
-
-    bootstrap: 'vendor/bootstrap/js/bootstrap.min',
-    tether: 'vendor/tether/js/tether.min',
+    jwtdecode: 'vendor/jwt-decode/jwt-decode',
+    pace: 'vendor/pace/pace.min',
 
     gapijs: "https://apis.google.com/js/platform",
     gapi: "gapi",
-    jwtdecode: 'vendor/jwt-decode/jwt-decode.min',
 
     // require plugins
-    async: 'vendor/require-plugins/dist/async',
-    // font: 'vendor/require-plugins/dist/font',
-    // goog: 'vendor/require-plugins/dist/goog',
-    // image: 'vendor/require-plugins/dist/image',
-    // json: 'vendor/require-plugins/dist/json',
-    // noext: 'vendor/require-plugins/dist/noext',
-    // mdown: 'vendor/require-plugins/dist/mdown',
-    // propertyParser : 'vendor/require-plugins/lib/propertyParser',
-    // markdownConverter : 'vendor/require-plugins/lib/Markdown.Converter',
+    async: 'vendor/require-plugins/async',
+    font: 'vendor/require-plugins/font',
+    goog: 'vendor/require-plugins/goog',
+    image: 'vendor/require-plugins/image',
+    json: 'vendor/require-plugins/json',
+    noext: 'vendor/require-plugins/noext',
+    mdown: 'vendor/require-plugins/mdown',
+    propertyParser : 'vendor/require-plugins/propertyParser',
+    
+    css: 'vendor/require-css/css',
+    'css-builder': 'vendor/require-css/css-builder',
+    'normalize': 'vendor/require-css/normalize',
 
     layouts: './layouts',
     app: './app',
@@ -41,11 +42,6 @@
     views: './views',
     styles: './styles'
   },
-  map: {
-    '*': {
-      css: 'vendor/require-css/css'
-    }
-  },
   name: './main',
-  out: 'main-built.js'
+  out: 'main-built.js',
 });
