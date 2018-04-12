@@ -85,7 +85,7 @@ gulp.task('copy', function () {
     .pipe(rename('require.min.js'))
     .pipe(gulp.dest('vendor/requirejs'));
 
-  gulp.src(['node_modules/require-css/css.js', 'node_modules/require-css/css.min.js', 'node_modules/require-css/css-builder.js',  'node_modules/require-css/normalize.js'])
+  gulp.src(['node_modules/require-css/css.js', 'node_modules/require-css/css.min.js', 'node_modules/require-css/css-builder.js', 'node_modules/require-css/normalize.js'])
     .pipe(gulp.dest('vendor/require-css'));
 
   gulp.src('node_modules/requirejs-text/text.js')

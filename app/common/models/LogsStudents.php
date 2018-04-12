@@ -235,8 +235,8 @@ class LogsStudents extends \Phalcon\Mvc\Model
             'student_id' => (int)$this->student_id,
             'room_from' => (int)$this->room_from,
             'room_to' => (int)$this->room_to,
-	        'confirmed' => (bool)$this->confirmed,
-	        'timestamp_confirmed' => $this->timestamp_confirmed
+            'confirmed' => (bool)$this->confirmed,
+            'timestamp_confirmed' => $this->timestamp_confirmed
         ];
     }
 

@@ -1,23 +1,23 @@
 // Filename: /collections/students.js
 
 define([
-    'backbone',
-    'backbone.paginator',
-    'models/student',
+  'backbone',
+  'backbone.paginator',
+  'models/student',
 ], function (Backbone, PageableCollection, Student) {
-    return Backbone.Collection.extend({
+  return Backbone.Collection.extend({
 
-        model: Student,
+    model: Student,
 
-        url: '/api/students',
+    url: '/api/students',
 
-        // parseState: function (resp, queryParams, state, options) {
-        //     return {
-        //         currentPage: parseInt(options.xhr.getResponseHeader('x-paginate-current-page')),
-        //         totalPages: parseInt(options.xhr.getResponseHeader('x-paginate-total-pages')),
-        //         totalRecords: parseInt(options.xhr.getResponseHeader('x-paginate-total-items'))
-        //     };
-        // }
+    // parseState: function (resp, queryParams, state, options) {
+    //     return {
+    //         currentPage: parseInt(options.xhr.getResponseHeader('x-paginate-current-page')),
+    //         totalPages: parseInt(options.xhr.getResponseHeader('x-paginate-total-pages')),
+    //         totalRecords: parseInt(options.xhr.getResponseHeader('x-paginate-total-items'))
+    //     };
+    // }
 
-    });
+  });
 });

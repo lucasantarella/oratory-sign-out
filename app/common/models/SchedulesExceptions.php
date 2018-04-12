@@ -15,187 +15,187 @@ use Phalcon\Mvc\Model\MetaData;
 class SchedulesExceptions extends \Phalcon\Mvc\Model
 {
 
-	/**
-	 *
-	 * @var integer
-	 * @Primary
-	 * @Column(type="string", length=8, nullable=false)
-	 */
-	public $date;
+    /**
+     *
+     * @var integer
+     * @Primary
+     * @Column(type="string", length=8, nullable=false)
+     */
+    public $date;
 
-	/**
-	 *
-	 * @var boolean
-	 * @Column(type="integer", length=1, nullable=true)
-	 */
-	public $ignored_from_cycle;
+    /**
+     *
+     * @var boolean
+     * @Column(type="integer", length=1, nullable=true)
+     */
+    public $ignored_from_cycle;
 
-	/**
-	 *
-	 * @var integer|null
-	 * @Column(type="string", length=20, nullable=true)
-	 */
-	public $schedule_id;
+    /**
+     *
+     * @var integer|null
+     * @Column(type="string", length=20, nullable=true)
+     */
+    public $schedule_id;
 
-	/**
-	 *
-	 * @var integer|null
-	 * @Column(type="integer", length=1, nullable=true)
-	 */
-	public $cycle_day_override;
+    /**
+     *
+     * @var integer|null
+     * @Column(type="integer", length=1, nullable=true)
+     */
+    public $cycle_day_override;
 
-	/**
-	 *
-	 * @var boolean
-	 * @Column(type="integer", length=1, nullable=false, default=0)
-	 */
-	public $ignore_day;
+    /**
+     *
+     * @var boolean
+     * @Column(type="integer", length=1, nullable=false, default=0)
+     */
+    public $ignore_day;
 
-	/**
-	 * Initialize method for model.
-	 */
-	public function initialize()
-	{
-		$this->belongsTo('schedule_id', 'Oratorysignout\Models\Schedules', 'id', ['alias' => 'Schedule']);
-	}
+    /**
+     * Initialize method for model.
+     */
+    public function initialize()
+    {
+        $this->belongsTo('schedule_id', 'Oratorysignout\Models\Schedules', 'id', ['alias' => 'Schedule']);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function metaData()
-	{
-		return [
-			MetaData::MODELS_ATTRIBUTES => [
-				"date",
-				"ignored_from_cycle",
-				"schedule_id",
-				"cycle_day_override",
-				"ignore_day",
-			],
+    /**
+     * @return array
+     */
+    public function metaData()
+    {
+        return [
+            MetaData::MODELS_ATTRIBUTES => [
+                "date",
+                "ignored_from_cycle",
+                "schedule_id",
+                "cycle_day_override",
+                "ignore_day",
+            ],
 
-			MetaData::MODELS_PRIMARY_KEY => [
-				"date"
-			],
+            MetaData::MODELS_PRIMARY_KEY => [
+                "date"
+            ],
 
-			MetaData::MODELS_NON_PRIMARY_KEY => [
-				"date",
-				"ignored_from_cycle",
-				"schedule_id",
-				"cycle_day_override",
-				"ignore_day",
-			],
+            MetaData::MODELS_NON_PRIMARY_KEY => [
+                "date",
+                "ignored_from_cycle",
+                "schedule_id",
+                "cycle_day_override",
+                "ignore_day",
+            ],
 
-			// Every column that doesn't allows null values
-			MetaData::MODELS_NOT_NULL => [
-				"date",
-				"ignored_from_cycle",
-				"ignore_day",
-			],
+            // Every column that doesn't allows null values
+            MetaData::MODELS_NOT_NULL => [
+                "date",
+                "ignored_from_cycle",
+                "ignore_day",
+            ],
 
-			// Every column and their data types
-			MetaData::MODELS_DATA_TYPES => [
-				"date" => Column::TYPE_BIGINTEGER,
-				"ignored_from_cycle" => Column::TYPE_BOOLEAN,
-				"schedule_id" => Column::TYPE_BIGINTEGER,
-				"cycle_day_override" => Column::TYPE_INTEGER,
-				"ignore_day" => Column::TYPE_BOOLEAN,
-			],
+            // Every column and their data types
+            MetaData::MODELS_DATA_TYPES => [
+                "date" => Column::TYPE_BIGINTEGER,
+                "ignored_from_cycle" => Column::TYPE_BOOLEAN,
+                "schedule_id" => Column::TYPE_BIGINTEGER,
+                "cycle_day_override" => Column::TYPE_INTEGER,
+                "ignore_day" => Column::TYPE_BOOLEAN,
+            ],
 
-			// The columns that have numeric data types
-			MetaData::MODELS_DATA_TYPES_NUMERIC => [
-				"date" => true,
-				"schedule_id" => true,
-				"cycle_day_override" => true,
-			],
+            // The columns that have numeric data types
+            MetaData::MODELS_DATA_TYPES_NUMERIC => [
+                "date" => true,
+                "schedule_id" => true,
+                "cycle_day_override" => true,
+            ],
 
-			// The identity column, use boolean false if the model doesn't have
-			// an identity column
-			MetaData::MODELS_IDENTITY_COLUMN => false,
+            // The identity column, use boolean false if the model doesn't have
+            // an identity column
+            MetaData::MODELS_IDENTITY_COLUMN => false,
 
-			// How every column must be bound/casted
-			MetaData::MODELS_DATA_TYPES_BIND => [
-				"date" => Column::BIND_PARAM_INT,
-				"ignored_from_cycle" => Column::BIND_PARAM_BOOL,
-				"schedule_id" => Column::BIND_PARAM_INT,
-				"cycle_day_override" => Column::BIND_PARAM_INT,
-				"ignore_day" => Column::BIND_PARAM_BOOL,
-			],
+            // How every column must be bound/casted
+            MetaData::MODELS_DATA_TYPES_BIND => [
+                "date" => Column::BIND_PARAM_INT,
+                "ignored_from_cycle" => Column::BIND_PARAM_BOOL,
+                "schedule_id" => Column::BIND_PARAM_INT,
+                "cycle_day_override" => Column::BIND_PARAM_INT,
+                "ignore_day" => Column::BIND_PARAM_BOOL,
+            ],
 
-			// Fields that must be ignored from INSERT SQL statements
-			MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
+            // Fields that must be ignored from INSERT SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
 
-			// Fields that must be ignored from UPDATE SQL statements
-			MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
+            // Fields that must be ignored from UPDATE SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
 
-			// Default values for columns
-			MetaData::MODELS_DEFAULT_VALUES => [
-				"ignored_from_cycle" => false,
-				"ignore_day" => false,
-			],
+            // Default values for columns
+            MetaData::MODELS_DEFAULT_VALUES => [
+                "ignored_from_cycle" => false,
+                "ignore_day" => false,
+            ],
 
-			// Fields that allow empty strings
-			MetaData::MODELS_EMPTY_STRING_VALUES => [
-			],
-		];
-	}
+            // Fields that allow empty strings
+            MetaData::MODELS_EMPTY_STRING_VALUES => [
+            ],
+        ];
+    }
 
-	public function beforeSave()
-	{
-		$this->date = (int)$this->date;
-		$this->ignored_from_cycle = (int)$this->ignored_from_cycle;
-		$this->schedule_id = is_null($this->schedule_id) ? null : (int)$this->schedule_id;
-		$this->cycle_day_override = is_null($this->cycle_day_override) ? null : (int)$this->cycle_day_override;
-		$this->ignore_day = (int)$this->ignore_day;
-	}
+    public function beforeSave()
+    {
+        $this->date = (int)$this->date;
+        $this->ignored_from_cycle = (int)$this->ignored_from_cycle;
+        $this->schedule_id = is_null($this->schedule_id) ? null : (int)$this->schedule_id;
+        $this->cycle_day_override = is_null($this->cycle_day_override) ? null : (int)$this->cycle_day_override;
+        $this->ignore_day = (int)$this->ignore_day;
+    }
 
-	public function afterFetch()
-	{
-		$this->date = (int)$this->date;
-		$this->ignored_from_cycle = (bool)$this->ignored_from_cycle;
-		$this->schedule_id = is_null($this->schedule_id) ? null : (int)$this->schedule_id;
-		$this->cycle_day_override = is_null($this->cycle_day_override) ? null : (int)$this->cycle_day_override;
-		$this->ignore_day = (bool)$this->ignore_day;
-	}
+    public function afterFetch()
+    {
+        $this->date = (int)$this->date;
+        $this->ignored_from_cycle = (bool)$this->ignored_from_cycle;
+        $this->schedule_id = is_null($this->schedule_id) ? null : (int)$this->schedule_id;
+        $this->cycle_day_override = is_null($this->cycle_day_override) ? null : (int)$this->cycle_day_override;
+        $this->ignore_day = (bool)$this->ignore_day;
+    }
 
-	/**
-	 * @param mixed $parameters
-	 * @return Schedules
-	 */
-	public function getSchedule($parameters = null)
-	{
-		return $this->getRelated('Schedule', $parameters);
-	}
+    /**
+     * @param mixed $parameters
+     * @return Schedules
+     */
+    public function getSchedule($parameters = null)
+    {
+        return $this->getRelated('Schedule', $parameters);
+    }
 
-	/**
-	 * Returns table name mapped in the model.
-	 *
-	 * @return string
-	 */
-	public function getSource()
-	{
-		return 'schedules__exceptions';
-	}
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'schedules__exceptions';
+    }
 
-	/**
-	 * Allows to query a set of records that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return SchedulesExceptions[]
-	 */
-	public static function find($parameters = null)
-	{
-		return parent::find($parameters);
-	}
+    /**
+     * Allows to query a set of records that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return SchedulesExceptions[]
+     */
+    public static function find($parameters = null)
+    {
+        return parent::find($parameters);
+    }
 
-	/**
-	 * Allows to query the first record that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return SchedulesExceptions
-	 */
-	public static function findFirst($parameters = null)
-	{
-		return parent::findFirst($parameters);
-	}
+    /**
+     * Allows to query the first record that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return SchedulesExceptions
+     */
+    public static function findFirst($parameters = null)
+    {
+        return parent::findFirst($parameters);
+    }
 
 }

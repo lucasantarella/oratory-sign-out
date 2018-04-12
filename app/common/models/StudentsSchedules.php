@@ -15,157 +15,157 @@ use Phalcon\Mvc\Model\MetaData;
 class StudentsSchedules extends \Phalcon\Mvc\Model
 {
 
-	/**
-	 *
-	 * @var string
-	 * @Column(type="string", length=20, nullable=false)
-	 */
-	public $student_id;
+    /**
+     *
+     * @var string
+     * @Column(type="string", length=20, nullable=false)
+     */
+    public $student_id;
 
-	/**
-	 *
-	 * @var integer
-	 * @Column(type="integer", length=1, nullable=false)
-	 */
-	public $quarter;
+    /**
+     *
+     * @var integer
+     * @Column(type="integer", length=1, nullable=false)
+     */
+    public $quarter;
 
-	/**
-	 *
-	 * @var integer
-	 * @Column(type="integer", length=1, nullable=false)
-	 */
-	public $cycle_day;
+    /**
+     *
+     * @var integer
+     * @Column(type="integer", length=1, nullable=false)
+     */
+    public $cycle_day;
 
-	/**
-	 *
-	 * @var integer
-	 * @Column(type="integer", length=1, nullable=false)
-	 */
-	public $period;
+    /**
+     *
+     * @var integer
+     * @Column(type="integer", length=1, nullable=false)
+     */
+    public $period;
 
-	/**
-	 *
-	 * @var string
-	 * @Column(type="string", length=20, nullable=false)
-	 */
-	public $room;
+    /**
+     *
+     * @var string
+     * @Column(type="string", length=20, nullable=false)
+     */
+    public $room;
 
-	/**
-	 * Initialize method for model.
-	 */
-	public function initialize()
-	{
-		$this->belongsTo('quarter', 'Oratorysignout\Models\SchedulesQuarters', 'quarter_num', ['alias' => 'SchedulesQuarters']);
-		$this->belongsTo('student_id', 'Oratorysignout\Models\Students', 'id', ['alias' => 'Students']);
-	}
+    /**
+     * Initialize method for model.
+     */
+    public function initialize()
+    {
+        $this->belongsTo('quarter', 'Oratorysignout\Models\SchedulesQuarters', 'quarter_num', ['alias' => 'SchedulesQuarters']);
+        $this->belongsTo('student_id', 'Oratorysignout\Models\Students', 'id', ['alias' => 'Students']);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function metaData()
-	{
-		return [
-			MetaData::MODELS_ATTRIBUTES => [
-				"student_id",
-				"quarter",
-				"cycle_day",
-				"period",
-				"room",
-			],
+    /**
+     * @return array
+     */
+    public function metaData()
+    {
+        return [
+            MetaData::MODELS_ATTRIBUTES => [
+                "student_id",
+                "quarter",
+                "cycle_day",
+                "period",
+                "room",
+            ],
 
-			MetaData::MODELS_PRIMARY_KEY => [],
+            MetaData::MODELS_PRIMARY_KEY => [],
 
-			MetaData::MODELS_NON_PRIMARY_KEY => [
-				"student_id",
-				"quarter",
-				"cycle_day",
-				"period",
-				"room",
-			],
+            MetaData::MODELS_NON_PRIMARY_KEY => [
+                "student_id",
+                "quarter",
+                "cycle_day",
+                "period",
+                "room",
+            ],
 
-			// Every column that doesn't allows null values
-			MetaData::MODELS_NOT_NULL => [
-				"student_id",
-				"quarter",
-				"cycle_day",
-				"period",
-				"room",
-			],
+            // Every column that doesn't allows null values
+            MetaData::MODELS_NOT_NULL => [
+                "student_id",
+                "quarter",
+                "cycle_day",
+                "period",
+                "room",
+            ],
 
-			// Every column and their data types
-			MetaData::MODELS_DATA_TYPES => [
-				"student_id" => Column::TYPE_BIGINTEGER,
-				"quarter" => Column::TYPE_INTEGER,
-				"cycle_day" => Column::TYPE_INTEGER,
-				"period" => Column::TYPE_INTEGER,
-				"room" => Column::TYPE_VARCHAR,
-			],
+            // Every column and their data types
+            MetaData::MODELS_DATA_TYPES => [
+                "student_id" => Column::TYPE_BIGINTEGER,
+                "quarter" => Column::TYPE_INTEGER,
+                "cycle_day" => Column::TYPE_INTEGER,
+                "period" => Column::TYPE_INTEGER,
+                "room" => Column::TYPE_VARCHAR,
+            ],
 
-			// The columns that have numeric data types
-			MetaData::MODELS_DATA_TYPES_NUMERIC => [
-				"student_id" => true,
-				"quarter" => true,
-				"cycle_day" => true,
-				"period" => true,
-			],
+            // The columns that have numeric data types
+            MetaData::MODELS_DATA_TYPES_NUMERIC => [
+                "student_id" => true,
+                "quarter" => true,
+                "cycle_day" => true,
+                "period" => true,
+            ],
 
-			// The identity column, use boolean false if the model doesn't have
-			// an identity column
-			MetaData::MODELS_IDENTITY_COLUMN => false,
+            // The identity column, use boolean false if the model doesn't have
+            // an identity column
+            MetaData::MODELS_IDENTITY_COLUMN => false,
 
-			// How every column must be bound/casted
-			MetaData::MODELS_DATA_TYPES_BIND => [
-				"student_id" => Column::BIND_PARAM_INT,
-				"quarter" => Column::BIND_PARAM_INT,
-				"cycle_day" => Column::BIND_PARAM_INT,
-				"period" => Column::BIND_PARAM_INT,
-				"room" => Column::BIND_PARAM_STR,
-			],
+            // How every column must be bound/casted
+            MetaData::MODELS_DATA_TYPES_BIND => [
+                "student_id" => Column::BIND_PARAM_INT,
+                "quarter" => Column::BIND_PARAM_INT,
+                "cycle_day" => Column::BIND_PARAM_INT,
+                "period" => Column::BIND_PARAM_INT,
+                "room" => Column::BIND_PARAM_STR,
+            ],
 
-			// Fields that must be ignored from INSERT SQL statements
-			MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
+            // Fields that must be ignored from INSERT SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
 
-			// Fields that must be ignored from UPDATE SQL statements
-			MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
+            // Fields that must be ignored from UPDATE SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
 
-			// Default values for columns
-			MetaData::MODELS_DEFAULT_VALUES => [],
+            // Default values for columns
+            MetaData::MODELS_DEFAULT_VALUES => [],
 
-			// Fields that allow empty strings
-			MetaData::MODELS_EMPTY_STRING_VALUES => [],
-		];
-	}
+            // Fields that allow empty strings
+            MetaData::MODELS_EMPTY_STRING_VALUES => [],
+        ];
+    }
 
-	/**
-	 * Returns table name mapped in the model.
-	 *
-	 * @return string
-	 */
-	public function getSource()
-	{
-		return 'students__schedules';
-	}
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'students__schedules';
+    }
 
-	/**
-	 * Allows to query a set of records that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return StudentsSchedules[]
-	 */
-	public static function find($parameters = null)
-	{
-		return parent::find($parameters);
-	}
+    /**
+     * Allows to query a set of records that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return StudentsSchedules[]
+     */
+    public static function find($parameters = null)
+    {
+        return parent::find($parameters);
+    }
 
-	/**
-	 * Allows to query the first record that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return StudentsSchedules
-	 */
-	public static function findFirst($parameters = null)
-	{
-		return parent::findFirst($parameters);
-	}
+    /**
+     * Allows to query the first record that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return StudentsSchedules
+     */
+    public static function findFirst($parameters = null)
+    {
+        return parent::findFirst($parameters);
+    }
 
 }

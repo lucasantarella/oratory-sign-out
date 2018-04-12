@@ -27,8 +27,8 @@
     json: 'vendor/require-plugins/json',
     noext: 'vendor/require-plugins/noext',
     mdown: 'vendor/require-plugins/mdown',
-    propertyParser : 'vendor/require-plugins/propertyParser',
-    
+    propertyParser: 'vendor/require-plugins/propertyParser',
+
     css: 'vendor/require-css/css',
     'css-builder': 'vendor/require-css/css-builder',
     'normalize': 'vendor/require-css/normalize',
