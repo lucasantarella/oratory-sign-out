@@ -27,7 +27,7 @@ require.config({
     json: 'vendor/require-plugins/json',
     noext: 'vendor/require-plugins/noext',
     mdown: 'vendor/require-plugins/mdown',
-    propertyParser : 'vendor/require-plugins/propertyParser',
+    propertyParser: 'vendor/require-plugins/propertyParser',
 
     layouts: './layouts',
     app: './app',

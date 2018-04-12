@@ -1,6 +1,7 @@
 <?php
 
 namespace Oratorysignout\Models;
+
 use Phalcon\Db\Column;
 use Phalcon\Mvc\Model\MetaData;
 
@@ -14,114 +15,114 @@ use Phalcon\Mvc\Model\MetaData;
 class Rooms extends \Phalcon\Mvc\Model
 {
 
-	/**
-	 *
-	 * @var string
-	 * @Primary
-	 * @Column(type="string", length=20, nullable=false)
-	 */
-	public $name;
+    /**
+     *
+     * @var string
+     * @Primary
+     * @Column(type="string", length=20, nullable=false)
+     */
+    public $name;
 
-	/**
-	 * Initialize method for model.
-	 */
-	public function initialize()
-	{
-		$this->hasMany('name', 'Oratorysignout\Models\StudentsSchedules', 'room', ['alias' => 'StudentsSchedules']);
-	}
+    /**
+     * Initialize method for model.
+     */
+    public function initialize()
+    {
+        $this->hasMany('name', 'Oratorysignout\Models\StudentsSchedules', 'room', ['alias' => 'StudentsSchedules']);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function metaData()
-	{
-		return [
-			MetaData::MODELS_ATTRIBUTES => [
-				"name",
-			],
+    /**
+     * @return array
+     */
+    public function metaData()
+    {
+        return [
+            MetaData::MODELS_ATTRIBUTES => [
+                "name",
+            ],
 
-			MetaData::MODELS_PRIMARY_KEY => [
-				"name",
-			],
+            MetaData::MODELS_PRIMARY_KEY => [
+                "name",
+            ],
 
-			MetaData::MODELS_NON_PRIMARY_KEY => [],
+            MetaData::MODELS_NON_PRIMARY_KEY => [],
 
-			// Every column that doesn't allows null values
-			MetaData::MODELS_NOT_NULL => [
-				"name",
-			],
+            // Every column that doesn't allows null values
+            MetaData::MODELS_NOT_NULL => [
+                "name",
+            ],
 
-			// Every column and their data types
-			MetaData::MODELS_DATA_TYPES => [
-				"name" => Column::TYPE_VARCHAR,
-			],
+            // Every column and their data types
+            MetaData::MODELS_DATA_TYPES => [
+                "name" => Column::TYPE_VARCHAR,
+            ],
 
-			// The columns that have numeric data types
-			MetaData::MODELS_DATA_TYPES_NUMERIC => [],
+            // The columns that have numeric data types
+            MetaData::MODELS_DATA_TYPES_NUMERIC => [],
 
-			// The identity column, use boolean false if the model doesn't have
-			// an identity column
-			MetaData::MODELS_IDENTITY_COLUMN => "name",
+            // The identity column, use boolean false if the model doesn't have
+            // an identity column
+            MetaData::MODELS_IDENTITY_COLUMN => "name",
 
-			// How every column must be bound/casted
-			MetaData::MODELS_DATA_TYPES_BIND => [
-				"name" => Column::BIND_PARAM_STR,
-			],
+            // How every column must be bound/casted
+            MetaData::MODELS_DATA_TYPES_BIND => [
+                "name" => Column::BIND_PARAM_STR,
+            ],
 
-			// Fields that must be ignored from INSERT SQL statements
-			MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
+            // Fields that must be ignored from INSERT SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_INSERT => [],
 
-			// Fields that must be ignored from UPDATE SQL statements
-			MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
+            // Fields that must be ignored from UPDATE SQL statements
+            MetaData::MODELS_AUTOMATIC_DEFAULT_UPDATE => [],
 
-			// Default values for columns
-			MetaData::MODELS_DEFAULT_VALUES => [],
+            // Default values for columns
+            MetaData::MODELS_DEFAULT_VALUES => [],
 
-			// Fields that allow empty strings
-			MetaData::MODELS_EMPTY_STRING_VALUES => [],
-		];
-	}
+            // Fields that allow empty strings
+            MetaData::MODELS_EMPTY_STRING_VALUES => [],
+        ];
+    }
 
-	/**
-	 * Returns table name mapped in the model.
-	 *
-	 * @return string
-	 */
-	public function getSource()
-	{
-		return 'rooms__';
-	}
+    /**
+     * Returns table name mapped in the model.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        return 'rooms__';
+    }
 
-	/**
-	 * Allows to query a set of records that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return Rooms[]
-	 */
-	public static function find($parameters = null)
-	{
-		return parent::find($parameters);
-	}
+    /**
+     * Allows to query a set of records that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return Rooms[]
+     */
+    public static function find($parameters = null)
+    {
+        return parent::find($parameters);
+    }
 
-	/**
-	 * Allows to query the first record that match the specified conditions
-	 *
-	 * @param mixed $parameters
-	 * @return Rooms
-	 */
-	public static function findFirst($parameters = null)
-	{
-		return parent::findFirst($parameters);
-	}
+    /**
+     * Allows to query the first record that match the specified conditions
+     *
+     * @param mixed $parameters
+     * @return Rooms
+     */
+    public static function findFirst($parameters = null)
+    {
+        return parent::findFirst($parameters);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function jsonSerialize()
-	{
-		return [
-			'name' => $this->name,
-		];
-	}
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'name' => $this->name,
+        ];
+    }
 
 }

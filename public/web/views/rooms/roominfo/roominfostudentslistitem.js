@@ -1,24 +1,24 @@
 // Filename: /views/rooms/rooms.js
 
 define([
-    'underscore',
-    'backbone',
-    'marionette',
+  'underscore',
+  'backbone',
+  'marionette',
 ], function (_, Backbone, Marionette) {
-    return Marionette.View.extend({
+  return Marionette.View.extend({
 
-        tagName: 'tr',
+    tagName: 'tr',
 
-        template: _.template('' +
-            '<th scope="row"><%- id %></th>' +
-            '<td><%- first_name %></td>' +
-            '<td><%- last_name %></td>' +
-            '<td><%- email %></td>' +
-            ''),
+    template: _.template('' +
+      '<th scope="row"><%- id %></th>' +
+      '<td><%- first_name %></td>' +
+      '<td><%- last_name %></td>' +
+      '<td><%- email %></td>' +
+      ''),
 
-        onRender: function () {
-            console.log(this.model);
-        },
+    onRender: function () {
+      console.log(this.model);
+    },
 
-    });
+  });
 });

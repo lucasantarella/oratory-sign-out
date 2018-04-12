@@ -230,7 +230,7 @@ class StudentsController extends AuthRequiredControllerBase
         ]);
 
         $response = [];
-        if(count($query) === 1) {
+        if (count($query) === 1) {
             $row = $query[0];
 
             /** @var SchedulesPeriods $period */

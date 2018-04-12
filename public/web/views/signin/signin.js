@@ -42,7 +42,7 @@ define([
         'width': 240,
         'height': 50,
         'longtitle': true,
-        'onsuccess': function(googleUser) {
+        'onsuccess': function (googleUser) {
           context.callback(googleUser, context.app);
         }
       });

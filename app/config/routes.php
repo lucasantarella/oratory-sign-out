@@ -12,29 +12,29 @@ $router->removeExtraSlashes(false);
 
 foreach ($application->getModules() as $key => $module) {
 
-	$controllerNamespace = '\\Oratorysignout\\Modules\\' . explode('\\', $module["className"])[2] . '\\Controllers';
+    $controllerNamespace = '\\Oratorysignout\\Modules\\' . explode('\\', $module["className"])[2] . '\\Controllers';
 
-	$group = new Router\Group([
-		'module' => $key,
-		'namespace' => $controllerNamespace,
-	]);
+    $group = new Router\Group([
+        'module' => $key,
+        'namespace' => $controllerNamespace,
+    ]);
 
-	$group->setPrefix($module["className"]::getMountPath());
+    $group->setPrefix($module["className"]::getMountPath());
 
-	foreach ($module["className"]::getRoutes() as $route) {
-		if (is_array($route))
-			$group->add($route['pattern'], $route['attr'], (isset($route['method'])) ? $route['method'] : 'GET');
-	}
+    foreach ($module["className"]::getRoutes() as $route) {
+        if (is_array($route))
+            $group->add($route['pattern'], $route['attr'], (isset($route['method'])) ? $route['method'] : 'GET');
+    }
 
-	if (count($group->getRoutes()) > 0)
-		$router->mount($group);
+    if (count($group->getRoutes()) > 0)
+        $router->mount($group);
 }
 
 $router->setDefaults(array(
-	'module' => 'frontend',
-	'namespace' => 'Oratorysignout\Modules\Frontend\Controllers',
-	'controller' => 'errors',
-	'action' => 'notFound'
+    'module' => 'frontend',
+    'namespace' => 'Oratorysignout\Modules\Frontend\Controllers',
+    'controller' => 'errors',
+    'action' => 'notFound'
 ));
 
 $di->set('router', $router);

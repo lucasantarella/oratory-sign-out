@@ -12,14 +12,14 @@ namespace Oratorysignout;
 interface ModuleRoutesDefinitionInterface
 {
 
-	/**
-	 * @return string
-	 */
-	public static function getMountPath();
+    /**
+     * @return string
+     */
+    public static function getMountPath();
 
-	/**
-	 * @return array
-	 */
-	public static function getRoutes();
+    /**
+     * @return array
+     */
+    public static function getRoutes();
 
 }
