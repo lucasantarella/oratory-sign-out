@@ -98,6 +98,7 @@ define(function (require) {
       appContext.session.set('gtoken', googleUser.getAuthResponse().id_token);
       window.localStorage.setItem('gauth', btoa(JSON.stringify(appContext.session.get('gauth'))));
       Cookies.set('gtoken', btoa(appContext.session.get('gtoken')));
+      window.OratoryUserType = (response.email.indexOf(".student") >= 1) ? "student" : "teacher";
       appContext.start();
     },
 
