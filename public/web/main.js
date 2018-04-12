@@ -16,9 +16,6 @@ require.config({
     jwtdecode: 'vendor/jwt-decode/jwt-decode',
     pace: 'vendor/pace/pace.min',
 
-    bootstrap: 'vendor/bootstrap/js/bootstrap',
-    tether: 'vendor/tether/js/tether',
-
     gapijs: "https://apis.google.com/js/platform",
     gapi: "gapi",
 
@@ -44,8 +41,6 @@ require.config({
   },
   shim: {
     /* Set bootstrap dependencies (just jQuery) */
-    'tether': ['jquery'],
-    'bootstrap': ['jquery', 'tether'],
     'gapijs': {
       'exports': 'gapi'
     }
@@ -62,11 +57,6 @@ require([
   'backbone',
   'app',
   'pace',
-  'tether',
-  'bootstrap',
-  'css!styles/bootstrap.css',
-  'css!vendor/font-awesome/scss/font-awesome.css',
-  'css!vendor/tether/css/tether.min.css',
   'css!styles/main.css'
 ], function ($, Backbone, App, pace) {
 

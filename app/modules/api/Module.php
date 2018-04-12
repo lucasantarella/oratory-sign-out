@@ -110,6 +110,13 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 					'action' => 'schedules',
 				]
 			],
+            [
+                'pattern' => '/schedules/now',
+                'attr' => [
+                    'controller' => 'students',
+                    'action' => 'currentRoom',
+                ]
+            ],
 			[
 				'pattern' => '/schedules/today',
 				'attr' => [

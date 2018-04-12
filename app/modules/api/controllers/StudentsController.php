@@ -18,165 +18,236 @@ use Oratorysignout\Models\StudentsSchedules;
 use Phalcon\Filter;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
-class StudentsController extends ControllerBase
+class StudentsController extends AuthRequiredControllerBase
 {
 
-	public function studentsAction()
-	{
-		$builder = $this->modelsManager->createBuilder()
-			->from('Oratorysignout\\Models\\Students');
+    public function studentsAction()
+    {
+        $builder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\Students');
 
-		$paginator = new PaginatorQueryBuilder(
-			[
-				"builder" => $builder,
-				"limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 20),
-				"page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
-			]
-		);
-		$paginate = $paginator->getPaginate();
+        $paginator = new PaginatorQueryBuilder(
+            [
+                "builder" => $builder,
+                "limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 20),
+                "page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
+            ]
+        );
+        $paginate = $paginator->getPaginate();
 
-		$this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
-		$this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
-		$this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
-		return $this->sendResponse($paginate->items);
-	}
+        $this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
+        $this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
+        $this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
+        return $this->sendResponse($paginate->items);
+    }
 
-	public function studentAction($id)
-	{
-		$student = Students::findFirst($id);
-		if ($student !== false)
-			return $this->sendResponse($student);
-		else
-			return $this->sendNotFound();
-	}
+    public function studentAction($id)
+    {
+        $student = Students::findFirst($id);
+        if ($student !== false)
+            return $this->sendResponse($student);
+        else
+            return $this->sendNotFound();
+    }
 
-	public function studentScheduleAction($student_id, $date = null)
-	{
-		$student = Students::findFirst($student_id);
-		if ($student === false)
-			return $this->sendNotFound();
+    public function studentScheduleAction($student_id, $date = null)
+    {
+        $student = Students::findFirst($student_id);
+        if ($student === false)
+            return $this->sendNotFound();
 
-		if (is_null($date))
-			$date = (int)date('Ymd');
+        if (is_null($date))
+            $date = (int)date('Ymd');
 
-		$quarter = Schedules::getQuarter(substr(strval($date), 4, 4));
+        $quarter = Schedules::getQuarter(substr(strval($date), 4, 4));
 
-		$schedule = Schedules::getSchedule($date);
-		if ($schedule === false)
-			return $this->sendBadRequest([
-				'status' => 'Error',
-				'status_details' => 'No schedule for the specified date.'
-			]);
+        $schedule = Schedules::getSchedule($date);
+        if ($schedule === false)
+            return $this->sendBadRequest([
+                'status' => 'Error',
+                'status_details' => 'No schedule for the specified date.'
+            ]);
 
-		$cycleDay = Schedules::getCycleDay($date);
-		if ($cycleDay === false)
-			return $this->sendBadRequest([
-				'status' => 'Error',
-				'status_details' => 'No schedule for the specified date.'
-			]);
+        $cycleDay = Schedules::getCycleDay($date);
+        if ($cycleDay === false)
+            return $this->sendBadRequest([
+                'status' => 'Error',
+                'status_details' => 'No schedule for the specified date.'
+            ]);
 
-		/** @var SchedulesPeriods $periods */
-		$periods = $schedule->getPeriods();
+        /** @var SchedulesPeriods $periods */
+        $periods = $schedule->getPeriods();
 
-		$periodNums = [];
-		foreach ($periods as $period) {
-			$periodNums[] = (int)$period->period;
-		}
-		unset($period);
+        $periodNums = [];
+        foreach ($periods as $period) {
+            $periodNums[] = (int)$period->period;
+        }
+        unset($period);
 
-		$builder = $this->modelsManager->createBuilder()
-			->from('Oratorysignout\\Models\\StudentsSchedules')
-			->columns(['Oratorysignout\\Models\\StudentsSchedules.*', 'Oratorysignout\\Models\\SchedulesPeriods.*'])
-			->inWhere('Oratorysignout\\Models\\StudentsSchedules.period', $periodNums)
-			->andWhere('Oratorysignout\\Models\\StudentsSchedules.student_id = :student_id:')
-			->andWhere('Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter:')
-			->andWhere('Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day:')
-			->innerJoin('Oratorysignout\\Models\\SchedulesPeriods', 'Oratorysignout\\Models\\SchedulesPeriods.period = Oratorysignout\\Models\\StudentsSchedules.period AND Oratorysignout\\Models\\SchedulesPeriods.schedule_id = ' . $schedule->id);
+        $builder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\StudentsSchedules')
+            ->columns(['Oratorysignout\\Models\\StudentsSchedules.*', 'Oratorysignout\\Models\\SchedulesPeriods.*'])
+            ->inWhere('Oratorysignout\\Models\\StudentsSchedules.period', $periodNums)
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.student_id = :student_id:')
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter:')
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day:')
+            ->innerJoin('Oratorysignout\\Models\\SchedulesPeriods', 'Oratorysignout\\Models\\SchedulesPeriods.period = Oratorysignout\\Models\\StudentsSchedules.period AND Oratorysignout\\Models\\SchedulesPeriods.schedule_id = ' . $schedule->id)
+            ->orderBy('Oratorysignout\\Models\\StudentsSchedules.period ASC');
 
-		/** @var StudentsSchedules $query */
-		$query = $builder->getQuery()->execute([
-			'student_id' => $student_id,
-			'quarter' => $quarter,
-			'cycle_day' => $cycleDay,
-		]);
+        /** @var StudentsSchedules $query */
+        $query = $builder->getQuery()->execute([
+            'student_id' => $student_id,
+            'quarter' => $quarter,
+            'cycle_day' => $cycleDay,
+        ]);
 
-		$response = [];
-		foreach ($query as $row) {
-			/** @var SchedulesPeriods $period */
-			$period = $row['oratorysignout\\Models\\SchedulesPeriods'];
+        $response = [];
+        foreach ($query as $row) {
+            /** @var SchedulesPeriods $period */
+            $period = $row['oratorysignout\\Models\\SchedulesPeriods'];
 
-			/** @var StudentsSchedules $studentSchedule */
-			$studentSchedule = $row['oratorysignout\\Models\\StudentsSchedules'];
+            /** @var StudentsSchedules $studentSchedule */
+            $studentSchedule = $row['oratorysignout\\Models\\StudentsSchedules'];
 
-			$response[] = [
-				'period' => (int)$period->period,
-				'start_time' => $period->start_time,
-				'end_time' => $period->end_time,
-				'room' => $studentSchedule->room
-			];
-		}
+            $response[] = [
+                'period' => (int)$period->period,
+                'start_time' => $period->start_time,
+                'end_time' => $period->end_time,
+                'room' => $studentSchedule->room
+            ];
+        }
 
-		return $this->sendResponse($response);
-	}
+        return $this->sendResponse($response);
+    }
 
-	public function signOutAction($student_id, $name_from = '')
-	{
-		$filter = new Filter();
+    public function signOutAction($student_id, $name_from = '')
+    {
+        $filter = new Filter();
 
-		$requestBody = $this->request->getJsonRawBody(true);
+        $requestBody = $this->request->getJsonRawBody(true);
 
-		if (strlen($name_from) == 0 && isset($requestBody['room_from']))
-			$room_from = $filter->sanitize($requestBody['room_from'], Filter::FILTER_STRING);
-		else
-			return $this->sendNotFound();
+        if (strlen($name_from) == 0 && isset($requestBody['room_from']))
+            $room_from = $filter->sanitize($requestBody['room_from'], Filter::FILTER_STRING);
+        else
+            return $this->sendNotFound();
 
-		if (!isset($requestBody['room_to']))
-			return $this->sendNotFound();
-		else
-			$room_to = $filter->sanitize($requestBody['room_to'], Filter::FILTER_STRING);
+        if (!isset($requestBody['room_to']))
+            return $this->sendNotFound();
+        else
+            $room_to = $filter->sanitize($requestBody['room_to'], Filter::FILTER_STRING);
 
-		$student = Students::findFirst($student_id);
-		if ($student === false)
-			return $this->sendNotFound();
+        $student = Students::findFirst($student_id);
+        if ($student === false)
+            return $this->sendNotFound();
 
-		$room_from = Rooms::findFirst("name = '{$room_from}'");
-		if ($room_from === false)
-			return $this->sendNotFound();
+        $room_from = Rooms::findFirst("name = '{$room_from}'");
+        if ($room_from === false)
+            return $this->sendNotFound();
 
-		$room_to = Rooms::findFirst("name = '{$room_to}'");
-		if ($room_to === false)
-			return $this->sendNotFound();
+        $room_to = Rooms::findFirst("name = '{$room_to}'");
+        if ($room_to === false)
+            return $this->sendNotFound();
 
-		// Begin transaction
-		$this->db->begin();
+        // Begin transaction
+        $this->db->begin();
 
-		$log = new LogsStudents();
-		$log->student_id = $student_id;
-		$log->timestamp = (isset($requestBody['timestamp']) ? $requestBody['timestamp'] : (int)date('YmdHis'));
-		$log->room_from = $room_from->name;
-		$log->room_to = $room_to->name;
+        $log = new LogsStudents();
+        $log->student_id = $student_id;
+        $log->timestamp = (isset($requestBody['timestamp']) ? $requestBody['timestamp'] : (int)date('YmdHis'));
+        $log->room_from = $room_from->name;
+        $log->room_to = $room_to->name;
 
-		if (!$log->create()) {
-			// Revert transaction
-			$this->db->rollback();
-			$errors = [];
-			foreach ($log->getMessages() as $message) {
-				$error = [];
-				$error['message'] = $message->getMessage();
-				$error['field'] = $message->getField();
-				$error['type'] = $message->getType();
-				array_push($errors, $error);
-			}
-			return $this->sendBadRequest([
-				"errors" => $errors
-			]);
-		}
+        if (!$log->create()) {
+            // Revert transaction
+            $this->db->rollback();
+            $errors = [];
+            foreach ($log->getMessages() as $message) {
+                $error = [];
+                $error['message'] = $message->getMessage();
+                $error['field'] = $message->getField();
+                $error['type'] = $message->getType();
+                array_push($errors, $error);
+            }
+            return $this->sendBadRequest([
+                "errors" => $errors
+            ]);
+        }
 
-		// Commit transaction
-		$this->db->commit();
+        // Commit transaction
+        $this->db->commit();
 
-		// Send response
-		return $this->sendResponse($log);
-	}
+        // Send response
+        return $this->sendResponse($log);
+    }
+
+    public function currentRoomAction()
+    {
+        $student = Students::findFirst("email = '{$this->getUser()['email']}'");
+        if ($student === false)
+            return $this->sendNotFound();
+
+        $date = (int)date('Ymd');
+
+        $quarter = Schedules::getQuarter(substr(strval($date), 4, 4));
+
+        $schedule = Schedules::getSchedule($date);
+        if ($schedule === false)
+            return $this->sendBadRequest([
+                'status' => 'Error',
+                'status_details' => 'No schedule for the specified date.'
+            ]);
+
+        $cycleDay = Schedules::getCycleDay($date);
+        if ($cycleDay === false)
+            return $this->sendBadRequest([
+                'status' => 'Error',
+                'status_details' => 'No schedule for the specified date.'
+            ]);
+
+        /** @var SchedulesPeriods $periods */
+        $periods = $schedule->getPeriods("start_time <= " . date('Hi') . " AND end_time >= " . date('Hi'));
+        $periodNums = [];
+        foreach ($periods as $period) {
+            $periodNums[] = (int)$period->period;
+        }
+        unset($period);
+
+        $builder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\StudentsSchedules')
+            ->columns(['Oratorysignout\\Models\\StudentsSchedules.*', 'Oratorysignout\\Models\\SchedulesPeriods.*'])
+            ->inWhere('Oratorysignout\\Models\\StudentsSchedules.period', $periodNums)
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.student_id = :student_id:')
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter:')
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day:')
+            ->innerJoin('Oratorysignout\\Models\\SchedulesPeriods', 'Oratorysignout\\Models\\SchedulesPeriods.period = Oratorysignout\\Models\\StudentsSchedules.period AND Oratorysignout\\Models\\SchedulesPeriods.schedule_id = ' . $schedule->id)
+            ->orderBy('Oratorysignout\\Models\\StudentsSchedules.period ASC');
+
+        /** @var StudentsSchedules $query */
+        $query = $builder->getQuery()->execute([
+            'student_id' => $student->id,
+            'quarter' => $quarter,
+            'cycle_day' => $cycleDay,
+        ]);
+
+        $response = [];
+        if(count($query) === 1) {
+            $row = $query[0];
+
+            /** @var SchedulesPeriods $period */
+            $period = $row['oratorysignout\\Models\\SchedulesPeriods'];
+
+            /** @var StudentsSchedules $studentSchedule */
+            $studentSchedule = $row['oratorysignout\\Models\\StudentsSchedules'];
+
+            $response = [
+                'period' => (int)$period->period,
+                'start_time' => $period->start_time,
+                'end_time' => $period->end_time,
+                'room' => $studentSchedule->room
+            ];
+        }
+
+        return $this->sendResponse($response);
+    }
 
 }

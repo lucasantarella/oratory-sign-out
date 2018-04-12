@@ -28,7 +28,7 @@ define(function (require) {
     },
 
     // Define the element where the application will exist
-    region: 'main',
+    region: 'body',
 
     session: null,
 
@@ -61,6 +61,7 @@ define(function (require) {
             success: function (response) {
               if (response.error_description === undefined) {
                 this.signedIn = true;
+                window.OratoryUserType = (response.email.indexOf(".student") >= 1) ? "student" : "teacher";
                 this.start();
               }
             },
@@ -88,7 +89,7 @@ define(function (require) {
         // root: '/',
       });
 
-      Backbone.history.navigate(Backbone.history.getFragment(), {trigger: true});
+      Backbone.history.navigate((window.OratoryUserType === "student") ? "signout" : "students", {trigger: true});
     },
 
     initializeSession: function (googleUser, appContext) {
