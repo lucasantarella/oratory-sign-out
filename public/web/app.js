@@ -93,10 +93,10 @@ define(function (require) {
 
     initializeSession: function (googleUser, appContext) {
       appContext = (appContext) ? appContext : this;
-      window.localStorage.setItem('gauth', btoa(JSON.stringify(appContext.session.get('gauth'))));
-      Cookies.set('gtoken', btoa(appContext.session.get('gtoken')));
       appContext.session.set('gauth', googleUser);
       appContext.session.set('gtoken', googleUser.getAuthResponse().id_token);
+      window.localStorage.setItem('gauth', btoa(JSON.stringify(appContext.session.get('gauth'))));
+      Cookies.set('gtoken', btoa(appContext.session.get('gtoken')));
       appContext.start();
     },
 

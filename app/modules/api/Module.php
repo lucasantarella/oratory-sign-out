@@ -70,9 +70,10 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
 			[
 				'pattern' => '/profile',
 				'attr' => [
-					'controller' => 'index',
-					'action' => 'profile',
-				]
+					'controller' => 'profile',
+					'action' => 'getProfile',
+				],
+                'method' => 'GET'
 			],
 			[
 				'pattern' => '/students',
