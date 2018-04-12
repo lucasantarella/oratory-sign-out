@@ -1,1 +1,36 @@
-test
+web:
+  image: nginx:latest
+  restart: on-failure
+  ports:
+    - "8080:80"
+    - "8443:443"
+  volumes:
+    - ./:/code
+    - ./site.conf:/etc/nginx/conf.d/default.conf
+  links:
+    - php
+
+php:
+  image: lucasantarella/php-fpm-phalcon:php-7.1.5_phalcon-3.3.1
+  restart: on-failure
+  volumes:
+    - ./:/code
+  environment:
+    BUGSNAG_API_KEY: 8c9bdbc65cc43175fe0d50abe819ca76
+    MYSQL_HOST: mysql
+    MYSQL_USER: root
+    MYSQL_PASS: 
+    MYSQL_DB: oratory_sign_out
+  links:
+    - mysql
+
+mysql:
+  image: mysql
+  restart: on-failure
+  environment:
+    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    MYSQL_DATABASE: oratory_sign_out
+  volumes:
+    - /usr/local/var/docker/mysql:/var/lib/mysql
+  ports:
+    - "3306:3306"
