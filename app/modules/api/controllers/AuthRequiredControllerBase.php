@@ -32,9 +32,10 @@ class AuthRequiredControllerBase extends ControllerBase
 
 		$client = new Google_Client();
         $result = $client->verifyIdToken(base64_decode($_COOKIE['gtoken']));
-        if($result === false)
+        if($result === false) {
+            $this->sendNotFound();
             return false;
-        else
+        }else
             $this->user = $result;
 
         return true;
