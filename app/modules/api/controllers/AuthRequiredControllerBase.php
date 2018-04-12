@@ -18,6 +18,10 @@ class AuthRequiredControllerBase extends ControllerBase
 	{
 		parent::beforeExecuteRoute();
 
+        if(getenv('TIME_OVERRIDE') !== false && extension_loaded('timecop')) {
+            timecop_return();
+        }
+
 		$client = new Google_Client();
         $result = $client->verifyIdToken(base64_decode($_COOKIE['gtoken']));
         if($result === false) {
@@ -25,6 +29,11 @@ class AuthRequiredControllerBase extends ControllerBase
             return false;
         }else
             $this->user = $result;
+
+        if(getenv('TIME_OVERRIDE') !== false && extension_loaded('timecop')) {
+            $time = DateTime::createFromFormat('YmdHis', getenv('TIME_OVERRIDE'));
+            timecop_freeze(mktime($time->format('H'), $time->format('i'), $time->format('s'), $time->format('m'), $time->format('d'), $time->format('Y')));
+        }
 
         return true;
 	}
