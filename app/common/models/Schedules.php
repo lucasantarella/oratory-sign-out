@@ -51,12 +51,12 @@ class Schedules extends \Phalcon\Mvc\Model
         if (CommonLibrary::isWeekend($date))
             return false;
 
-        $exception = SchedulesExceptions::findFirst("(ignored_from_cycle = 1 OR ignore_day = 1) AND (date = {$date})");
+        $exception = SchedulesExceptions::findFirst("date = {$date}");
         if ($exception !== false) {
             if ($exception->ignore_day) // If the exception is to ignore the day (i.e. no school) then return false
                 return false;
             if (!is_null($exception->schedule_id)) // If the exception is a specific schedule type, return that
-                return $exception->schedule_id;
+                return $exception->getSchedule();
 
             return Schedules::getDefault();
         } else
