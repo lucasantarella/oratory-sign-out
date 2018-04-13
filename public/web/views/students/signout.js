@@ -46,9 +46,10 @@ define([
     },
 
     onRender: function () {
-      this.showChildView('modal', new SignoutModalView());
       if (this.model.get('room').length === 0)
         this.getUI('button').hide();
+      else
+        this.showChildView('modal', new SignoutModalView());
     },
 
     onClickShowModal: function (event) {
