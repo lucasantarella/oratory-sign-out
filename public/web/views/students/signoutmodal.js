@@ -10,41 +10,34 @@ define([
 
     tagName: 'div',
 
-    className: 'modal',
+    className: 'modal modal-fixed-footer',
 
     template: _.template('' +
       '<div class="modal-content">' +
       '  <h4>Signout To</h4>' +
+      '  <p>' +
       '  <div class="row">' +
-      '  <div class="input-field col s4 offset-s4">' +
-      '  <label>Room Selection</label>' +
-      '  <select>' +
-      '  </select>' +
+      '  <div class="collection col s4 offset-s4" style="padding-left: 0; padding-right: 0;">' +
       '  </div>' +
       '  </div>' +
+      '  </p>' +
       '</div>' +
       '<div class="modal-footer">' +
       '  <a class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>' +
       '</div>' +
       ''),
 
-    ui: {
-      'select': 'select'
-    },
-
     collection: new RoomsCollection(),
 
-    childViewContainer: 'select',
+    childViewContainer: '.collection',
 
     childView: Marionette.View.extend({
 
-      el: 'option',
+      tagName: 'div',
 
-      template: _.template('<%= name %>'),
+      className: 'collection-item',
 
-      onRender: function () {
-        this.$el.attr('value', this.model.get('name'))
-      }
+      template: _.template('<p><%= name %></p>'),
 
     }),
 
@@ -52,12 +45,7 @@ define([
 
     initialize: function () {
       this.collection.fetch();
-
-      let context = this;
-      this.collection.bind('sync', function () {
-        context.loadFinished = true;
-        context.render();
-      })
+      this.collection.bind('sync', this.render)
     },
 
     onRender: function () {
@@ -65,12 +53,6 @@ define([
         this.instance = M.Modal.init(this.$el[0]);
     },
 
-    onDomRefresh: function () {
-      if(this.select !== undefined)
-        this.select.destroy();
-      if (this.loadFinished)
-        this.select = M.FormSelect.init(this.getUI('select')[0]);
-    },
 
     close: function (context) {
       context = (context) ? context : this;
