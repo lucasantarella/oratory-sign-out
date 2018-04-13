@@ -205,7 +205,7 @@ class StudentsController extends AuthRequiredControllerBase
             ]);
 
         /** @var SchedulesPeriods $periods */
-        $periods = $schedule->getPeriods("start_time <= " . date('Hi') . " AND end_time >= " . date('Hi'));
+        $periods = $schedule->getPeriods("start_time <= " . date('Hi') . " AND end_time > " . date('Hi'));
         $periodNums = [];
         foreach ($periods as $period) {
             $periodNums[] = (int)$period->period;
