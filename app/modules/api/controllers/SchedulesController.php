@@ -10,6 +10,7 @@ namespace Oratorysignout\Modules\Api\Controllers;
 
 
 use Oratorysignout\Models\Schedules;
+use Oratorysignout\Models\SchedulesExceptions;
 use Phalcon\Filter;
 
 class SchedulesController extends ControllerBase
@@ -18,18 +19,18 @@ class SchedulesController extends ControllerBase
     public function scheduleAction($date = null)
     {
         if (is_null($date))
-            $date = $this->request->getQuery('date', Filter::FILTER_INT_CAST, date('Ymd'));
+            $date = (int)$this->request->getQuery('date', Filter::FILTER_INT_CAST, date('Ymd'));
 
         $cycleDay = Schedules::getCycleDay($date);
         if ($cycleDay === false)
             return $this->sendResponse([
-                'date' => (int)$date,
+                'date' => $date,
                 'cycle_day' => false,
                 'schedule' => null
             ]);
         else
             return $this->sendResponse([
-                'date' => (int)$date,
+                'date' => $date,
                 'cycle_day' => $cycleDay,
                 'schedule' => Schedules::getSchedule($date)
             ]);
