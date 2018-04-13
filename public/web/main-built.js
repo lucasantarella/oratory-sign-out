@@ -178,7 +178,7 @@ define('views/AppView',[
       '<footer class="page-footer blue darken-4">' +
       ' <div class="container">' +
       '   <div class="row">' +
-      '   © 2014 Copyright Luca Santarella' +
+      '   © 2018 Copyright Luca Santarella' +
       '   </div>' +
       ' </div>' +
       '</footer>' +
@@ -533,73 +533,73 @@ define('views/spinnerview',[
 // Filename: /models/student.js
 
 define('models/student',[
-    'jquery',
-    'backbone'
+  'jquery',
+  'backbone'
 ], function ($, Backbone) {
-    return Backbone.Model.extend({
+  return Backbone.Model.extend({
 
-        urlRoot: '/api/students',
+    urlRoot: '/api/students',
 
-        defaults: {
-            first_name: '',
-            middle_name: '',
-            last_name: '',
-            email: ''
-        },
-        
-        signOut: function (roomFrom, roomTo, callback, context) {
-            $.ajax({
-                type: "POST",
-                context: (context) ? context : this,
-                url: this.url() + "/logs",
-                data: JSON.stringify({room_from: roomFrom, room_to: roomTo}),
-                contentType:"application/json; charset=utf-8",
-                success: (callback.success) ? callback.success : null,
-                error: (callback.error) ? callback.error : null,
-            });
-        }
+    defaults: {
+      first_name: '',
+      middle_name: '',
+      last_name: '',
+      email: ''
+    },
 
-    });
+    signOut: function (roomFrom, roomTo, callback, context) {
+      $.ajax({
+        type: "POST",
+        context: (context) ? context : this,
+        url: this.url() + "/logs",
+        data: JSON.stringify({room_from: roomFrom, room_to: roomTo}),
+        contentType: "application/json; charset=utf-8",
+        success: (callback.success) ? callback.success : null,
+        error: (callback.error) ? callback.error : null,
+      });
+    }
+
+  });
 });
 // Filename: /collections/students.js
 
 define('collections/students',[
-    'backbone',
-    'backbone.paginator',
-    'models/student',
+  'backbone',
+  'backbone.paginator',
+  'models/student',
 ], function (Backbone, PageableCollection, Student) {
-    return Backbone.Collection.extend({
+  return Backbone.Collection.extend({
 
-        model: Student,
+    model: Student,
 
-        url: '/api/students',
+    url: '/api/students',
 
-        // parseState: function (resp, queryParams, state, options) {
-        //     return {
-        //         currentPage: parseInt(options.xhr.getResponseHeader('x-paginate-current-page')),
-        //         totalPages: parseInt(options.xhr.getResponseHeader('x-paginate-total-pages')),
-        //         totalRecords: parseInt(options.xhr.getResponseHeader('x-paginate-total-items'))
-        //     };
-        // }
+    // parseState: function (resp, queryParams, state, options) {
+    //     return {
+    //         currentPage: parseInt(options.xhr.getResponseHeader('x-paginate-current-page')),
+    //         totalPages: parseInt(options.xhr.getResponseHeader('x-paginate-total-pages')),
+    //         totalRecords: parseInt(options.xhr.getResponseHeader('x-paginate-total-items'))
+    //     };
+    // }
 
-    });
+  });
 });
 // Filename: /models/room.js
 
 define('models/profile',[
-    'backbone',
-    'collections/students'
+  'backbone',
+  'collections/students'
 ], function (Backbone, StudentsCollection) {
-    return Backbone.Model.extend({
+  return Backbone.Model.extend({
 
-        idAttribute: 'id',
+    idAttribute: 'id',
 
-        urlRoot: '/api/profile',
+    urlRoot: '/api/profile',
 
-        initialize: function (attributes) {
+    initialize: function (attributes) {
 
-        },
-    });
+    },
+  });
 });
 /*! js-cookie v2.2.0 | MIT */
 
@@ -662,7 +662,7 @@ define('views/signin/signin',[
         'width': 240,
         'height': 50,
         'longtitle': true,
-        'onsuccess': function(googleUser) {
+        'onsuccess': function (googleUser) {
           context.callback(googleUser, context.app);
         }
       });
@@ -721,240 +721,229 @@ define('views/rooms/roomslist/roomslistitem',[
   });
 });
 
-
-define('css!styles/views/roomslist/roomslist',[],function(){});
 // Filename: /views/rooms/roomslist/roomslist.js
 
 define('views/rooms/roomslist/roomslist',[
-    'backbone',
-    'marionette',
-    'views/rooms/roomslist/roomslistitem',
-    'css!styles/views/roomslist/roomslist.css'
+  'backbone',
+  'marionette',
+  'views/rooms/roomslist/roomslistitem',
 ], function (Backbone, Marionette, RoomsListItem) {
-    return Marionette.CollectionView.extend({
+  return Marionette.CollectionView.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        className: 'list-group p-2',
+    className: 'list-group p-2',
 
-        attributes: {
-            style: 'padding-top: 0; padding-bottom: 0;'
-        },
+    attributes: {
+      style: 'padding-top: 0; padding-bottom: 0;'
+    },
 
-        childView: RoomsListItem,
+    childView: RoomsListItem,
 
-        childViewOptions: function (model, index) {
-            return {
-                model: model,
-                childIndex: index
-            }
-        },
+    childViewOptions: function (model, index) {
+      return {
+        model: model,
+        childIndex: index
+      }
+    },
 
-        childViewTriggers: {
-            'click:room': 'child:click:room'
-        },
+    childViewTriggers: {
+      'click:room': 'child:click:room'
+    },
 
-        initialize: function (options) {
-            this.pageableCollection = options.collection;
-            this.collection = new Backbone.Collection([]);
+    initialize: function (options) {
+      this.pageableCollection = options.collection;
+      this.collection = new Backbone.Collection([]);
 
 
-            let collection = this.collection;
-            let pageableCollection = this.pageableCollection;
-            this.pageableCollection.bind('sync', function () {
-                collection.add(pageableCollection.toJSON());
-            });
-            this.pageableCollection.bind('sync', this.render);
-        },
+      let collection = this.collection;
+      let pageableCollection = this.pageableCollection;
+      this.pageableCollection.bind('sync', function () {
+        collection.add(pageableCollection.toJSON());
+      });
+      this.pageableCollection.bind('sync', this.render);
+    },
 
-        onRender: function () {
-            if (this.$el.height() <= this.$el.parent().height()) {
-                this.pageableCollection.getNextPage();
+    onRender: function () {
+      if (this.$el.height() <= this.$el.parent().height()) {
+        this.pageableCollection.getNextPage();
 
-            }
-        },
+      }
+    },
 
-        onAttach: function () {
-            let pageableCollection = this.pageableCollection;
+    onAttach: function () {
+      let pageableCollection = this.pageableCollection;
 
-            this.$el.parent().on('scroll', function () {
-                let scrollPosition = Math.ceil($(this).scrollTop() + $(this).outerHeight());
-                let divTotalHeight = $(this)[0].scrollHeight
-                    + parseInt($(this).css('padding-top'), 10)
-                    + parseInt($(this).css('padding-bottom'), 10)
-                    + parseInt($(this).css('border-top-width'), 10)
-                    + parseInt($(this).css('border-bottom-width'), 10);
+      this.$el.parent().on('scroll', function () {
+        let scrollPosition = Math.ceil($(this).scrollTop() + $(this).outerHeight());
+        let divTotalHeight = $(this)[0].scrollHeight
+          + parseInt($(this).css('padding-top'), 10)
+          + parseInt($(this).css('padding-bottom'), 10)
+          + parseInt($(this).css('border-top-width'), 10)
+          + parseInt($(this).css('border-bottom-width'), 10);
 
-                if (scrollPosition == divTotalHeight && pageableCollection.hasNextPage())
-                    pageableCollection.getNextPage();
-            });
-        }
+        if (scrollPosition == divTotalHeight && pageableCollection.hasNextPage())
+          pageableCollection.getNextPage();
+      });
+    }
 
-    });
+  });
 });
 
 // Filename: /views/rooms/rooms.js
 
 define('views/rooms/roominfo/roominfostudentslistitem',[
-    'underscore',
-    'backbone',
-    'marionette',
+  'underscore',
+  'backbone',
+  'marionette',
 ], function (_, Backbone, Marionette) {
-    return Marionette.View.extend({
+  return Marionette.View.extend({
 
-        tagName: 'tr',
+    tagName: 'tr',
 
-        template: _.template('' +
-            '<th scope="row"><%- id %></th>' +
-            '<td><%- first_name %></td>' +
-            '<td><%- last_name %></td>' +
-            '<td><%- email %></td>' +
-            ''),
+    template: _.template('' +
+      '<th scope="row"><%- id %></th>' +
+      '<td><%- first_name %></td>' +
+      '<td><%- last_name %></td>' +
+      '<td><%- email %></td>' +
+      ''),
 
-        onRender: function () {
-            console.log(this.model);
-        },
+    onRender: function () {
+      console.log(this.model);
+    },
 
-    });
+  });
 });
 
 // Filename: /views/rooms/roominfo/roominfo.js
 
 define('views/rooms/roominfo/roominfo',[
-    'underscore',
-    'marionette',
-    'views/rooms/roominfo/roominfostudentslistitem',
+  'underscore',
+  'marionette',
+  'views/rooms/roominfo/roominfostudentslistitem',
 ], function (_, Marionette, StudentItem) {
-    return Marionette.View.extend({
+  return Marionette.View.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        className: 'card',
+    className: 'card',
 
-        template: _.template('' +
-            '<div class="card-header">' +
-            'Room: <%- name %>' +
-            '</div>' +
-            '<div class="card-body">' +
-            '<h4 class="card-title">Students</h4>' +
-            '<table class="table">' +
-            '  <thead class="thead-default">' +
-            '    <tr>' +
-            '      <th>#</th>' +
-            '      <th>First Name</th>' +
-            '      <th>Last Name</th>' +
-            '      <th>Email</th>' +
-            '    </tr>' +
-            '  </thead>' +
-            '  <tbody id="view-rooms-students-container">' +
-            '  </tbody>' +
-            '</table>' +
-            '</div>' +
-            ''),
+    template: _.template('' +
+      '<div class="card-header">' +
+      'Room: <%- name %>' +
+      '</div>' +
+      '<div class="card-body">' +
+      '<h4 class="card-title">Students</h4>' +
+      '<table class="table">' +
+      '  <thead class="thead-default">' +
+      '    <tr>' +
+      '      <th>#</th>' +
+      '      <th>First Name</th>' +
+      '      <th>Last Name</th>' +
+      '      <th>Email</th>' +
+      '    </tr>' +
+      '  </thead>' +
+      '  <tbody id="view-rooms-students-container">' +
+      '  </tbody>' +
+      '</table>' +
+      '</div>' +
+      ''),
 
-        childView: StudentItem,
+    childView: StudentItem,
 
-        childViewContainer: '#view-rooms-students-container',
+    childViewContainer: '#view-rooms-students-container',
 
-        hasLoaded: false,
+    hasLoaded: false,
 
-        emptyView: function () {
-            if (this.hasLoaded)
-                return Marionette.View.extend({
-                    tagName: 'tr',
-                    attributes: {
-                        colspan: '4'
-                    },
-                    template: _.template('<p>No students...<br /><p class="small">Provision the room below.</p>')
-                });
-            else
-                return Marionette.View.extend({
-                    tagName: 'tr',
-                    attributes: {
-                        colspan: '4'
-                    },
-                    template: _.template('<p>Loading...</p>')
-                });
-        },
+    emptyView: function () {
+      if (this.hasLoaded)
+        return Marionette.View.extend({
+          tagName: 'tr',
+          attributes: {
+            colspan: '4'
+          },
+          template: _.template('<p>No students...<br /><p class="small">Provision the room below.</p>')
+        });
+      else
+        return Marionette.View.extend({
+          tagName: 'tr',
+          attributes: {
+            colspan: '4'
+          },
+          template: _.template('<p>Loading...</p>')
+        });
+    },
 
-        initialize: function (options) {
-            this.model = options.model;
+    initialize: function (options) {
+      this.model = options.model;
 
-            let context = this;
-            this.collection = options.model.get('students');
+      let context = this;
+      this.collection = options.model.get('students');
 
-            this.collection.on('sync', function () {
-                context.hasLoaded = true;
-                context.render();
-            });
+      this.collection.on('sync', function () {
+        context.hasLoaded = true;
+        context.render();
+      });
 
-            // this.collection.getFirstPage();
-            this.collection.fetch();
-        },
+      // this.collection.getFirstPage();
+      this.collection.fetch();
+    },
 
-        isEmpty: function () {
-            return this.collection.length === 0 || !this.hasLoaded;
-        },
+    isEmpty: function () {
+      return this.collection.length === 0 || !this.hasLoaded;
+    },
 
-        onRender: function () {
-            // if (this.collection.findWhere({active: true}))
-            //   this.getUI('createInstanceButton').hide();
-            // else
-            //   this.getUI('reprovisionButton').hide();
-        },
+    onRender: function () {
+      // if (this.collection.findWhere({active: true}))
+      //   this.getUI('createInstanceButton').hide();
+      // else
+      //   this.getUI('reprovisionButton').hide();
+    },
 
-        onChildClickInstance: function (childView) {
-            // Backbone.history.navigate('installations/' + this.model.get('installation_id') + '/instances/' + childView.model.get('uuid'), {trigger: true});
-        },
+    onChildClickInstance: function (childView) {
+      // Backbone.history.navigate('installations/' + this.model.get('installation_id') + '/instances/' + childView.model.get('uuid'), {trigger: true});
+    },
 
-    });
+  });
 });
 
 // Filename: /models/room.js
 
 define('models/room',[
-    'backbone',
-    'collections/students'
+  'backbone',
+  'collections/students'
 ], function (Backbone, StudentsCollection) {
-    return Backbone.Model.extend({
+  return Backbone.Model.extend({
 
-        idAttribute: 'name',
+    idAttribute: 'name',
 
-        urlRoot: '/api/rooms',
+    urlRoot: '/api/rooms',
 
-        initialize: function (attributes) {
-            this.set(attributes);
-            let students = new StudentsCollection();
-            const url = this.url();
-            students.url = function () {
-                return url + '/students'
-            };
-            this.set('students', students);
-        },
-    });
+    initialize: function (attributes) {
+      this.set(attributes);
+      let students = new StudentsCollection();
+      const url = this.url();
+      students.url = function () {
+        return url + '/students'
+      };
+      this.set('students', students);
+    },
+  });
 });
 // Filename: /collections/rooms.js
 
 define('collections/rooms',[
-    'backbone',
-    'backbone.paginator',
-    'models/room',
-], function (Backbone, PageableCollection, Room) {
-    return PageableCollection.extend({
+  'underscore',
+  'backbone',
+  'models/room'
+], function (_, Backbone, Room) {
+  return Backbone.Collection.extend({
 
-        model: Room,
+    model: Room,
 
-        url: '/api/rooms',
+    url: '/api/rooms',
 
-        parseState: function (resp, queryParams, state, options) {
-            return {
-                currentPage: parseInt(options.xhr.getResponseHeader('x-paginate-current-page')),
-                totalPages: parseInt(options.xhr.getResponseHeader('x-paginate-total-pages')),
-                totalRecords: parseInt(options.xhr.getResponseHeader('x-paginate-total-items'))
-            };
-        }
-
-    });
+  });
 });
 // Filename: /views/rooms/rooms.js
 
@@ -1019,295 +1008,295 @@ define('views/rooms/rooms',[
 // Filename: /views/rooms/roomstudents/studentslistitem.js
 
 define('views/rooms/roomstudents/studentslistitem',[
-    'underscore',
-    'backbone',
-    'marionette',
+  'underscore',
+  'backbone',
+  'marionette',
 ], function (_, Backbone, Marionette) {
-    return Marionette.View.extend({
+  return Marionette.View.extend({
 
-        tagName: 'tr',
+    tagName: 'tr',
 
-        template: _.template('' +
-            '   <th scope="row"><%- id %></th>' +
-            '   <td><%- first_name %></td>' +
-            '   <td><%- last_name %></td>' +
-            '   <td><%- email %></td>' +
-            '   <td><button class="btn btn-danger btn-sign-out hidden-xs-up">Sign Out</button><button class="btn btn-success btn-confirm-sign-in hidden-xs-up">Sign In</button></td>' +
-            ''),
+    template: _.template('' +
+      '   <th scope="row"><%- id %></th>' +
+      '   <td><%- first_name %></td>' +
+      '   <td><%- last_name %></td>' +
+      '   <td><%- email %></td>' +
+      '   <td><button class="btn btn-danger btn-sign-out hidden-xs-up">Sign Out</button><button class="btn btn-success btn-confirm-sign-in hidden-xs-up">Sign In</button></td>' +
+      ''),
 
-        ui: {
-            signOutButton: '.btn-sign-out',
-            confirmSigninButton: '.btn-confirm-sign-in',
-        },
+    ui: {
+      signOutButton: '.btn-sign-out',
+      confirmSigninButton: '.btn-confirm-sign-in',
+    },
 
-        triggers: {
-            'click @ui.signOutButton': 'click:sign:out'
-        },
+    triggers: {
+      'click @ui.signOutButton': 'click:sign:out'
+    },
 
-        onRender: function () {
-            switch (this.model.get('status')) {
-                case 'signedin_unconfirmed':
-                    this._setUnconfirmedSignin();
-                    break;
-                case 'signedout':
-                    this._setSignedOut();
-                    break;
-                case 'scheduled':
-                case 'signedin_confirmed':
-                    this._setConfirmedSignin();
-                    break;
-            }
-        },
+    onRender: function () {
+      switch (this.model.get('status')) {
+        case 'signedin_unconfirmed':
+          this._setUnconfirmedSignin();
+          break;
+        case 'signedout':
+          this._setSignedOut();
+          break;
+        case 'scheduled':
+        case 'signedin_confirmed':
+          this._setConfirmedSignin();
+          break;
+      }
+    },
 
-        _setUnconfirmedSignin: function () {
-            this.$el.addClass('bg-warning');
-            this.getUI('confirmSigninButton').removeClass('hidden-xs-up');
-        },
+    _setUnconfirmedSignin: function () {
+      this.$el.addClass('bg-warning');
+      this.getUI('confirmSigninButton').removeClass('hidden-xs-up');
+    },
 
-        _setConfirmedSignin: function () {
-            this.getUI('signOutButton').removeClass('hidden-xs-up');
-        },
+    _setConfirmedSignin: function () {
+      this.getUI('signOutButton').removeClass('hidden-xs-up');
+    },
 
-        _setSignedOut: function () {
-            this.$el.addClass('bg-danger').addClass('text-white');
-        },
+    _setSignedOut: function () {
+      this.$el.addClass('bg-danger').addClass('text-white');
+    },
 
-    });
+  });
 });
 
 // Filename: /views/rooms/roomstudents/students.js
 
 define('views/rooms/roomstudents/studentslist',[
-    'underscore',
-    'backbone',
-    'marionette',
-    'collections/students',
-    'views/rooms/roomstudents/studentslistitem',
+  'underscore',
+  'backbone',
+  'marionette',
+  'collections/students',
+  'views/rooms/roomstudents/studentslistitem',
 ], function (_, Backbone, Marionette, StudentsCollection, StudentListItem) {
-    return Marionette.CompositeView.extend({
+  return Marionette.CompositeView.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        className: 'container no-gutters-sm no-gutters-md',
+    className: 'container no-gutters-sm no-gutters-md',
 
-        template: _.template('' +
-            '<table class="table">' +
-            '  <thead class="thead-default">' +
-            '    <tr>' +
-            '      <th>#</th>' +
-            '      <th>First Name</th>' +
-            '      <th>Last Name</th>' +
-            '      <th>Email</th>' +
-            '      <th></th>' +
-            '    </tr>' +
-            '  </thead>' +
-            '  <tbody>' +
-            '  </tbody>' +
-            '</table>' +
-            '<div class="modal-holder"></div>' +
-            ''),
+    template: _.template('' +
+      '<table class="table">' +
+      '  <thead class="thead-default">' +
+      '    <tr>' +
+      '      <th>#</th>' +
+      '      <th>First Name</th>' +
+      '      <th>Last Name</th>' +
+      '      <th>Email</th>' +
+      '      <th></th>' +
+      '    </tr>' +
+      '  </thead>' +
+      '  <tbody>' +
+      '  </tbody>' +
+      '</table>' +
+      '<div class="modal-holder"></div>' +
+      ''),
 
-        regions: {
-            modal: '.modal-holder'
-        },
+    regions: {
+      modal: '.modal-holder'
+    },
 
-        initialize: function (options) {
-            this.room = options.room;
-            this.collection = (options.collection) ? options.collection : new StudentsCollection();
-            this.collection.fetch();
-            this.collection.on('sync', this.render);
-        },
+    initialize: function (options) {
+      this.room = options.room;
+      this.collection = (options.collection) ? options.collection : new StudentsCollection();
+      this.collection.fetch();
+      this.collection.on('sync', this.render);
+    },
 
-        childViewContainer: 'tbody',
+    childViewContainer: 'tbody',
 
-        childView: StudentListItem,
+    childView: StudentListItem,
 
-        childViewTriggers: {
-            'click:sign:out': 'child:click:sign:out'
-        },
+    childViewTriggers: {
+      'click:sign:out': 'child:click:sign:out'
+    },
 
-        _setChildSelected: function (model) {
-            let roomsView = this.getChildView('roomsList');
-            roomsView.children.each(function (e) {
-                e.setInactive();
-            });
-            roomsView.children.findByModel(roomsView.collection.findWhere({name: model.get('name')})).setActive();
-        },
+    _setChildSelected: function (model) {
+      let roomsView = this.getChildView('roomsList');
+      roomsView.children.each(function (e) {
+        e.setInactive();
+      });
+      roomsView.children.findByModel(roomsView.collection.findWhere({name: model.get('name')})).setActive();
+    },
 
-    });
+  });
 });
 
 // Filename: /views/rooms/roomstudents/roompickermodal.js
 
 define('views/rooms/roomstudents/roompickermodal',[
-    'underscore',
-    'backbone',
-    'marionette',
-    'collections/rooms',
-    'models/room'
+  'underscore',
+  'backbone',
+  'marionette',
+  'collections/rooms',
+  'models/room'
 ], function (_, Backbone, Marionette, RoomsCollection, RoomModel) {
-    return Marionette.CompositeView.extend({
+  return Marionette.CompositeView.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        className: 'modal fade',
+    className: 'modal fade',
 
-        attributes: {
-            // 'tabindex': '-1',
-            'role': 'dialog',
-            'aria-labelledby': 'Room Picker',
-            'aria-hidden': 'true'
-        },
+    attributes: {
+      // 'tabindex': '-1',
+      'role': 'dialog',
+      'aria-labelledby': 'Room Picker',
+      'aria-hidden': 'true'
+    },
 
-        template: _.template('' +
-            '<div class="modal-dialog" role="document">' +
-            '    <div class="modal-content">' +
-            '      <div class="modal-header">' +
-            '        <h5 class="modal-title" id="exampleModalLabel">Select a Room to Sign Out to</h5>' +
-            '        <button type="button" class="close" aria-label="Close">' +
-            '          <span aria-hidden="true">&times;</span>' +
-            '        </button>' +
-            '      </div>' +
-            '      <div class="modal-body">' +
-            '           <div class="form">' +
-            '               <select>' +
-            '               </select>' +
-            '           </div>' +
-            '      </div>' +
-            '      <div class="modal-footer">' +
-            '        <button type="button" class="btn btn-warning modal-btn-submit">Sign Out</button>' +
-            '      </div>' +
-            '    </div>' +
-            '  </div>' +
-            ''),
+    template: _.template('' +
+      '<div class="modal-dialog" role="document">' +
+      '    <div class="modal-content">' +
+      '      <div class="modal-header">' +
+      '        <h5 class="modal-title" id="exampleModalLabel">Select a Room to Sign Out to</h5>' +
+      '        <button type="button" class="close" aria-label="Close">' +
+      '          <span aria-hidden="true">&times;</span>' +
+      '        </button>' +
+      '      </div>' +
+      '      <div class="modal-body">' +
+      '           <div class="form">' +
+      '               <select>' +
+      '               </select>' +
+      '           </div>' +
+      '      </div>' +
+      '      <div class="modal-footer">' +
+      '        <button type="button" class="btn btn-warning modal-btn-submit">Sign Out</button>' +
+      '      </div>' +
+      '    </div>' +
+      '  </div>' +
+      ''),
 
-        ui: {
-            submitButton: '.btn',
-            roomSelect: 'select'
-        },
+    ui: {
+      submitButton: '.btn',
+      roomSelect: 'select'
+    },
 
-        triggers: {
-            'click @ui.submitButton': 'submit'
-        },
+    triggers: {
+      'click @ui.submitButton': 'submit'
+    },
 
-        initialize: function (options) {
-            this.collection = new (Backbone.Collection.extend({
-                model: RoomModel,
-                url: '/api/rooms'
-            }))();
+    initialize: function (options) {
+      this.collection = new (Backbone.Collection.extend({
+        model: RoomModel,
+        url: '/api/rooms'
+      }))();
 
-            this.collection.fetch();
-            this.collection.on('sync', this.render);
-        },
+      this.collection.fetch();
+      this.collection.on('sync', this.render);
+    },
 
-        onSubmit: function () {
-            let val = this.getUI('roomSelect').val();
-            console.log('onClick: ' + val);
-            if (this.submitCallback)
-                this.submitCallback.call(this.callbackContext, val);
-            this.hideModal();
-        },
+    onSubmit: function () {
+      let val = this.getUI('roomSelect').val();
+      console.log('onClick: ' + val);
+      if (this.submitCallback)
+        this.submitCallback.call(this.callbackContext, val);
+      this.hideModal();
+    },
 
-        showModal: function (callback, context) {
-            this.$el.modal('show');
+    showModal: function (callback, context) {
+      this.$el.modal('show');
 
-            if (callback && callback.submit)
-                this.submitCallback = callback.submit;
+      if (callback && callback.submit)
+        this.submitCallback = callback.submit;
 
-            if (callback && context)
-                this.callbackContext = context;
-            else
-                this.callbackContext = this;
+      if (callback && context)
+        this.callbackContext = context;
+      else
+        this.callbackContext = this;
 
-            let self = this;
-            let onSubmit = this.onSubmit;
-            this.getUI('submitButton').on('click', function () {
-                onSubmit.call(self);
-            });
-        },
+      let self = this;
+      let onSubmit = this.onSubmit;
+      this.getUI('submitButton').on('click', function () {
+        onSubmit.call(self);
+      });
+    },
 
-        hideModal: function () {
-            this.$el.modal('hide');
-        },
+    hideModal: function () {
+      this.$el.modal('hide');
+    },
 
-        childViewContainer: 'select',
+    childViewContainer: 'select',
 
-        childView: Marionette.View.extend({
+    childView: Marionette.View.extend({
 
-            tagName: 'option',
+      tagName: 'option',
 
-            template: _.template('<%- name %>'),
+      template: _.template('<%- name %>'),
 
-            onRender: function () {
-                this.$el.attr('value', this.model.get('name'));
-            }
-        }),
+      onRender: function () {
+        this.$el.attr('value', this.model.get('name'));
+      }
+    }),
 
-    });
+  });
 });
 
 // Filename: /views/rooms/roomstudents/students.js
 
 define('views/rooms/roomstudents/students',[
-    'underscore',
-    'backbone',
-    'marionette',
-    'collections/students',
-    'views/rooms/roomstudents/studentslist',
-    'views/rooms/roomstudents/roompickermodal'
+  'underscore',
+  'backbone',
+  'marionette',
+  'collections/students',
+  'views/rooms/roomstudents/studentslist',
+  'views/rooms/roomstudents/roompickermodal'
 ], function (_, Backbone, Marionette, StudentsCollection, StudentList, RoomsModalView) {
-    return Marionette.View.extend({
+  return Marionette.View.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        className: 'container no-gutters-sm no-gutters-md',
+    className: 'container no-gutters-sm no-gutters-md',
 
-        template: _.template('' +
-            '<div class="students-list"></div>' +
-            '<div class="modal-holder"></div>' +
-            ''),
+    template: _.template('' +
+      '<div class="students-list"></div>' +
+      '<div class="modal-holder"></div>' +
+      ''),
 
-        regions: {
-            modal: {
-                el: '.modal-holder',
-                replaceElement: true
-            },
-            list: {
-                el: '.students-list',
-                replaceElement: true
-            },
-        },
+    regions: {
+      modal: {
+        el: '.modal-holder',
+        replaceElement: true
+      },
+      list: {
+        el: '.students-list',
+        replaceElement: true
+      },
+    },
 
-        initialize: function (options) {
-            this.room = options.room;
-            this.collection = (options.collection) ? options.collection : new StudentsCollection();
-            if (!options.collection)
-                this.collection.fetch();
-        },
+    initialize: function (options) {
+      this.room = options.room;
+      this.collection = (options.collection) ? options.collection : new StudentsCollection();
+      if (!options.collection)
+        this.collection.fetch();
+    },
 
-        onRender: function () {
-            this.showChildView('list', new StudentList({room: this.room, collection: this.collection}));
-            this.showChildView('modal', new RoomsModalView({collection: this.collection}));
-        },
+    onRender: function () {
+      this.showChildView('list', new StudentList({room: this.room, collection: this.collection}));
+      this.showChildView('modal', new RoomsModalView({collection: this.collection}));
+    },
 
-        childViewEvents: {
-            'child:click:sign:out': 'onChildviewClickSignOut'
-        },
+    childViewEvents: {
+      'child:click:sign:out': 'onChildviewClickSignOut'
+    },
 
-        onChildviewClickSignOut: function (childView) {
-            return this.getChildView('modal').showModal({
-                submit: function (value) {
-                    childView.model.signOut(this.room.get('name'), value, {
-                        success: function () {
-                            this.collection.fetch();
-                        }
-                    }, this);
-                }
-            }, this);
-
+    onChildviewClickSignOut: function (childView) {
+      return this.getChildView('modal').showModal({
+        submit: function (value) {
+          childView.model.signOut(this.room.get('name'), value, {
+            success: function () {
+              this.collection.fetch();
+            }
+          }, this);
         }
+      }, this);
 
-    });
+    }
+
+  });
 });
 
 //Filename: /modules/rooms.js
@@ -1325,7 +1314,7 @@ define('modules/rooms',[
     initialize: function (options) {
       this.app = (options.app) ? options.app : null;
       this.rooms = new RoomsCollection();
-      this.rooms.getFirstPage();
+      // this.rooms.getFirstPage();
     },
 
     routes: {
@@ -1360,77 +1349,77 @@ define('modules/rooms',[
 // Filename: /views/students/studentslistitem.js
 
 define('views/students/studentslistitem',[
-    'underscore',
-    'backbone',
-    'marionette',
+  'underscore',
+  'backbone',
+  'marionette',
 ], function (_, Backbone, Marionette) {
-    return Marionette.View.extend({
+  return Marionette.View.extend({
 
-        tagName: 'tr',
+    tagName: 'tr',
 
-        template: _.template('' +
-            '   <th scope="row"><%- id %></th>' +
-            '   <td><%- first_name %></td>' +
-            '   <td><%- last_name %></td>' +
-            '   <td><%- email %></td>' +
-            ''),
+    template: _.template('' +
+      '   <th scope="row"><%- id %></th>' +
+      '   <td><%- first_name %></td>' +
+      '   <td><%- last_name %></td>' +
+      '   <td><%- email %></td>' +
+      ''),
 
-    });
+  });
 });
 
 // Filename: /views/students/students.js
 
 define('views/students/students',[
-    'underscore',
-    'backbone',
-    'marionette',
-    'collections/students',
-    'views/students/studentslistitem'
+  'underscore',
+  'backbone',
+  'marionette',
+  'collections/students',
+  'views/students/studentslistitem'
 ], function (_, Backbone, Marionette, StudentsCollection, StudentListItem) {
-    return Marionette.CompositeView.extend({
+  return Marionette.CompositeView.extend({
 
-        tagName: 'div',
+    tagName: 'div',
 
-        className: 'container no-gutters-sm no-gutters-md',
+    className: 'container no-gutters-sm no-gutters-md',
 
-        template: _.template('' +
-            '<table class="table">' +
-            '  <thead class="thead-default">' +
-            '    <tr>' +
-            '      <th>#</th>' +
-            '      <th>First Name</th>' +
-            '      <th>Last Name</th>' +
-            '      <th>Email</th>' +
-            '    </tr>' +
-            '  </thead>' +
-            '  <tbody>' +
-            '  </tbody>' +
-            '</table>' +
-            ''),
+    template: _.template('' +
+      '<table class="table">' +
+      '  <thead class="thead-default">' +
+      '    <tr>' +
+      '      <th>#</th>' +
+      '      <th>First Name</th>' +
+      '      <th>Last Name</th>' +
+      '      <th>Email</th>' +
+      '    </tr>' +
+      '  </thead>' +
+      '  <tbody>' +
+      '  </tbody>' +
+      '</table>' +
+      ''),
 
-        initialize: function (options) {
-            this.collection = (options.collection) ? options.collection : new StudentsCollection();
-            this.collection.getFirstPage();
-        },
+    initialize: function (options) {
+      this.collection = (options.collection) ? options.collection : new StudentsCollection();
+      this.collection.getFirstPage();
+    },
 
-        childViewContainer: 'tbody',
+    childViewContainer: 'tbody',
 
-        childView: StudentListItem,
+    childView: StudentListItem,
 
-        childViewEvents: {
-            // 'child:click:room': 'onRoomSelected',
-            //'child:click:instance': 'onInstanceSelected'
-        },
+    childViewEvents: {
+      // 'child:click:room': 'onRoomSelected',
+      //'child:click:instance': 'onInstanceSelected'
+    },
 
-        _setChildSelected: function (model) {
-            let roomsView = this.getChildView('roomsList');
-            roomsView.children.each(function (e) {
-                e.setInactive();
-            });
-            roomsView.children.findByModel(roomsView.collection.findWhere({installation_id: model.get('installation_id')})).setActive();
-        }
+    _setChildSelected: function (model) {
+      let roomsView = this.getChildView('roomsList');
+      roomsView.children.each(function (e) {
+        e.setInactive();
+      });
+      roomsView.children.findByModel(roomsView.collection.findWhere({installation_id: model.get('installation_id')})).setActive();
+    }
 
-    });
+  });
 });
 
 // Filename: /models/room.js
@@ -1455,14 +1444,107 @@ define('models/period',[
 
   });
 });
-// Filename: /views/students/students.js
+// Filename: /views/students/signoutmodal.js
+
+define('views/students/signoutmodal',[
+  'underscore',
+  'backbone',
+  'marionette',
+  'collections/rooms'
+], function (_, Backbone, Marionette, RoomsCollection) {
+  return Marionette.CompositeView.extend({
+
+    tagName: 'div',
+
+    className: 'modal',
+
+    template: _.template('' +
+      '<div class="modal-content">' +
+      '  <h4>Signout To</h4>' +
+      '  <div class="row">' +
+      '  <div class="input-field col s4 offset-s4">' +
+      '  <label>Room Selection</label>' +
+      '  <select>' +
+      '  </select>' +
+      '  </div>' +
+      '  </div>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '  <a class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>' +
+      '</div>' +
+      ''),
+
+    ui: {
+      'select': 'select'
+    },
+
+    collection: new RoomsCollection(),
+
+    childViewContainer: 'select',
+
+    childView: Marionette.View.extend({
+
+      el: 'option',
+
+      template: _.template('<%= name %>'),
+
+      onRender: function () {
+        this.$el.attr('value', this.model.get('name'))
+      }
+
+    }),
+
+    loadFinished: false,
+
+    initialize: function () {
+      this.collection.fetch();
+
+      let context = this;
+      this.collection.bind('sync', function () {
+        context.loadFinished = true;
+        context.render();
+      })
+    },
+
+    onRender: function () {
+      if (this.instance === undefined)
+        this.instance = M.Modal.init(this.$el[0]);
+    },
+
+    onDomRefresh: function () {
+      if(this.select !== undefined)
+        this.select.destroy();
+      if (this.loadFinished)
+        this.select = M.FormSelect.init(this.getUI('select')[0]);
+    },
+
+    close: function (context) {
+      context = (context) ? context : this;
+      context.instance.close();
+    },
+
+    open: function (context) {
+      context = (context) ? context : this;
+      context.instance.open();
+    },
+
+    isOpen: function (context) {
+      context = (context) ? context : this;
+      return context.instance.isOpen();
+    },
+
+  });
+});
+
+// Filename: /views/students/signout.js
 
 define('views/students/signout',[
   'underscore',
   'backbone',
   'marionette',
   'models/period',
-], function (_, Backbone, Marionette, PeriodModel) {
+  'views/students/signoutmodal',
+], function (_, Backbone, Marionette, PeriodModel, SignoutModalView) {
   return Marionette.View.extend({
 
     tagName: 'div',
@@ -1474,16 +1556,44 @@ define('views/students/signout',[
       '  <div class="col s4 offset-s4" style="text-align: center">' +
       '    <h4>Current Room:</h4>' +
       '    <h2><%= room %></h2>' +
-      '    <a class="waves-effect waves-light btn-large blue darken-4"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
+      '    <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
       '  </div>' +
       '</div>' +
+      '<div id="signout-modal"></div>' +
       ''),
+
+    ui: {
+      'button': '.btn-large'
+    },
+
+    events: {
+      'click @ui.button': 'onClickShowModal'
+    },
+
+    regions: {
+      'modal': {
+        'el': '#signout-modal',
+        replaceElement: true
+      }
+    },
 
     initialize: function (options) {
       this.model = new PeriodModel();
       this.model.fetch();
       this.model.bind('sync', this.render);
     },
+
+    onRender: function () {
+      if (this.model.get('room').length === 0)
+        this.getUI('button').hide();
+      else
+        this.showChildView('modal', new SignoutModalView());
+    },
+
+    onClickShowModal: function (event) {
+      event.preventDefault();
+      this.getChildView('modal').open();
+    }
 
   });
 });
@@ -1677,7 +1787,7 @@ require.config({
     json: 'vendor/require-plugins/json',
     noext: 'vendor/require-plugins/noext',
     mdown: 'vendor/require-plugins/mdown',
-    propertyParser : 'vendor/require-plugins/propertyParser',
+    propertyParser: 'vendor/require-plugins/propertyParser',
 
     layouts: './layouts',
     app: './app',
@@ -1727,4 +1837,4 @@ define("main", function(){});
 
 
 (function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})
-('.spinner {\n    margin: 100px auto;\n    width: 50px;\n    height: 40px;\n    text-align: center;\n    font-size: 10px;\n}\n\n.spinner > div {\n    background-color: #333;\n    height: 100%;\n    width: 6px;\n    display: inline-block;\n\n    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;\n    animation: sk-stretchdelay 1.2s infinite ease-in-out;\n}\n\n.spinner .rect2 {\n    -webkit-animation-delay: -1.1s;\n    animation-delay: -1.1s;\n}\n\n.spinner .rect3 {\n    -webkit-animation-delay: -1.0s;\n    animation-delay: -1.0s;\n}\n\n.spinner .rect4 {\n    -webkit-animation-delay: -0.9s;\n    animation-delay: -0.9s;\n}\n\n.spinner .rect5 {\n    -webkit-animation-delay: -0.8s;\n    animation-delay: -0.8s;\n}\n\n@-webkit-keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        -webkit-transform: scaleY(0.4)\n    }\n    20% {\n        -webkit-transform: scaleY(1.0)\n    }\n}\n\n@keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        transform: scaleY(0.4);\n        -webkit-transform: scaleY(0.4);\n    }\n    20% {\n        transform: scaleY(1.0);\n        -webkit-transform: scaleY(1.0);\n    }\n}#view-rooms-list-container {\n  height: calc(80vh);\n  overflow-x: hidden;\n  overflow-y: scroll; }\n\n/*# sourceMappingURL=roomslist.css.map */\n/* Sticky Footer */\n#main-wrapper {\n  display: flex;\n  min-height: 100vh;\n  flex-direction: column; }\n\nmain {\n  flex: 1 0 auto; }\n\n/*# sourceMappingURL=main.css.map */\n');
+('.spinner {\n    margin: 100px auto;\n    width: 50px;\n    height: 40px;\n    text-align: center;\n    font-size: 10px;\n}\n\n.spinner > div {\n    background-color: #333;\n    height: 100%;\n    width: 6px;\n    display: inline-block;\n\n    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;\n    animation: sk-stretchdelay 1.2s infinite ease-in-out;\n}\n\n.spinner .rect2 {\n    -webkit-animation-delay: -1.1s;\n    animation-delay: -1.1s;\n}\n\n.spinner .rect3 {\n    -webkit-animation-delay: -1.0s;\n    animation-delay: -1.0s;\n}\n\n.spinner .rect4 {\n    -webkit-animation-delay: -0.9s;\n    animation-delay: -0.9s;\n}\n\n.spinner .rect5 {\n    -webkit-animation-delay: -0.8s;\n    animation-delay: -0.8s;\n}\n\n@-webkit-keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        -webkit-transform: scaleY(0.4)\n    }\n    20% {\n        -webkit-transform: scaleY(1.0)\n    }\n}\n\n@keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        transform: scaleY(0.4);\n        -webkit-transform: scaleY(0.4);\n    }\n    20% {\n        transform: scaleY(1.0);\n        -webkit-transform: scaleY(1.0);\n    }\n}/* Sticky Footer */\n#main-wrapper {\n    display: flex;\n    min-height: 100vh;\n    flex-direction: column;\n}\n\nmain {\n    flex: 1 0 auto;\n}\n\n/*# sourceMappingURL=main.css.map */\n');

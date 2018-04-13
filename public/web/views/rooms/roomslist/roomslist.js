@@ -4,7 +4,6 @@ define([
   'backbone',
   'marionette',
   'views/rooms/roomslist/roomslistitem',
-  'css!styles/views/roomslist/roomslist.css'
 ], function (Backbone, Marionette, RoomsListItem) {
   return Marionette.CollectionView.extend({
 
