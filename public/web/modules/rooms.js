@@ -13,7 +13,7 @@ define([
     initialize: function (options) {
       this.app = (options.app) ? options.app : null;
       this.rooms = new RoomsCollection();
-      this.rooms.getFirstPage();
+      // this.rooms.getFirstPage();
     },
 
     routes: {

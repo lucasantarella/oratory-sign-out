@@ -18,7 +18,7 @@ define([
       '<footer class="page-footer blue darken-4">' +
       ' <div class="container">' +
       '   <div class="row">' +
-      '   © 2014 Copyright Luca Santarella' +
+      '   © 2018 Copyright Luca Santarella' +
       '   </div>' +
       ' </div>' +
       '</footer>' +

@@ -25,19 +25,7 @@ class RoomsController extends ControllerBase
         $builder = $this->modelsManager->createBuilder()
             ->from('Oratorysignout\\Models\\Rooms');
 
-        $paginator = new PaginatorQueryBuilder(
-            [
-                "builder" => $builder,
-                "limit" => $this->request->getQuery("per_page", Filter::FILTER_INT_CAST, 25),
-                "page" => $this->request->getQuery("page", Filter::FILTER_INT_CAST, 1),
-            ]
-        );
-        $paginate = $paginator->getPaginate();
-
-        $this->response->setHeader('X-Paginate-Total-Pages', $paginate->total_pages);
-        $this->response->setHeader('X-Paginate-Total-Items', $paginate->total_items);
-        $this->response->setHeader('X-Paginate-Current-Page', $paginate->current);
-        return $this->sendResponse($paginate->items);
+        return $this->sendResponse($builder->getQuery()->execute());
     }
 
     public function roomAction($name = '')
