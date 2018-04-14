@@ -12,16 +12,26 @@ define([
 
     tagName: 'div',
 
-    className: 'container no-gutters-sm no-gutters-md',
+    className: 'container',
 
     template: _.template('' +
       '<style>' +
-      '#signInButton div {' +
-      ' display:inline-block;' +
+      'body {' +
+      ' background-color: #00235a;' +
+      '}' +
+      '#signInButton div  {' +
+      'margin: 0 auto;' +
       '}' +
       '</style>' +
-      '<div id="profileView"></div>' +
-      '<div style=" width: 100%;max-width: 330px;padding: 15px;margin: 0 auto;" id="signInButton" class="col text-center">' +
+      '<div class="row">' +
+      '  <div class="col s6 offset-s3">' +
+      '    <img class="responsive-img" src="./img/logo.png">' +
+      '  </div>' +
+      '</div>' +
+      '<div class="row">' +
+      '  <div class="col s6 offset-s3 center-align" id="wrapper">' +
+      '    <div id="signInButton">text</div>' +
+      '  </div> ' +
       '</div>' +
       ''),
 
