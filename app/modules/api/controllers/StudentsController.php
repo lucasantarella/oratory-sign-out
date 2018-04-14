@@ -249,8 +249,7 @@ class StudentsController extends AuthRequiredControllerBase
         $builder = $this->modelsManager->createBuilder()
             ->from('Oratorysignout\\Models\\LogsStudents')
             ->columns(['Oratorysignout\\Models\\LogsStudents.*'])
-            ->where('Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN :period_start: AND :period_end:')
-            ->andWhere('Oratorysignout\\Models\\LogsStudents.student_id = :student_id:')
+            ->where('(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN :period_start: AND :period_end:) AND Oratorysignout\\Models\\LogsStudents.student_id = :student_id:')
             ->orderBy('Oratorysignout\\Models\\LogsStudents.timestamp DESC')
             ->limit(1);
 
@@ -259,17 +258,14 @@ class StudentsController extends AuthRequiredControllerBase
             'period_start' => strval($date) . $period->start_time . '00',
             'period_end' => strval($date) . $period->end_time . '00'
         ];
-        var_dump($builder->getPhql());;
 
         /** @var LogsStudents[] $query */
-        $logsQuery = $builder->getQuery()->execute();
+        $logsQuery = $builder->getQuery()->execute($params);
 
         if (count($logsQuery) === 1) {
-            $row = $query[0];
-
-            $response = [
-                'room' => $row
-            ];
+            /** @var LogsStudents $row */
+            $row = $logsQuery[0];
+            $response['room'] = $row->room_to;
         }
 
         return $this->sendResponse($response);
