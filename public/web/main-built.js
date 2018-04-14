@@ -175,7 +175,7 @@ define('views/AppView',[
       '<div id="main">' +
       '</div>' +
       '</main>' +
-      '<footer class="page-footer blue darken-4">' +
+      '<footer class="page-footer oratory-blue darken-4">' +
       ' <div class="container">' +
       '   <div class="row">' +
       '   © 2018 Copyright Luca Santarella' +
@@ -636,9 +636,6 @@ define('views/signin/signin',[
 
     template: _.template('' +
       '<style>' +
-      'body {' +
-      ' background-color: #00235a;' +
-      '}' +
       '#signInButton div  {' +
       'margin: 0 auto;' +
       '}' +
@@ -676,7 +673,12 @@ define('views/signin/signin',[
           context.callback(googleUser, context.app);
         }
       });
+      $('body').addClass('oratory-blue');
     },
+
+    onDetach: function () {
+      $('body').removeClass('oratory-blue');
+    }
 
   });
 });
@@ -1485,11 +1487,12 @@ define('models/period',[
 // Filename: /views/students/signoutmodal.js
 
 define('views/students/signoutmodal',[
+  'jquery',
   'underscore',
   'backbone',
   'marionette',
-  'collections/rooms'
-], function (_, Backbone, Marionette, RoomsCollection) {
+  'collections/rooms',
+], function ($, _, Backbone, Marionette, RoomsCollection) {
   return Marionette.CompositeView.extend({
 
     tagName: 'div',
@@ -1514,6 +1517,15 @@ define('views/students/signoutmodal',[
       '</div>' +
       ''),
 
+    ui: {
+      'signout': 'a',
+      'roomSelect': 'select'
+    },
+
+    events: {
+      'click @ui.signout': 'onClickSignOut',
+    },
+
     collection: new RoomsCollection(),
 
     childViewContainer: 'select',
@@ -1532,9 +1544,11 @@ define('views/students/signoutmodal',[
 
     loadFinished: false,
 
-    initialize: function () {
+    initialize: function (options) {
       this.collection.fetch();
-      this.collection.bind('sync', this.render)
+      this.collection.bind('sync', this.render);
+      this.onClose = (options.onClose) ? options.onClose : function () {};
+      this.callbackContext = (options.callbackContext) ? options.callbackContext : this;
     },
 
     onRender: function () {
@@ -1549,6 +1563,7 @@ define('views/students/signoutmodal',[
     close: function (context) {
       context = (context) ? context : this;
       context.instance.close();
+      this.onClose.call(this.callbackContext);
     },
 
     open: function (context) {
@@ -1560,6 +1575,25 @@ define('views/students/signoutmodal',[
       context = (context) ? context : this;
       return context.instance.isOpen();
     },
+
+    onClickSignOut: function (event) {
+      event.preventDefault();
+
+      $.ajax({
+        type: "POST",
+        context: this,
+        url: "/api/students/me/logs",
+        data: JSON.stringify({room_to: this.getUI('roomSelect').val()}),
+        contentType: "application/json; charset=utf-8",
+        success: function () {
+          this.close();
+        },
+        error: function () {
+          this.close();
+          alert('Error signing out!');
+        }
+      });
+    }
 
   });
 });
@@ -1584,7 +1618,7 @@ define('views/students/signout',[
       '  <div class="col s4 offset-s4 center-align">' +
       '    <h4>Current Room:</h4>' +
       '    <h2><%= room %></h2>' +
-      '    <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
+      '    <a class="waves-effect waves-light btn-large oratory-blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
       '  </div>' +
       '</div>' +
       '<div id="signout-modal"></div>' +
@@ -1615,7 +1649,12 @@ define('views/students/signout',[
       if (this.model.get('room').length === 0)
         this.getUI('button').hide();
       else
-        this.showChildView('modal', new SignoutModalView());
+        this.showChildView('modal', new SignoutModalView({
+          onClose: function () {
+            this.model.fetch();
+          },
+          callbackContext: this
+        }));
     },
 
     onClickShowModal: function (event) {

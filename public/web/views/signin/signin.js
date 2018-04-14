@@ -16,9 +16,6 @@ define([
 
     template: _.template('' +
       '<style>' +
-      'body {' +
-      ' background-color: #00235a;' +
-      '}' +
       '#signInButton div  {' +
       'margin: 0 auto;' +
       '}' +
@@ -56,7 +53,12 @@ define([
           context.callback(googleUser, context.app);
         }
       });
+      $('body').addClass('oratory-blue');
     },
+
+    onDetach: function () {
+      $('body').removeClass('oratory-blue');
+    }
 
   });
 });

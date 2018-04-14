@@ -11,16 +11,18 @@ web:
     - php
 
 php:
-  image: lucasantarella/php-fpm-phalcon:php-7.1.5_phalcon-3.3.1
+  image: lucasantarella/php-fpm-phalcon:php-7.1.5_phalcon-3.3.2
   restart: on-failure
   volumes:
     - ./:/code
   environment:
     BUGSNAG_API_KEY: 8c9bdbc65cc43175fe0d50abe819ca76
-    MYSQL_HOST: mysql
-    MYSQL_USER: root
-    MYSQL_PASS: 
-    MYSQL_DB: oratory_sign_out
+    DB_HOST: mysql
+    DB_USER: root
+    DB_PASS:
+    DB_NAME: oratory_sign_out
+    CYCLE_START_DATE: 20180405
+    TIME_OVERRIDE: 20180413091400
   links:
     - mysql
 

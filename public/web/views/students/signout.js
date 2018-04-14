@@ -18,7 +18,7 @@ define([
       '  <div class="col s4 offset-s4 center-align">' +
       '    <h4>Current Room:</h4>' +
       '    <h2><%= room %></h2>' +
-      '    <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
+      '    <a class="waves-effect waves-light btn-large oratory-blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
       '  </div>' +
       '</div>' +
       '<div id="signout-modal"></div>' +
