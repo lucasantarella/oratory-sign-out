@@ -23,6 +23,7 @@ php:
     DB_NAME: oratory_sign_out
     CYCLE_START_DATE: 20180405
     TIME_OVERRIDE: 20180413091400
+    XDEBUG_CONFIG: remote_host=172.16.0.30
   links:
     - mysql
 
