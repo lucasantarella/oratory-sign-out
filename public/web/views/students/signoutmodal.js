@@ -1,11 +1,12 @@
 // Filename: /views/students/signoutmodal.js
 
 define([
+  'jquery',
   'underscore',
   'backbone',
   'marionette',
-  'collections/rooms'
-], function (_, Backbone, Marionette, RoomsCollection) {
+  'collections/rooms',
+], function ($, _, Backbone, Marionette, RoomsCollection) {
   return Marionette.CompositeView.extend({
 
     tagName: 'div',
@@ -30,6 +31,15 @@ define([
       '</div>' +
       ''),
 
+    ui: {
+      'signout': 'a',
+      'roomSelect': 'select'
+    },
+
+    events: {
+      'click @ui.signout': 'onClickSignOut',
+    },
+
     collection: new RoomsCollection(),
 
     childViewContainer: 'select',
@@ -48,9 +58,11 @@ define([
 
     loadFinished: false,
 
-    initialize: function () {
+    initialize: function (options) {
       this.collection.fetch();
-      this.collection.bind('sync', this.render)
+      this.collection.bind('sync', this.render);
+      this.onClose = (options.onClose) ? options.onClose : function () {};
+      this.callbackContext = (options.callbackContext) ? options.callbackContext : this;
     },
 
     onRender: function () {
@@ -65,6 +77,7 @@ define([
     close: function (context) {
       context = (context) ? context : this;
       context.instance.close();
+      this.onClose.call(this.callbackContext);
     },
 
     open: function (context) {
@@ -76,6 +89,25 @@ define([
       context = (context) ? context : this;
       return context.instance.isOpen();
     },
+
+    onClickSignOut: function (event) {
+      event.preventDefault();
+
+      $.ajax({
+        type: "POST",
+        context: this,
+        url: "/api/students/me/logs",
+        data: JSON.stringify({room_to: this.getUI('roomSelect').val()}),
+        contentType: "application/json; charset=utf-8",
+        success: function () {
+          this.close();
+        },
+        error: function () {
+          this.close();
+          alert('Error signing out!');
+        }
+      });
+    }
 
   });
 });
