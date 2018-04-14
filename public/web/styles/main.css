@@ -1,0 +1,12 @@
+/* Sticky Footer */
+#main-wrapper {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/*# sourceMappingURL=main.css.map */
