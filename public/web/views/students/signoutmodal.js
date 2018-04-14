@@ -14,30 +14,35 @@ define([
 
     template: _.template('' +
       '<div class="modal-content">' +
-      '  <h4>Signout To</h4>' +
+      '  <h4 style="text-align:center;">Signout To</h4>' +
       '  <p>' +
-      '  <div class="row">' +
-      '  <div class="collection col s4 offset-s4" style="padding-left: 0; padding-right: 0;">' +
+      '  <div class="row" style="margin-top: 60px">' +
+      '  <div class="col s6 offset-s3">' +
+      '  <select class="browser-default" style="font-size:18px;"></select>' +
+      '  </div>' +
+      '  </div>' +
+      '  <div class="row" style="margin-top: 60px">' +
+      '  <div class="col s4 offset-s4">' +
+      '  <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
       '  </div>' +
       '  </div>' +
       '  </p>' +
-      '</div>' +
-      '<div class="modal-footer">' +
-      '  <a class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>' +
       '</div>' +
       ''),
 
     collection: new RoomsCollection(),
 
-    childViewContainer: '.collection',
+    childViewContainer: 'select',
 
     childView: Marionette.View.extend({
 
-      tagName: 'div',
-
-      className: 'collection-item',
+      tagName: 'option',
 
       template: _.template('<p><%= name %></p>'),
+
+      onRender: function () {
+        this.$el.attr('value', this.model.get('name'));
+      }
 
     }),
 
@@ -53,6 +58,9 @@ define([
         this.instance = M.Modal.init(this.$el[0]);
     },
 
+    onAttach: function () {
+      this.select = M.FormSelect.init(this.$el.find('select'));
+    },
 
     close: function (context) {
       context = (context) ? context : this;
