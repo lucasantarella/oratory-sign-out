@@ -1,5 +1,11 @@
 <IfModule mod_rewrite.c>
-	RewriteEngine on
-	RewriteRule  ^$ public/    [L]
-	RewriteRule  (.*) public/$1 [L]
+        RewriteEngine on
+        RewriteBase /
+        RewriteRule ^api/(.*) public/index.php?_url=/api/$1 [L,QSA]
+
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule  ^/(.*)$ web/index.html [L,QSA]
 </IfModule>
+
+Header set Access-Control-Allow-Origin "*"
