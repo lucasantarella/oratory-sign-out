@@ -210,6 +210,14 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
                 ],
                 'method' => 'POST'
             ],
+            [
+                'pattern' => '/students/me/logs',
+                'attr' => [
+                    'controller' => 'students',
+                    'action' => 'signMeOut'
+                ],
+                'method' => 'POST'
+            ],
         ];
     }
 
