@@ -11,6 +11,7 @@ define(function (require) {
   const Cookies = require('cookie');
 
   // Modules
+  const AuthModule = require('modules/auth');
   const RoomsModule = require('modules/rooms');
   const StudentsModule = require('modules/students');
 
@@ -82,6 +83,7 @@ define(function (require) {
       // Init modules
       new RoomsModule({app: this});
       new StudentsModule({app: this});
+      new AuthModule({app: this});
 
       // Start history
       Backbone.history.start({

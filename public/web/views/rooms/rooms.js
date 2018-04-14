@@ -23,7 +23,7 @@ define([
 
     initialize: function (options) {
       this.collection = (options.collection) ? options.collection : new RoomsCollection();
-      this.collection.getFirstPage();
+      // this.collection.getFirstPage();
     },
 
     onRender: function () {

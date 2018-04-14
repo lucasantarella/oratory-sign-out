@@ -22,7 +22,7 @@ define([
       '  </div>' +
       '  </div>' +
       '  <div class="row" style="margin-top: 60px">' +
-      '  <div class="col s4 offset-s4">' +
+      '  <div class="col s4 offset-s4 center-align">' +
       '  <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
       '  </div>' +
       '  </div>' +

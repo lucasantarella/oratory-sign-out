@@ -14,8 +14,8 @@ define([
     className: 'container',
 
     template: _.template('' +
-      '<div class="row">' +
-      '  <div class="col s4 offset-s4" style="text-align: center">' +
+      '<div class="row" style="margin-top: 100px">' +
+      '  <div class="col s4 offset-s4 center-align">' +
       '    <h4>Current Room:</h4>' +
       '    <h2><%= room %></h2>' +
       '    <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +

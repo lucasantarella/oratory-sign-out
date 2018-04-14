@@ -632,16 +632,26 @@ define('views/signin/signin',[
 
     tagName: 'div',
 
-    className: 'container no-gutters-sm no-gutters-md',
+    className: 'container',
 
     template: _.template('' +
       '<style>' +
-      '#signInButton div {' +
-      ' display:inline-block;' +
+      'body {' +
+      ' background-color: #00235a;' +
+      '}' +
+      '#signInButton div  {' +
+      'margin: 0 auto;' +
       '}' +
       '</style>' +
-      '<div id="profileView"></div>' +
-      '<div style=" width: 100%;max-width: 330px;padding: 15px;margin: 0 auto;" id="signInButton" class="col text-center">' +
+      '<div class="row">' +
+      '  <div class="col s6 offset-s3">' +
+      '    <img class="responsive-img" src="./img/logo.png">' +
+      '  </div>' +
+      '</div>' +
+      '<div class="row">' +
+      '  <div class="col s6 offset-s3 center-align" id="wrapper">' +
+      '    <div id="signInButton">text</div>' +
+      '  </div> ' +
       '</div>' +
       ''),
 
@@ -671,6 +681,34 @@ define('views/signin/signin',[
   });
 });
 
+//Filename: /modules/auth.js
+
+define('modules/auth',[
+  'marionette',
+  'cookie'
+], function (Marionette, Cookie) {
+
+  return Marionette.AppRouter.extend({
+
+    initialize: function (options) {
+      this.app = (options.app) ? options.app : null;
+    },
+
+    routes: {
+      'logout': 'logout',
+    },
+
+    logout: function () {
+      Cookie.remove('gtoken');
+      this.app.session.set('gauth', undefined);
+      this.app.session.set('gtoken', undefined);
+      window.OratoryUserType = null;
+      Backbone.history.navigate('');
+      location.reload();
+    },
+
+  });
+});
 // Filename: /views/devices/deviceslist/deviceslistitem.js
 
 define('views/rooms/roomslist/roomslistitem',[
@@ -970,7 +1008,7 @@ define('views/rooms/rooms',[
 
     initialize: function (options) {
       this.collection = (options.collection) ? options.collection : new RoomsCollection();
-      this.collection.getFirstPage();
+      // this.collection.getFirstPage();
     },
 
     onRender: function () {
@@ -1456,27 +1494,25 @@ define('views/students/signoutmodal',[
 
     tagName: 'div',
 
-    className: 'modal',
+    className: 'modal modal-fixed-footer',
 
     template: _.template('' +
       '<div class="modal-content">' +
-      '  <h4>Signout To</h4>' +
-      '  <div class="row">' +
-      '  <div class="input-field col s4 offset-s4">' +
-      '  <label>Room Selection</label>' +
-      '  <select>' +
-      '  </select>' +
+      '  <h4 style="text-align:center;">Signout To</h4>' +
+      '  <p>' +
+      '  <div class="row" style="margin-top: 60px">' +
+      '  <div class="col s6 offset-s3">' +
+      '  <select class="browser-default" style="font-size:18px;"></select>' +
       '  </div>' +
       '  </div>' +
-      '</div>' +
-      '<div class="modal-footer">' +
-      '  <a class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>' +
+      '  <div class="row" style="margin-top: 60px">' +
+      '  <div class="col s4 offset-s4 center-align">' +
+      '  <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
+      '  </div>' +
+      '  </div>' +
+      '  </p>' +
       '</div>' +
       ''),
-
-    ui: {
-      'select': 'select'
-    },
 
     collection: new RoomsCollection(),
 
@@ -1484,12 +1520,12 @@ define('views/students/signoutmodal',[
 
     childView: Marionette.View.extend({
 
-      el: 'option',
+      tagName: 'option',
 
-      template: _.template('<%= name %>'),
+      template: _.template('<p><%= name %></p>'),
 
       onRender: function () {
-        this.$el.attr('value', this.model.get('name'))
+        this.$el.attr('value', this.model.get('name'));
       }
 
     }),
@@ -1498,12 +1534,7 @@ define('views/students/signoutmodal',[
 
     initialize: function () {
       this.collection.fetch();
-
-      let context = this;
-      this.collection.bind('sync', function () {
-        context.loadFinished = true;
-        context.render();
-      })
+      this.collection.bind('sync', this.render)
     },
 
     onRender: function () {
@@ -1511,11 +1542,8 @@ define('views/students/signoutmodal',[
         this.instance = M.Modal.init(this.$el[0]);
     },
 
-    onDomRefresh: function () {
-      if(this.select !== undefined)
-        this.select.destroy();
-      if (this.loadFinished)
-        this.select = M.FormSelect.init(this.getUI('select')[0]);
+    onAttach: function () {
+      this.select = M.FormSelect.init(this.$el.find('select'));
     },
 
     close: function (context) {
@@ -1552,8 +1580,8 @@ define('views/students/signout',[
     className: 'container',
 
     template: _.template('' +
-      '<div class="row">' +
-      '  <div class="col s4 offset-s4" style="text-align: center">' +
+      '<div class="row" style="margin-top: 100px">' +
+      '  <div class="col s4 offset-s4 center-align">' +
       '    <h4>Current Room:</h4>' +
       '    <h2><%= room %></h2>' +
       '    <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
@@ -1637,7 +1665,7 @@ define('modules/students',[
 });
 // Filename: app.js
 
-define('app',['require','jquery','backbone','marionette','views/AppView','views/spinnerview','views/signin/signin','cookie','modules/rooms','modules/students'],function (require) {
+define('app',['require','jquery','backbone','marionette','views/AppView','views/spinnerview','views/signin/signin','cookie','modules/auth','modules/rooms','modules/students'],function (require) {
 
   const $ = require('jquery');
   const Backbone = require('backbone');
@@ -1648,6 +1676,7 @@ define('app',['require','jquery','backbone','marionette','views/AppView','views/
   const Cookies = require('cookie');
 
   // Modules
+  const AuthModule = require('modules/auth');
   const RoomsModule = require('modules/rooms');
   const StudentsModule = require('modules/students');
 
@@ -1719,6 +1748,7 @@ define('app',['require','jquery','backbone','marionette','views/AppView','views/
       // Init modules
       new RoomsModule({app: this});
       new StudentsModule({app: this});
+      new AuthModule({app: this});
 
       // Start history
       Backbone.history.start({
