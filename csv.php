@@ -1,7 +1,7 @@
 <?php
 
 /* Map Rows and Loop Through Them */
-$rows = array_map('str_getcsv', file(__DIR__ . '/students.CSV'));
+$rows = array_map('str_getcsv', file(__DIR__ . '/students.csv'));
 $header = array_shift($rows);
 $csv = array();
 foreach ($rows as $row) {

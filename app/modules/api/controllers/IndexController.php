@@ -3,6 +3,9 @@
 namespace Oratorysignout\Modules\Api\Controllers;
 
 
+use Oratorysignout\Models\Students;
+use Oratorysignout\Models\StudentsSchedules;
+
 class IndexController extends ControllerBase
 {
 
@@ -14,7 +17,7 @@ class IndexController extends ControllerBase
     public function importAction()
     {
         /* Map Rows and Loop Through Them */
-        $rows = str_getcsv($this->request->getRawBody());
+        $rows = array_map('str_getcsv', file($_FILES['students']['tmp_name']));
         $header = array_shift($rows);
         $csv = array();
         foreach ($rows as $row) {
@@ -31,32 +34,63 @@ class IndexController extends ControllerBase
             'Period 4' => 7,
         ];
 
-        foreach ($csv as $row) {
-            $student = $row;
-            unset($student['StsSt_Firstname']);
-            unset($student['StsSt_Lastname']);
-            unset($student['StsAdrs_1_01_Cnts_1_01_Contactnum']);
-            $values = array_values($student);
-            $schedule = [];
+        $response = [];
 
-            for ($i = 0; $i < count($student); $i += 3) {
+        $this->db->begin();
+
+        foreach ($csv as $row) {
+            $student = Students::findFirst("email = '{$row['StsAdrs_1_01_Cnts_1_01_Contactnum']}'");
+            unset($row['StsSt_Firstname']);
+            unset($row['StsSt_Lastname']);
+            unset($row['StsAdrs_1_01_Cnts_1_01_Contactnum']);
+            $values = array_values($row);
+            $schedules = [];
+//            die(print_r($row));
+
+            for ($i = 0; $i < count($row); $i += 3) {
                 if (is_numeric($values[$i])) {
                     foreach (explode(', ', $values[$i + 1]) as $period_str) {
-                        $schedule[] = [
+                        $schedules[] = new StudentsSchedules([
+                            'student_id' => $student->id,
+                            'quarter' => 4,
                             'cycle_day' => $values[$i],
                             'period' => (array_key_exists($period_str, $periods)) ? $periods[$period_str] : $period_str,
-                            'room' => $values[$i - 1]
-                        ];
+                            'room' => $values[$i + 2]
+                        ]);
                     }
                 }
             }
 
-            array_multisort(
-                array_column($schedule, 'cycle_day'), SORT_ASC,
-                array_column($schedule, 'period'), SORT_ASC,
-                $schedule);
-            var_dump($schedule);
+            // Delete all the old schedules
+            $builder = $this->modelsManager->createQuery("DELETE FROM Oratorysignout\\Models\\StudentsSchedules WHERE Oratorysignout\\Models\\StudentsSchedules.student_id = :student_id:")->execute(['student_id' => $student->id]);
+
+            foreach ($schedules as $schedule) {
+                if (!$schedule->create()) {
+                    // Revert transaction
+                    $this->db->rollback();
+                    $errors = [];
+                    foreach ($schedule->getMessages() as $message) {
+                        $error = [];
+                        $error['message'] = $message->getMessage();
+                        $error['field'] = $message->getField();
+                        $error['type'] = $message->getType();
+                        array_push($errors, $error);
+                    }
+                    return $this->sendBadRequest([
+                        "errors" => $errors
+                    ]);
+                }
+            }
+
+            $response[] = [
+                'student' => $student,
+                'schedules' => $schedules
+            ];
         }
+
+        $this->db->commit();
+
+        return $this->sendResponse($response);
 
     }
 

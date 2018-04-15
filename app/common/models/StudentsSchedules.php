@@ -73,7 +73,12 @@ class StudentsSchedules extends \Phalcon\Mvc\Model
                 "room",
             ],
 
-            MetaData::MODELS_PRIMARY_KEY => [],
+            MetaData::MODELS_PRIMARY_KEY => [
+                "student_id",
+                "quarter",
+                "cycle_day",
+                "period"
+            ],
 
             MetaData::MODELS_NON_PRIMARY_KEY => [
                 "student_id",
