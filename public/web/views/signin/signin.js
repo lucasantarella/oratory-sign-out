@@ -21,8 +21,8 @@ define([
       '}' +
       '</style>' +
       '<div class="row">' +
-      '  <div class="col s6 offset-s3">' +
-      '    <img class="responsive-img" src="./img/logo.png">' +
+      '  <div class="col s6 offset-s3" style="margin-top: 50px">' +
+      '    <img class="responsive-img" src="./img/logo_white.svg">' +
       '  </div>' +
       '</div>' +
       '<div class="row">' +

@@ -40,12 +40,34 @@ class IndexController extends ControllerBase
 
         foreach ($csv as $row) {
             $student = Students::findFirst("email = '{$row['StsAdrs_1_01_Cnts_1_01_Contactnum']}'");
+            if ($student === false) {
+                $student = new Students([
+                    'first_name' => $row['StsSt_Firstname'],
+                    'last_name' => $row['StsSt_Lastname'],
+                    'email' => $row['StsAdrs_1_01_Cnts_1_01_Contactnum']
+                ]);
+                if (!$student->create()) {
+                    // Revert transaction
+                    $this->db->rollback();
+                    $errors = [];
+                    foreach ($student->getMessages() as $message) {
+                        $error = [];
+                        $error['message'] = $message->getMessage();
+                        $error['field'] = $message->getField();
+                        $error['type'] = $message->getType();
+                        array_push($errors, $error);
+                    }
+                    return $this->sendBadRequest([
+                        "errors" => $errors
+                    ]);
+                }
+            }
+
             unset($row['StsSt_Firstname']);
             unset($row['StsSt_Lastname']);
             unset($row['StsAdrs_1_01_Cnts_1_01_Contactnum']);
             $values = array_values($row);
             $schedules = [];
-//            die(print_r($row));
 
             for ($i = 0; $i < count($row); $i += 3) {
                 if (is_numeric($values[$i])) {
@@ -62,7 +84,7 @@ class IndexController extends ControllerBase
             }
 
             // Delete all the old schedules
-            $builder = $this->modelsManager->createQuery("DELETE FROM Oratorysignout\\Models\\StudentsSchedules WHERE Oratorysignout\\Models\\StudentsSchedules.student_id = :student_id:")->execute(['student_id' => $student->id]);
+            $this->modelsManager->createQuery("DELETE FROM Oratorysignout\\Models\\StudentsSchedules WHERE Oratorysignout\\Models\\StudentsSchedules.student_id = :student_id:")->execute(['student_id' => $student->id]);
 
             foreach ($schedules as $schedule) {
                 if (!$schedule->create()) {
