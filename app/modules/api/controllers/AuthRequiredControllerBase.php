@@ -22,6 +22,11 @@ class AuthRequiredControllerBase extends ControllerBase
             timecop_return();
         }
 
+        if (!isset($_COOKIE['gtoken'])) {
+            $this->sendNotFound();
+            return false;
+        }
+
         $client = new Google_Client();
         $result = $client->verifyIdToken(base64_decode($_COOKIE['gtoken']));
         if ($result === false) {
