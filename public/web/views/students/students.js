@@ -69,7 +69,7 @@ define([
     childView: StudentListItem,
 
     filter: function (child, index, collection) {
-      return child.get('status') === 'scheduled';
+      return child.get('status') !== 'signedout';
     },
 
     onAttach: function () {
