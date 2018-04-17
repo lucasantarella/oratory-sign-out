@@ -237,7 +237,7 @@ class IndexController extends ControllerBase
 //                $this->modelsManager->createQuery("DELETE FROM Oratorysignout\\Models\\TeachersSchedules WHERE Oratorysignout\\Models\\TeachersSchedules.teacher_id = :teacher_id:")->execute(['teacher_id' => $teacher->id]);
 
                 foreach ($schedules as $schedule) {
-                    if (!$schedule->create()) {
+                    if (!$schedule->save()) {
                         // Revert transaction
 //                        $this->db->rollback();
                         $errors = [];
