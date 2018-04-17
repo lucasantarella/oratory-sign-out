@@ -12,6 +12,12 @@ define('APP_PATH', BASE_PATH . '/app');
  */
 $di = new FactoryDefault();
 
+
+/**
+ * Include Autoloader
+ */
+include APP_PATH . '/config/loader.php';
+
 /**
  * Include general services
  */
@@ -21,11 +27,6 @@ include APP_PATH . '/config/services.php';
  * Include cli environment specific services
  */
 include APP_PATH . '/config/services_cli.php';
-
-/**
- * Include Autoloader
- */
-include APP_PATH . '/config/loader.php';
 
 /**
  * Get config service for use in inline setup below
