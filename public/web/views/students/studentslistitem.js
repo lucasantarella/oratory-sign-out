@@ -10,10 +10,7 @@ define([
     tagName: 'tr',
 
     template: _.template('' +
-      '   <th scope="row"><%- id %></th>' +
-      '   <td><%- first_name %></td>' +
-      '   <td><%- last_name %></td>' +
-      '   <td><%- email %></td>' +
+      '   <td><%- first_name %>&nbsp;<%- last_name %></td>' +
       ''),
 
   });

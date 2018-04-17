@@ -32,4 +32,5 @@ class Module implements ModuleDefinitionInterface
     public function registerServices(DiInterface $di)
     {
     }
+
 }

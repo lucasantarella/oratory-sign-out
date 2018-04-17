@@ -380,28 +380,6 @@ class TeachersController extends AuthRequiredControllerBase
             ];
         } else return $this->sendNotFound();
 
-        $builder = $this->modelsManager->createBuilder()
-            ->from('Oratorysignout\\Models\\LogsTeachers')
-            ->columns(['Oratorysignout\\Models\\LogsTeachers.*'])
-            ->where('(Oratorysignout\\Models\\LogsTeachers.timestamp BETWEEN :period_start: AND :period_end:) AND Oratorysignout\\Models\\LogsTeachers.teacher_id = :teacher_id:')
-            ->orderBy('Oratorysignout\\Models\\LogsTeachers.timestamp DESC')
-            ->limit(1);
-
-        $params = [
-            'teacher_id' => $teacher->id,
-            'period_start' => strval($date) . $period->start_time . '00',
-            'period_end' => strval($date) . $period->end_time . '00'
-        ];
-
-        /** @var LogsTeachers[] $query */
-        $logsQuery = $builder->getQuery()->execute($params);
-
-        if (count($logsQuery) === 1) {
-            /** @var LogsTeachers $row */
-            $row = $logsQuery[0];
-            $response['room'] = $row->room_to;
-        }
-
         return $this->sendResponse($response);
     }
 
