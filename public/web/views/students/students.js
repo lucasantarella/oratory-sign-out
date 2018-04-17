@@ -68,6 +68,10 @@ define([
 
     childView: StudentListItem,
 
+    filter: function (child, index, collection) {
+      return child.get('status') === 'scheduled';
+    },
+
     onAttach: function () {
       $('body').addClass('oratory-blue');
     },
