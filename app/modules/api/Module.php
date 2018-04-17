@@ -234,6 +234,13 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
                 ],
                 'method' => 'POST'
             ],
+            [
+                'pattern' => '/teachers/me/schedules/now',
+                'attr' => [
+                    'controller' => 'teachers',
+                    'action' => 'currentRoom',
+                ]
+            ],
         ];
     }
 
