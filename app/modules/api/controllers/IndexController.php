@@ -234,7 +234,7 @@ class IndexController extends ControllerBase
                 }
 
                 // Delete all the old schedules
-                $this->modelsManager->createQuery("DELETE FROM Oratorysignout\\Models\\TeachersSchedules WHERE Oratorysignout\\Models\\TeachersSchedules.teacher_id = :teacher_id:")->execute(['teacher_id' => $teacher->id]);
+//                $this->modelsManager->createQuery("DELETE FROM Oratorysignout\\Models\\TeachersSchedules WHERE Oratorysignout\\Models\\TeachersSchedules.teacher_id = :teacher_id:")->execute(['teacher_id' => $teacher->id]);
 
                 foreach ($schedules as $schedule) {
                     if (!$schedule->create()) {
