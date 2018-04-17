@@ -1421,10 +1421,7 @@ define('views/students/studentslistitem',[
     tagName: 'tr',
 
     template: _.template('' +
-      '   <th scope="row"><%- id %></th>' +
-      '   <td><%- first_name %></td>' +
-      '   <td><%- last_name %></td>' +
-      '   <td><%- email %></td>' +
+      '   <td><%- first_name %>&nbsp;<%- last_name %></td>' +
       ''),
 
   });
@@ -1433,12 +1430,13 @@ define('views/students/studentslistitem',[
 // Filename: /views/students/students.js
 
 define('views/students/students',[
+  'jquery',
   'underscore',
   'backbone',
   'marionette',
   'collections/students',
   'views/students/studentslistitem'
-], function (_, Backbone, Marionette, StudentsCollection, StudentListItem) {
+], function ($, _, Backbone, Marionette, StudentsCollection, StudentListItem) {
   return Marionette.CompositeView.extend({
 
     tagName: 'div',
@@ -1447,48 +1445,65 @@ define('views/students/students',[
 
     template: _.template('' +
       '<div class="row">' +
-      '<div class="s12 center-align">' +
-      '<h2>Room 101</h2>' +
-      '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="s12">' +
-      '<table class="table">' +
-      '  <thead class="thead-default">' +
-      '    <tr>' +
-      '      <th>#</th>' +
-      '      <th>First Name</th>' +
-      '      <th>Last Name</th>' +
-      '      <th>Email</th>' +
-      '    </tr>' +
-      '  </thead>' +
-      '  <tbody>' +
-      '  </tbody>' +
-      '</table>' +
-      '</div>' +
+      '  <div class="col s6 offset-s3">' +
+      '    <div class="card" style="margin-top: 100px; padding: 20px">' +
+      '      <div class="row">' +
+      '        <div class="col s10 offset-s1 center-align">' +
+      '          <h2>Room <%= room %></h2>' +
+      '        </div>' +
+      '      </div>' +
+      '      <div class="row">' +
+      '        <div class="col s10 offset-s1 center">' +
+      '          <table class="table">' +
+      '            <thead class="thead-default">' +
+      '              <tr><th>Students</th></tr>' +
+      '            </thead>' +
+      '            <tbody></tbody>' +
+      '          </table>' +
+      '        </div>' +
+      '      </div>' +
+      '    </div>' +
+      '  </div>' +
       '</div>' +
       ''),
 
     initialize: function (options) {
-      this.collection = (options.collection) ? options.collection : new StudentsCollection();
-      this.collection.fetch();
+      let model = (options.model) ? options.model : new Backbone.Model({room: ''});
+      let collection = (options.collection) ? options.collection : new StudentsCollection();
+
+      this.model = model;
+      this.model.bind('change', this.render);
+      this.collection = collection;
+
+      let socket = new WebSocket(window.socketUrl, ['teacher']);
+
+      socket.onopen = function () {
+        socket.send(JSON.stringify({action: 'get', value: 'currentroom'}))
+      };
+
+      socket.onmessage = function (event) {
+        var jsonObject = JSON.parse(event.data);
+        if (jsonObject.data_type === 'room') {
+          model.set(jsonObject.data);
+          collection.url = '/api/rooms/' + model.get('room') + '/students';
+          collection.fetch();
+        }
+      };
+
+      this.socket = socket;
     },
 
     childViewContainer: 'tbody',
 
     childView: StudentListItem,
 
-    childViewEvents: {
-      // 'child:click:room': 'onRoomSelected',
-      //'child:click:instance': 'onInstanceSelected'
+    onAttach: function () {
+      $('body').addClass('oratory-blue');
     },
 
-    _setChildSelected: function (model) {
-      let roomsView = this.getChildView('roomsList');
-      roomsView.children.each(function (e) {
-        e.setInactive();
-      });
-      roomsView.children.findByModel(roomsView.collection.findWhere({installation_id: model.get('installation_id')})).setActive();
+    onDetach: function () {
+      $('body').removeClass('oratory-blue');
+      this.socket.close();
     }
 
   });
@@ -1816,7 +1831,8 @@ define('app',['require','jquery','backbone','marionette','views/AppView','views/
       // Show the loading spinner
       this.showView(new AppView());
 
-      this.connection = new WebSocket(((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090'), window.OratoryUserType);
+      window.socketUrl = ((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090');
+      this.connection = new WebSocket(window.socketUrl, window.OratoryUserType);
 
       // Init modules
       new RoomsModule({app: this});
