@@ -1804,7 +1804,7 @@ define('app',['require','jquery','backbone','marionette','views/AppView','views/
       // Show the loading spinner
       this.showView(new AppView());
 
-      this.connection = new WebSocket(((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':9090', window.OratoryUserType);
+      this.connection = new WebSocket(((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090'), window.OratoryUserType);
 
       // Init modules
       new RoomsModule({app: this});
