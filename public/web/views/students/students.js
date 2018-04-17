@@ -11,9 +11,16 @@ define([
 
     tagName: 'div',
 
-    className: 'container no-gutters-sm no-gutters-md',
+    className: 'container',
 
     template: _.template('' +
+      '<div class="row">' +
+      '<div class="s12 center-align">' +
+      '<h2>Room 101</h2>' +
+      '</div>' +
+      '</div>' +
+      '<div class="row">' +
+      '<div class="s12">' +
       '<table class="table">' +
       '  <thead class="thead-default">' +
       '    <tr>' +
@@ -26,11 +33,13 @@ define([
       '  <tbody>' +
       '  </tbody>' +
       '</table>' +
+      '</div>' +
+      '</div>' +
       ''),
 
     initialize: function (options) {
       this.collection = (options.collection) ? options.collection : new StudentsCollection();
-      this.collection.getFirstPage();
+      this.collection.fetch();
     },
 
     childViewContainer: 'tbody',

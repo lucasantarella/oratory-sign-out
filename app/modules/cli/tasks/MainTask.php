@@ -16,12 +16,16 @@ class MainTask extends \Phalcon\Cli\Task
         $loop = Factory::create();
         $pusher = new WebsocketController;
 
+        $wsServer = new \Ratchet\WebSocket\WsServer(
+            new WebsocketController()
+        );
+        $wsServer->enableKeepAlive($loop);
+        $wsServer->setStrictSubProtocolCheck(false);
+
         $webSock = new \React\Socket\Server('0.0.0.0:9090', $loop); // Binding to 0.0.0.0 means remotes can connect
         $webServer = new \Ratchet\Server\IoServer(
             new \Ratchet\Http\HttpServer(
-                new \Ratchet\WebSocket\WsServer(
-                    new WebsocketController()
-                )
+                $wsServer
             ),
             $webSock
         );
