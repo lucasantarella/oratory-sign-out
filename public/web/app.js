@@ -80,7 +80,7 @@ define(function (require) {
       // Show the loading spinner
       this.showView(new AppView());
 
-      this.connection = new WebSocket('ws://localhost:9090', window.OratoryUserType);
+      this.connection = new WebSocket('ws://' + window.location.hostname + ':9090', window.OratoryUserType);
 
       // Init modules
       new RoomsModule({app: this});
