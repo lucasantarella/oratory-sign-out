@@ -17,7 +17,7 @@ class MainTask extends \Phalcon\Cli\Task
 {
     public function mainAction()
     {
-        $loop   = Factory::create();
+        $loop = Factory::create();
         $pusher = new WebsocketController;
 
         $webSock = new \React\Socket\Server('0.0.0.0:9090', $loop); // Binding to 0.0.0.0 means remotes can connect
@@ -37,7 +37,8 @@ class MainTask extends \Phalcon\Cli\Task
 
 }
 
-class WebsocketController implements MessageComponentInterface, WsServerInterface{
+class WebsocketController implements MessageComponentInterface, WsServerInterface
+{
 
     /**
      * When a new connection is opened it will be passed to this method
@@ -48,7 +49,7 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
     {
         $cookiesRaw = $conn->httpRequest->getHeader('Cookie');
 
-        if(count($cookiesRaw)) {
+        if (count($cookiesRaw)) {
             $cookiesArr = \GuzzleHttp\Psr7\parse_header($cookiesRaw)[0]; // Array of cookies
         }
 
@@ -86,7 +87,9 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
 
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg)
     {
-        echo $msg;
+        $json = json_decode($msg, true);
+        if (array_key_exists('msg', $json) && $json['msg'] == 'ping')
+            $conn->send(json_encode(['msg' => 'pong']));
     }
 
     /**
