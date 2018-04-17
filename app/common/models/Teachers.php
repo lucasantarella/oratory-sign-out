@@ -4,7 +4,8 @@ namespace Oratorysignout\Models;
 
 use Phalcon\Db\Column;
 use Phalcon\Mvc\Model\MetaData;
-use Phalcon\Mvc\Model\Validator\Email as Email;
+use Phalcon\Validation\Validator\Email;
+use Phalcon\Validation;
 
 /**
  * Teachers
@@ -60,20 +61,16 @@ class Teachers extends \Phalcon\Mvc\Model
      */
     public function validation()
     {
-        $this->validate(
-            new Email(
-                [
-                    'field' => 'email',
-                    'required' => true,
-                ]
-            )
+        $validator = new Validation();
+
+        $validator->add(
+            'email', //your field name
+            new Email([
+                'message' => 'Please enter a correct email address'
+            ])
         );
 
-        if ($this->validationHasFailed() == true) {
-            return false;
-        }
-
-        return true;
+        return $this->validate($validator);
     }
 
     /**

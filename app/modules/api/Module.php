@@ -68,10 +68,18 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
                 ]
             ],
             [
-                'pattern' => '/import',
+                'pattern' => '/import/students',
                 'attr' => [
                     'controller' => 'index',
-                    'action' => 'import',
+                    'action' => 'importStudents',
+                ],
+                'method' => 'POST'
+            ],
+            [
+                'pattern' => '/import/teachers',
+                'attr' => [
+                    'controller' => 'index',
+                    'action' => 'importTeachers',
                 ],
                 'method' => 'POST'
             ],
