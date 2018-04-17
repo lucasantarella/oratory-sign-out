@@ -3,10 +3,13 @@
 namespace Oratorysignout\Modules\Cli\Tasks;
 
 use Google_Client;
+use Oratorysignout\Models\LogsStudents;
 use Oratorysignout\Models\Schedules;
 use Oratorysignout\Models\SchedulesPeriods;
 use Oratorysignout\Models\Students;
+use Oratorysignout\Models\StudentsSchedules;
 use Oratorysignout\Models\Teachers;
+use Oratorysignout\Models\TeachersSchedules;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
@@ -35,7 +38,6 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
         );
 
         $loop->run();
-
     }
 
     /**
@@ -142,32 +144,35 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
                                 'end_time' => $period->end_time,
                                 'room' => $studentSchedule->room
                             ];
-                        } else return;
 
-                        var_dump($response);
+                            $builder = $this->modelsManager->createBuilder()
+                                ->from('Oratorysignout\\Models\\LogsStudents')
+                                ->columns(['Oratorysignout\\Models\\LogsStudents.*'])
+                                ->where('(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN :period_start: AND :period_end:) AND Oratorysignout\\Models\\LogsStudents.student_id = :student_id:')
+                                ->orderBy('Oratorysignout\\Models\\LogsStudents.timestamp DESC')
+                                ->limit(1);
 
-                        $builder = $this->modelsManager->createBuilder()
-                            ->from('Oratorysignout\\Models\\LogsStudents')
-                            ->columns(['Oratorysignout\\Models\\LogsStudents.*'])
-                            ->where('(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN :period_start: AND :period_end:) AND Oratorysignout\\Models\\LogsStudents.student_id = :student_id:')
-                            ->orderBy('Oratorysignout\\Models\\LogsStudents.timestamp DESC')
-                            ->limit(1);
+                            $params = [
+                                'student_id' => $student->id,
+                                'period_start' => strval($date) . $period->start_time . '00',
+                                'period_end' => strval($date) . $period->end_time . '00'
+                            ];
 
-                        $params = [
-                            'student_id' => $student->id,
-                            'period_start' => strval($date) . $period->start_time . '00',
-                            'period_end' => strval($date) . $period->end_time . '00'
-                        ];
+                            /** @var LogsStudents[] $query */
+                            $logsQuery = $builder->getQuery()->execute($params);
 
-                        /** @var LogsStudents[] $query */
-                        $logsQuery = $builder->getQuery()->execute($params);
+                            if (count($logsQuery) === 1) {
+                                /** @var LogsStudents $row */
+                                $row = $logsQuery[0];
+                                $response['room'] = $row->room_to;
+                            }
 
-                        if (count($logsQuery) === 1) {
-                            /** @var LogsStudents $row */
-                            $row = $logsQuery[0];
-                            $response['room'] = $row->room_to;
-                        }
-                        return $conn->send(json_encode($response));
+                        } else $response = null;
+
+                        return $conn->send(json_encode([
+                            'data_type' => 'room',
+                            'data' => $response
+                        ]));
                     } else {
                         $teacher = Teachers::findFirst("email = '{$conn->user['email']}'");
                         if ($teacher === false) return;
@@ -198,12 +203,18 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
                             $teacherSchedule = $row['oratorysignout\\Models\\TeachersSchedules'];
 
                             return $conn->send(json_encode([
-                                'period' => (int)$period->period,
-                                'start_time' => $period->start_time,
-                                'end_time' => $period->end_time,
-                                'room' => $teacherSchedule->room
+                                'data_type' => 'room',
+                                'data' => [
+                                    'period' => (int)$period->period,
+                                    'start_time' => $period->start_time,
+                                    'end_time' => $period->end_time,
+                                    'room' => $teacherSchedule->room
+                                ]
                             ]));
-                        } else return;
+                        } else return $conn->send(json_encode([
+                            'data_type' => 'room',
+                            'data' => null
+                        ]));
                     }
                 }
                 break;

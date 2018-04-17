@@ -20,7 +20,7 @@ define([
       '    <div class="card" style="margin-top: 100px; padding: 20px">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
-      '          <h2>Room 101</h2>' +
+      '          <h2>Room <%= room %></h2>' +
       '        </div>' +
       '      </div>' +
       '      <div class="row">' +
@@ -39,9 +39,29 @@ define([
       ''),
 
     initialize: function (options) {
-      this.collection = (options.collection) ? options.collection : new StudentsCollection();
+      let model = (options.model) ? options.model : new Backbone.Model({room: ''});
+      let collection = (options.collection) ? options.collection : new StudentsCollection();
 
-      this.collection.fetch();
+      this.model = model;
+      this.model.bind('change', this.render);
+      this.collection = collection;
+
+      let socket = new WebSocket(window.socketUrl, ['teacher']);
+
+      socket.onopen = function () {
+        socket.send(JSON.stringify({action: 'get', value: 'currentroom'}))
+      };
+
+      socket.onmessage = function (event) {
+        var jsonObject = JSON.parse(event.data);
+        if (jsonObject.data_type === 'room') {
+          model.set(jsonObject.data);
+          collection.url = '/api/rooms/' + model.get('room') + '/students';
+          collection.fetch();
+        }
+      };
+
+      this.socket = socket;
     },
 
     childViewContainer: 'tbody',
@@ -54,6 +74,7 @@ define([
 
     onDetach: function () {
       $('body').removeClass('oratory-blue');
+      this.socket.close();
     }
 
   });

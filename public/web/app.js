@@ -80,7 +80,8 @@ define(function (require) {
       // Show the loading spinner
       this.showView(new AppView());
 
-      this.connection = new WebSocket(((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090'), window.OratoryUserType);
+      window.socketUrl = ((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090');
+      this.connection = new WebSocket(window.socketUrl, window.OratoryUserType);
 
       // Init modules
       new RoomsModule({app: this});
