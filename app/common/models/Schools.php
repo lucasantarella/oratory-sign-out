@@ -4,8 +4,7 @@ namespace Oratorysignout\Models;
 
 use Phalcon\Db\Column;
 use Phalcon\Mvc\Model\MetaData;
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\Email;
+use Phalcon\Mvc\Model\Validator\Email as Email;
 
 /**
  * Students
@@ -29,72 +28,16 @@ class Students extends \Phalcon\Mvc\Model
     /**
      *
      * @var string
-     * @Primary
-     * @Identity
-     * @Column(type="string", length=20, nullable=false)
-     */
-    public $school_id;
-
-    /**
-     *
-     * @var string
      * @Column(type="string", length=50, nullable=false)
      */
-    public $first_name;
-
-    /**
-     *
-     * @var string
-     * @Column(type="string", length=50, nullable=false)
-     */
-    public $middle_name;
-
-    /**
-     *
-     * @var string
-     * @Column(type="string", length=50, nullable=false)
-     */
-    public $last_name;
-
-    /**
-     *
-     * @var string
-     * @Column(type="string", length=255, nullable=true)
-     */
-    public $email;
-
-    /**
-     *
-     * @var int
-     * @Column(type="int", length=4, nullable=true)
-     */
-    public $grad_year;
-
-    /**
-     * Validations and business logic
-     *
-     * @return boolean
-     */
-    public function validation()
-    {
-        $validator = new Validation();
-
-        $validator->add(
-            'email', //your field name
-            new Email([
-                'message' => 'Please enter a correct email address'
-            ])
-        );
-
-        return $this->validate($validator);
-    }
+    public $name;
 
     /**
      * Initialize method for model.
      */
     public function initialize()
     {
-        $this->hasMany('id', 'Oratorysignout\Models\StudentsSchedules', 'student_id', ['alias' => 'StudentsSchedules']);
+        $this->hasMany('id', 'Oratorysignout\Models\Students', 'school_id', ['alias' => 'Students']);
     }
 
     /**
@@ -105,10 +48,7 @@ class Students extends \Phalcon\Mvc\Model
         return [
             MetaData::MODELS_ATTRIBUTES => [
                 "id",
-                "first_name",
-                "last_name",
-                "email",
-                "grad_year",
+                "name",
             ],
 
             MetaData::MODELS_PRIMARY_KEY => [
@@ -116,33 +56,23 @@ class Students extends \Phalcon\Mvc\Model
             ],
 
             MetaData::MODELS_NON_PRIMARY_KEY => [
-                "first_name",
-                "last_name",
-                "email",
-                "grad_year",
+                "name",
             ],
 
             // Every column that doesn't allows null values
             MetaData::MODELS_NOT_NULL => [
                 "id",
-                "first_name",
-                "last_name",
-                "email",
             ],
 
             // Every column and their data types
             MetaData::MODELS_DATA_TYPES => [
                 "id" => Column::TYPE_BIGINTEGER,
-                "first_name" => Column::TYPE_VARCHAR,
-                "last_name" => Column::TYPE_VARCHAR,
-                "email" => Column::TYPE_VARCHAR,
-                "grad_year" => Column::TYPE_INTEGER,
+                "name" => Column::TYPE_VARCHAR,
             ],
 
             // The columns that have numeric data types
             MetaData::MODELS_DATA_TYPES_NUMERIC => [
                 "id" => true,
-                "grad_year" => true,
             ],
 
             // The identity column, use boolean false if the model doesn't have
@@ -152,10 +82,7 @@ class Students extends \Phalcon\Mvc\Model
             // How every column must be bound/casted
             MetaData::MODELS_DATA_TYPES_BIND => [
                 "id" => Column::BIND_PARAM_INT,
-                "first_name" => Column::BIND_PARAM_STR,
-                "last_name" => Column::BIND_PARAM_STR,
-                "email" => Column::BIND_PARAM_STR,
-                "grad_year" => Column::BIND_PARAM_INT,
+                "name" => Column::BIND_PARAM_STR,
             ],
 
             // Fields that must be ignored from INSERT SQL statements
@@ -168,16 +95,12 @@ class Students extends \Phalcon\Mvc\Model
 
             // Default values for columns
             MetaData::MODELS_DEFAULT_VALUES => [
-                "first_name" => '',
-                "last_name" => '',
-                "email" => '',
+                "name" => '',
             ],
 
             // Fields that allow empty strings
             MetaData::MODELS_EMPTY_STRING_VALUES => [
-                "first_name" => '',
-                "last_name" => '',
-                "email" => '',
+                "name" => '',
             ],
         ];
     }
@@ -221,9 +144,7 @@ class Students extends \Phalcon\Mvc\Model
     {
         return [
             'id' => (int)$this->id,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'email' => $this->email,
+            'name' => $this->name,
         ];
     }
 
