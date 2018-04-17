@@ -2,6 +2,7 @@
 
 namespace Oratorysignout\Modules\Cli\Tasks;
 
+use Google_Client;
 use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServer;
 use Ratchet\Mock\Component;
@@ -50,8 +51,15 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
         if(count($cookiesRaw)) {
             $cookiesArr = \GuzzleHttp\Psr7\parse_header($cookiesRaw)[0]; // Array of cookies
         }
-        var_dump($cookiesArr['gtoken']);
-        var_dump($conn);
+
+        $client = new Google_Client();
+        $result = $client->verifyIdToken(base64_decode($cookiesArr['gtoken']));
+        if ($result === false) {
+            $conn->close();
+        } else
+            $conn->user = $result;
+
+        var_dump($conn->user);
     }
 
     /**
@@ -78,7 +86,7 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
 
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg)
     {
-        // TODO: Implement onMessage() method.
+        echo $msg;
     }
 
     /**
