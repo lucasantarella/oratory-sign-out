@@ -60,7 +60,7 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
         } else
             $conn->user = $result;
 
-        var_dump($conn->user);
+        echo "User " . $conn->user['email'] . " connected" . PHP_EOL;
     }
 
     /**
@@ -70,7 +70,7 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
      */
     function onClose(ConnectionInterface $conn)
     {
-        // TODO: Implement onClose() method.
+        echo "Connection Closed" . PHP_EOL;
     }
 
     /**
@@ -82,7 +82,7 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
      */
     function onError(ConnectionInterface $conn, \Exception $e)
     {
-        // TODO: Implement onError() method.
+        echo $e->getTraceAsString();
     }
 
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg)
@@ -101,4 +101,5 @@ class WebsocketController implements MessageComponentInterface, WsServerInterfac
     {
         return ['student', 'teacher'];
     }
+
 }
