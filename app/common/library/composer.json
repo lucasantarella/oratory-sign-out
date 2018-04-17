@@ -8,6 +8,8 @@
     "vlucas/phpdotenv": "^2.4",
     "bugsnag/bugsnag": "^3.6",
     "google/apiclient": "^2.0",
-    "cboden/ratchet": "^0.4.1"
+    "cboden/ratchet": "^0.4.1",
+    "react/zmq": "0.2.*|0.3.*"
+
   }
 }
