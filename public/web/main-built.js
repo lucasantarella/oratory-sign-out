@@ -683,13 +683,15 @@ define('views/signin/signin',[
   });
 });
 
+
 //Filename: /modules/auth.js
 
 define('modules/auth',[
   'jquery',
   'marionette',
-  'cookie'
-], function ($, Marionette, Cookie) {
+  'cookie',
+  'gapi!auth2'
+], function ($, Marionette, Cookie, auth2) {
 
   return Marionette.AppRouter.extend({
 
@@ -707,15 +709,16 @@ define('modules/auth',[
       this.app.session.set('gauth', undefined);
       this.app.session.set('gtoken', undefined);
       window.OratoryUserType = null;
+      auth2.getAuthInstance().signOut();
       Backbone.history.navigate('');
       location.reload();
     },
 
-    import: function() {
+    import: function () {
       var formData = new FormData();
       formData.append('section', 'general');
       formData.append('action', 'previewImg');
-// Attach file
+      // Attach file
       formData.append('image', $('input[type=file]')[0].files[0]);
       $.ajax({
         url: '/api/import',
@@ -723,7 +726,7 @@ define('modules/auth',[
         type: 'POST',
         contentType: false,
         processData: false,
-        success: function(response) {
+        success: function (response) {
           console.log(response);
         }
       });
