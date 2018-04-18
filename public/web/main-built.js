@@ -697,7 +697,7 @@ define('views/import',[
     className: 'container',
 
     template: _.template('' +
-      '<form method="POST" action="/api/import/students">' +
+      '<form method="POST" action="/api/import/students" enctype="multipart/form-data">' +
       '<input type="file" name="schedules" />' +
       '<input type="submit" value="Submit">' +
       '</form>' +
