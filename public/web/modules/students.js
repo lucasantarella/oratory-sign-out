@@ -13,6 +13,7 @@ define([
 
     initialize: function (options) {
       this.app = (options.app) ? options.app : null;
+      this.currentRoomModel = (options.currentRoomModel) ? options.currentRoomModel : (app.currentRoomModel) ? app.currentRoomModel : new Backbone.Model({room: ''});
       this.students = new StudentsCollection();
       // this.students.getFirstPage();
     },
@@ -24,7 +25,7 @@ define([
     },
 
     listStudents: function (student) {
-      let view = new StudentsView({collection: this.students});
+      let view = new StudentsView({collection: this.students, model: this.currentRoomModel});
       this.app.getView().showChildView('main', view);
     },
 

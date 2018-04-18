@@ -25,6 +25,12 @@ include APP_PATH . '/config/loader.php';
  */
 include APP_PATH . '/config/services.php';
 
+
+if (getenv('TIME_OVERRIDE') !== false && extension_loaded('timecop')) {
+    $time = DateTime::createFromFormat('YmdHis', getenv('TIME_OVERRIDE'));
+    timecop_freeze(mktime($time->format('H'), $time->format('i'), $time->format('s'), $time->format('m'), $time->format('d'), $time->format('Y')));
+}
+
 /**
  * Include cli environment specific services
  */
