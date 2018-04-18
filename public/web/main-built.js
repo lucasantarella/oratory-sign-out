@@ -1446,10 +1446,11 @@ define('views/students/students',[
     template: _.template('' +
       '<div class="row">' +
       '  <div class="col s6 offset-s3">' +
-      '    <div class="card" style="margin-top: 100px; padding: 20px">' +
+      '    <div class="card-panel" style="margin-top: 50px;">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
-      '          <h2>Room <%= room %></h2>' +
+      '          <img class="responsive-img" src="./img/crest.svg" width="100px"/>' +
+      '          <h2 style="margin-top: 0.6em;">Room <%= room %></h2>' +
       '        </div>' +
       '      </div>' +
       '      <div class="row">' +
@@ -1466,6 +1467,10 @@ define('views/students/students',[
       '  </div>' +
       '</div>' +
       ''),
+
+    ui: {
+      'header': 'h2'
+    },
 
     initialize: function (options) {
       let model = (options.model) ? options.model : new Backbone.Model({room: ''});
@@ -1499,6 +1504,14 @@ define('views/students/students',[
 
     filter: function (child, index, collection) {
       return child.get('status') !== 'signedout';
+    },
+
+    onRender: function () {
+      if(this.model.get('room').length === 0) {
+        this.getUI('header').html('No class scheduled!');
+        this.$el.find('table').hide();
+      } else
+        this.$el.find('table').show();
     },
 
     onAttach: function () {
@@ -1731,6 +1744,7 @@ define('modules/students',[
 
     initialize: function (options) {
       this.app = (options.app) ? options.app : null;
+      this.currentRoomModel = (options.currentRoomModel) ? options.currentRoomModel : (app.currentRoomModel) ? app.currentRoomModel : new Backbone.Model({room: ''});
       this.students = new StudentsCollection();
       // this.students.getFirstPage();
     },
@@ -1742,7 +1756,7 @@ define('modules/students',[
     },
 
     listStudents: function (student) {
-      let view = new StudentsView({collection: this.students});
+      let view = new StudentsView({collection: this.students, model: this.currentRoomModel});
       this.app.getView().showChildView('main', view);
     },
 
@@ -1830,6 +1844,8 @@ define('app',['require','jquery','backbone','marionette','views/AppView','views/
       } else
         this.showSignIn(this);
     },
+
+    currentRoomModel: new Backbone.Model({room: ''}),
 
     onStart: function () {
       // Show the loading spinner
