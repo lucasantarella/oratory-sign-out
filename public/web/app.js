@@ -76,6 +76,8 @@ define(function (require) {
         this.showSignIn(this);
     },
 
+    currentRoomModel: new Backbone.Model({room: ''}),
+
     onStart: function () {
       // Show the loading spinner
       this.showView(new AppView());

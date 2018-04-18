@@ -2,6 +2,7 @@
 
 namespace Oratorysignout\Modules\Cli\Tasks;
 
+use DateTime;
 use Google_Client;
 use Oratorysignout\Models\LogsStudents;
 use Oratorysignout\Models\Schedules;
@@ -53,12 +54,21 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
             $cookiesArr = \GuzzleHttp\Psr7\parse_header($cookiesRaw)[0]; // Array of cookies
         }
 
+        if (getenv('TIME_OVERRIDE') !== false && extension_loaded('timecop')) {
+            timecop_return();
+        }
+
         $client = new Google_Client();
         $result = $client->verifyIdToken(base64_decode($cookiesArr['gtoken']));
         if ($result === false) {
             $conn->close();
         } else
             $conn->user = $result;
+
+        if (getenv('TIME_OVERRIDE') !== false && extension_loaded('timecop')) {
+            $time = DateTime::createFromFormat('YmdHis', getenv('TIME_OVERRIDE'));
+            timecop_freeze(mktime($time->format('H'), $time->format('i'), $time->format('s'), $time->format('m'), $time->format('d'), $time->format('Y')));
+        }
 
         echo "User " . $conn->user['email'] . " connected" . PHP_EOL;
     }

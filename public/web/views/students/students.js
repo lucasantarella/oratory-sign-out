@@ -17,10 +17,11 @@ define([
     template: _.template('' +
       '<div class="row">' +
       '  <div class="col s6 offset-s3">' +
-      '    <div class="card" style="margin-top: 100px; padding: 20px">' +
+      '    <div class="card-panel" style="margin-top: 50px;">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
-      '          <h2>Room <%= room %></h2>' +
+      '          <img class="responsive-img" src="./img/crest.svg" width="100px"/>' +
+      '          <h2 style="margin-top: 0.6em;">Room <%= room %></h2>' +
       '        </div>' +
       '      </div>' +
       '      <div class="row">' +
@@ -37,6 +38,10 @@ define([
       '  </div>' +
       '</div>' +
       ''),
+
+    ui: {
+      'header': 'h2'
+    },
 
     initialize: function (options) {
       let model = (options.model) ? options.model : new Backbone.Model({room: ''});
@@ -70,6 +75,14 @@ define([
 
     filter: function (child, index, collection) {
       return child.get('status') !== 'signedout';
+    },
+
+    onRender: function () {
+      if(this.model.get('room').length === 0) {
+        this.getUI('header').html('No class scheduled!');
+        this.$el.find('table').hide();
+      } else
+        this.$el.find('table').show();
     },
 
     onAttach: function () {
