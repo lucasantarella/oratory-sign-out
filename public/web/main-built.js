@@ -1744,7 +1744,7 @@ define('modules/students',[
 
     initialize: function (options) {
       this.app = (options.app) ? options.app : null;
-      this.currentRoomModel = (options.currentRoomModel) ? options.currentRoomModel : (app.currentRoomModel) ? app.currentRoomModel : new Backbone.Model({room: ''});
+      this.currentRoomModel = (options.currentRoomModel) ? options.currentRoomModel : (this.app.currentRoomModel) ? this.app.currentRoomModel : new Backbone.Model({room: ''});
       this.students = new StudentsCollection();
       // this.students.getFirstPage();
     },
