@@ -683,6 +683,29 @@ define('views/signin/signin',[
   });
 });
 
+// Filename: /views/import.js
+
+define('views/import',[
+  'underscore',
+  'backbone',
+  'marionette',
+], function (_, Backbone, Marionette) {
+  return Marionette.CompositeView.extend({
+
+    tagName: 'div',
+
+    className: 'container',
+
+    template: _.template('' +
+      '<form method="POST" action="/api/import/students">' +
+      '<input type="file" name="schedules" />' +
+      '<input type="submit" value="Submit">' +
+      '</form>' +
+      ''),
+
+  });
+});
+
 
 //Filename: /modules/auth.js
 
@@ -690,8 +713,9 @@ define('modules/auth',[
   'jquery',
   'marionette',
   'cookie',
+  'views/import',
   'gapi!auth2'
-], function ($, Marionette, Cookie, auth2) {
+], function ($, Marionette, Cookie, ImportView, auth2) {
 
   return Marionette.AppRouter.extend({
 
@@ -715,21 +739,7 @@ define('modules/auth',[
     },
 
     import: function () {
-      var formData = new FormData();
-      formData.append('section', 'general');
-      formData.append('action', 'previewImg');
-      // Attach file
-      formData.append('image', $('input[type=file]')[0].files[0]);
-      $.ajax({
-        url: '/api/import',
-        data: formData,
-        type: 'POST',
-        contentType: false,
-        processData: false,
-        success: function (response) {
-          console.log(response);
-        }
-      });
+      this.app.getView().showChildView('main', new ImportView());
     }
 
   });
