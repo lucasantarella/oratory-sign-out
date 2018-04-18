@@ -4,8 +4,9 @@ define([
   'jquery',
   'marionette',
   'cookie',
+  'views/import',
   'gapi!auth2'
-], function ($, Marionette, Cookie, auth2) {
+], function ($, Marionette, Cookie, ImportView, auth2) {
 
   return Marionette.AppRouter.extend({
 
@@ -29,21 +30,7 @@ define([
     },
 
     import: function () {
-      var formData = new FormData();
-      formData.append('section', 'general');
-      formData.append('action', 'previewImg');
-      // Attach file
-      formData.append('image', $('input[type=file]')[0].files[0]);
-      $.ajax({
-        url: '/api/import',
-        data: formData,
-        type: 'POST',
-        contentType: false,
-        processData: false,
-        success: function (response) {
-          console.log(response);
-        }
-      });
+      this.app.getView().showChildView('main', new ImportView());
     }
 
   });
