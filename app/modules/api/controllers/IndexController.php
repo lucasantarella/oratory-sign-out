@@ -42,7 +42,8 @@ class IndexController extends ControllerBase
         $this->db->begin();
 
         foreach ($csv as $row) {
-            $student = Students::findFirst("email = '{$row['StsAdrs_1_01_Cnts_1_01_Contactnum']}'");
+            $email = addslashes($row['StsAdrs_1_01_Cnts_1_01_Contactnum']);
+            $student = Students::findFirst("email = '{$email}'");
             if ($student === false) {
                 $student = new Students([
                     'first_name' => $row['StsSt_Firstname'],
@@ -173,8 +174,8 @@ class IndexController extends ControllerBase
             $schedules = [];
 
             if (isset($values[4]) && isset($values[5]) && strlen($values[4]) > 0 && strlen($values[5]) > 0) {
-
-                $teacher = Teachers::findFirst("email = '{$values[5]}'");
+                $email = addslashes($values[5]);
+                $teacher = Teachers::findFirst("email = '{$email}'");
                 if ($teacher === false) {
                     $teacher = new Teachers([
                         'last_name' => $values[4],
