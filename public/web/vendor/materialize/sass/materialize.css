@@ -2023,7 +2023,8 @@ a {
 
 .valign-wrapper {
   display: flex;
-  align-items: center; }
+  align-items: center;
+  }
 
 .clearfix {
   clear: both; }
@@ -2346,7 +2347,8 @@ td, th {
     line-height: 1.5rem;
     padding: 10px 20px;
     margin: 0;
-    border-bottom: 1px solid #e0e0e0; }
+    border-bottom: 1px solid #e0e0e0;
+    }
     .collection .collection-item.avatar {
       min-height: 84px;
       padding-left: 72px;
@@ -2518,15 +2520,17 @@ input[type=range] + .thumb {
 
 span.badge {
   min-width: 3rem;
-  padding: 0 6px;
+  padding: 0 8px;
   margin-left: 14px;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 22px;
   height: 22px;
   color: #757575;
   float: right;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  border-radius: 4px;
+  }
   span.badge.new {
     font-weight: 300;
     font-size: 0.8rem;
@@ -3424,7 +3428,8 @@ small {
   padding: 24px;
   margin: 0.5rem 0 1rem 0;
   border-radius: 2px;
-  background-color: #fff; }
+  background-color: #fff;
+  }
 
 .card {
   position: relative;
@@ -4141,7 +4146,8 @@ button.btn-floating {
 
 .modal.modal-fixed-footer {
   padding: 0;
-  height: 70%; }
+  height: 70%;
+  }
   .modal.modal-fixed-footer .modal-content {
     position: absolute;
     height: calc(100% - 56px);

@@ -72,7 +72,9 @@ $di->setShared('db', function () use ($di) {
  * If the configuration specify the use of metadata adapter use it or use memory otherwise
  */
 $di->setShared('modelsMetadata', function () {
-    return new MetaDataAdapter();
+    $adapter = new MetaDataAdapter();
+    $adapter->setStrategy(new \Phalcon\Mvc\Model\MetaData\Strategy\Annotations());
+    return $adapter;
 });
 
 /**

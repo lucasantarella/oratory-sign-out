@@ -18,7 +18,7 @@ define([
       '<style type="text/css">' +
       '.collapsible-body {' +
       ' width: 100%;' +
-      ' padding: 0.25rem 2rem 0.25rem 2rem;' +
+      // ' padding: 0.25rem 2rem 0.25rem 2rem;' +
       '}' +
       '</style>' +
       '<div class="row">' +
@@ -26,7 +26,6 @@ define([
       '    <div class="card-panel" style="margin-top: 50px;">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
-      '          <img class="responsive-img" src="./img/crest.svg" width="100px"/>' +
       '          <h2 style="margin-top: 0.6em;">Room <%= room %></h2>' +
       '        </div>' +
       '      </div>' +
@@ -84,7 +83,7 @@ define([
       let collection = (options.collection) ? options.collection : new StudentsCollection();
       let socket = new WebSocket(window.socketUrl, ['teacher']);
       let context = this;
-      socket.onmessage = function(event) {
+      socket.onmessage = function (event) {
         context.onSocketMessage(event, model, collection)
       };
 
@@ -108,7 +107,7 @@ define([
         socket.onopen = function () {
           socket.send(JSON.stringify({action: 'get', value: 'currentroom'}));
         };
-      socket.onmessage = function(event) {
+      socket.onmessage = function (event) {
         context.onSocketMessage(event, model, collection)
       };
     },
@@ -161,15 +160,6 @@ define([
       if (this.collection.where({status: 'signedin_unconfirmed'}).length > 0 || this.collection.where({status: 'signedin_confirmed'}).length > 0)
         this.collapsible.open(2);
     },
-
-    onAttach: function () {
-      $('body').addClass('oratory-blue');
-    },
-
-    onDetach: function () {
-      $('body').removeClass('oratory-blue');
-      this.socket.close();
-    }
 
   });
 });

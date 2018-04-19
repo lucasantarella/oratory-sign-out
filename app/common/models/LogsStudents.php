@@ -76,6 +76,24 @@ class LogsStudents extends \Phalcon\Mvc\Model
         $this->belongsTo('room_to', 'Oratorysignout\Models\Rooms', 'name', ['alias' => 'RoomTo']);
     }
 
+    public function beforeSave()
+    {
+        $this->id = (int)$this->id;
+        $this->student_id = (int)$this->student_id;
+        $this->timestamp = (int)$this->timestamp;
+        $this->confirmed = (bool)$this->confirmed;
+        $this->timestamp_confirmed = (int)$this->timestamp_confirmed;
+    }
+
+    public function afterFetch()
+    {
+        $this->id = (int)$this->id;
+        $this->student_id = (int)$this->student_id;
+        $this->timestamp = (int)$this->timestamp;
+        $this->confirmed = (bool)$this->confirmed;
+        $this->timestamp_confirmed = (int)$this->timestamp_confirmed;
+    }
+
     /**
      * @return array
      */
@@ -111,8 +129,7 @@ class LogsStudents extends \Phalcon\Mvc\Model
                 "student_id",
                 "timestamp",
                 "room_from",
-                "room_to",
-                "confirmed"
+                "room_to"
             ],
 
             // Every column and their data types
