@@ -9,7 +9,7 @@ define([
 
     tagName: 'li',
 
-    className: 'collection-item left',
+    className: 'collection-item left-align',
 
     template: _.template('<%- first_name %>&nbsp;<%- last_name %></td>'),
 
