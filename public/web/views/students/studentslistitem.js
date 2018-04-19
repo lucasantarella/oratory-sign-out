@@ -7,11 +7,28 @@ define([
 ], function (_, Backbone, Marionette) {
   return Marionette.View.extend({
 
-    tagName: 'tr',
+    tagName: 'li',
 
-    template: _.template('' +
-      '   <td><%- first_name %>&nbsp;<%- last_name %></td>' +
-      ''),
+    className: 'collection-item left',
+
+    template: _.template('<%- first_name %>&nbsp;<%- last_name %></td>'),
+
+    onRender: function() {
+      switch (this.model.get('status')){
+        case 'signedin_unconfirmed':
+          this.$el.addClass('orange');
+          this.$el.addClass('white-text');
+          break;
+        case 'signedin_confirmed':
+          this.$el.addClass('green');
+          this.$el.addClass('white-text');
+          break;
+        case 'signedout':
+          this.$el.addClass('red');
+          this.$el.addClass('white-text');
+          break;
+      }
+    }
 
   });
 });
