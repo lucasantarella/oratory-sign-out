@@ -11,14 +11,12 @@ use Oratorysignout\Models\Students;
 use Oratorysignout\Models\StudentsSchedules;
 use Oratorysignout\Models\Teachers;
 use Oratorysignout\Models\TeachersSchedules;
-use Phalcon\Filter;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
 use React\EventLoop\Factory;
 use ZMQ;
-use ZMQContext;
 
 /**
  * Class MainTask
