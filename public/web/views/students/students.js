@@ -16,7 +16,7 @@ define([
 
     template: _.template('' +
       '<div class="row">' +
-      '  <div class="col s6 offset-s3">' +
+      '  <div class="col s12 m8 offset-m2 l6 offset-l3">' +
       '    <div class="card-panel" style="margin-top: 50px;">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
@@ -26,12 +26,24 @@ define([
       '      </div>' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center">' +
-      '          <table class="table">' +
-      '            <thead class="thead-default">' +
-      '              <tr><th>Students</th></tr>' +
-      '            </thead>' +
-      '            <tbody></tbody>' +
-      '          </table>' +
+      '          <ul class="collapsible">' +
+      '            <li>' +
+      '              <div class="collapsible-header"><i class="material-icons red-text">people_outline</i>Signed Out Students</div>' +
+      '              <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>' +
+      '            </li>' +
+      '            <li>' +
+      '              <div class="collapsible-header"><i class="material-icons">people</i>Scheduled Students</div>' +
+      '              <div class="collapsible-body">' +
+      '                <table class="table">' +
+      '                  <tbody></tbody>' +
+      '                </table>' +
+      '              </div>' +
+      '            </li>' +
+      '            <li>' +
+      '              <div class="collapsible-header"><i class="material-icons green-text">directions_walk</i>Incoming Students</div>' +
+      '              <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>' +
+      '            </li>' +
+      '          </ul>' +
       '        </div>' +
       '      </div>' +
       '    </div>' +
@@ -83,10 +95,14 @@ define([
         this.$el.find('table').hide();
       } else
         this.$el.find('table').show();
+
+      let instance = M.Collapsible.init($('.collapsible')[0]);
     },
 
     onAttach: function () {
       $('body').addClass('oratory-blue');
+      // let el = this.$el.find('ul').collapsible();
+
     },
 
     onDetach: function () {
