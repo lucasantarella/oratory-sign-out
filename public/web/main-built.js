@@ -1491,7 +1491,8 @@ define('views/students/students',[
       ''),
 
     ui: {
-      'header': 'h2'
+      'header': 'h2',
+      'collapsible': '.collapsible'
     },
 
     initialize: function (options) {
@@ -1529,13 +1530,13 @@ define('views/students/students',[
     },
 
     onRender: function () {
+      let instance = M.Collapsible.init(this.getUI('collapsible')[0]);
       if(this.model.get('room').length === 0) {
         this.getUI('header').html('No class scheduled!');
-        this.$el.find('table').hide();
+        this.getUI('collapsible').hide();
       } else
-        this.$el.find('table').show();
+        this.getUI('collapsible').show();
 
-      let instance = M.Collapsible.init($('.collapsible')[0]);
     },
 
     onAttach: function () {
