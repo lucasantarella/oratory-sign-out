@@ -2286,7 +2286,8 @@ td, th {
   display: table-cell;
   text-align: left;
   vertical-align: middle;
-  border-radius: 2px; }
+  border-radius: 2px;
+  }
 
 @media only screen and (max-width: 992px) {
   table.responsive-table {
@@ -4186,7 +4187,8 @@ button.btn-floating {
   display: none;
   border-bottom: 1px solid #ddd;
   box-sizing: border-box;
-  padding: 2rem; }
+  /* padding: 2rem; */
+  }
 
 .sidenav .collapsible,
 .sidenav.fixed .collapsible {
