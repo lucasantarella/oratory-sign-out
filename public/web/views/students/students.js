@@ -83,6 +83,7 @@ define([
       let model = (options.model) ? options.model : new Backbone.Model({room: ''});
       let collection = (options.collection) ? options.collection : new StudentsCollection();
       let socket = new WebSocket(window.socketUrl, ['teacher']);
+      socket.onmessage = context.onSocketMessage;
 
       this.model = model;
       this.model.bind('change', this.render);
@@ -104,14 +105,23 @@ define([
         socket.onopen = function () {
           socket.send(JSON.stringify({action: 'get', value: 'currentroom'}));
         };
-      socket.onmessage = function (event) {
-        var jsonObject = JSON.parse(event.data);
-        if (jsonObject.data_type === 'room') {
+      socket.onmessage = context.onSocketMessage
+    },
+
+    onSocketMessage: function (event) {
+      var jsonObject = JSON.parse(event.data);
+      switch (jsonObject.data_type) {
+        case 'room':
           model.set(jsonObject.data);
           collection.url = '/api/rooms/' + model.get('room') + '/students';
           collection.fetch();
-        }
-      };
+          break;
+        case 'update':
+          model.set('name', jsonObject.data.room);
+          collection.url = '/api/rooms/' + model.get('room') + '/students';
+          collection.fetch();
+          break;
+      }
     },
 
     onRender: function () {
