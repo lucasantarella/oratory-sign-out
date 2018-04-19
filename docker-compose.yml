@@ -16,6 +16,7 @@ php:
   volumes:
     - ./:/code
   environment:
+    ZMQ_HOST: phpws
     BUGSNAG_API_KEY: 8c9bdbc65cc43175fe0d50abe819ca76
     DB_HOST: mysql
     DB_USER: root
@@ -26,6 +27,7 @@ php:
     XDEBUG_CONFIG: remote_host=172.16.0.30
   links:
     - mysql
+    - phpws
 
 phpws:
   image: lucasantarella/php-fpm-phalcon:php-7.1.5_phalcon-3.3.2
@@ -33,6 +35,7 @@ phpws:
   volumes:
     - ./:/code
   environment:
+    ZMQ_HOST: php
     BUGSNAG_API_KEY: 8c9bdbc65cc43175fe0d50abe819ca76
     DB_HOST: mysql
     DB_USER: root
@@ -43,6 +46,7 @@ phpws:
     XDEBUG_CONFIG: remote_host=172.16.0.30
   links:
     - mysql
+    - php
   ports:
     - "9090:9090"
   command: /code/run

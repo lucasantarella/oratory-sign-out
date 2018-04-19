@@ -11,11 +11,14 @@ use Oratorysignout\Models\Students;
 use Oratorysignout\Models\StudentsSchedules;
 use Oratorysignout\Models\Teachers;
 use Oratorysignout\Models\TeachersSchedules;
+use Phalcon\Filter;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
 use React\EventLoop\Factory;
+use ZMQ;
+use ZMQContext;
 
 /**
  * Class MainTask
@@ -23,12 +26,26 @@ use React\EventLoop\Factory;
  */
 class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, WsServerInterface
 {
+    /** @var \SplObjectStorage $clients */
+    private $clients;
+    
+    /** @var ConnectionInterface[] */
+    private $connectedUsers = [];
+
     public function mainAction()
     {
+        $this->clients = new \SplObjectStorage;
+
         $loop = Factory::create();
         $wsServer = new \Ratchet\WebSocket\WsServer($this);
         $wsServer->enableKeepAlive($loop);
         $wsServer->setStrictSubProtocolCheck(false);
+
+        // Listen for the web server to make a ZeroMQ push after an ajax request
+        $context = new \React\ZMQ\Context($loop);
+        $pull = $context->getSocket(ZMQ::SOCKET_PULL);
+        $pull->bind('tcp://127.0.0.1:5555'); // Binding to 127.0.0.1 means the only client that can connect is itself
+        $pull->on('message', array($this, 'onSignOut'));
 
         $webSock = new \React\Socket\Server('0.0.0.0:9090', $loop); // Binding to 0.0.0.0 means remotes can connect
         $webServer = new \Ratchet\Server\IoServer(
@@ -70,6 +87,9 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
             timecop_freeze(mktime($time->format('H'), $time->format('i'), $time->format('s'), $time->format('m'), $time->format('d'), $time->format('Y')));
         }
 
+        $this->clients->attach($conn, ['email' => $conn->user['email']]);
+        $this->connectedUsers[$conn->user['email']] = $conn;
+        
         echo "User " . $conn->user['email'] . " connected" . PHP_EOL;
     }
 
@@ -228,6 +248,47 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
                     }
                 }
                 break;
+        }
+    }
+
+    /**
+     * @param string $logString
+     */
+    public function onSignOut($logString)
+    {
+        $log = new LogsStudents(json_decode($logString, true));
+
+        $from_room = $log->getRoomFrom();
+        $to_room = $log->getRoomTo();
+
+        $date = (int)date('YmdHis');
+        $info = Schedules::getDateTimeInfo($date);
+
+        if ($info === false || $info['period'] === false) return;
+
+        /** @var SchedulesPeriods $period */
+        $period = $info['period'];
+
+        $periodStartTime = (int)(substr($date, 0, 8) . $period->start_time . '00');
+        $periodEndTime = (int)(substr($date, 0, 8) . $period->end_time . '00');
+
+        // Get users in room, minus those that are signed out
+        $scheduledTeachersBuilder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\Rooms')
+            ->columns(['Oratorysignout\\Models\\Teachers.email', 'Oratorysignout\\Models\\TeachersSchedules.room'])
+            ->where('Oratorysignout\\Models\\Rooms.name = :from_room: OR Oratorysignout\\Models\\Rooms.name = :to_room:', ['from_room' => $from_room->name, 'to_room' => $to_room->name])
+            ->innerJoin('Oratorysignout\\Models\\TeachersSchedules', 'Oratorysignout\\Models\\Rooms.name = Oratorysignout\\Models\\TeachersSchedules.room AND Oratorysignout\\Models\\TeachersSchedules.period = ' . $period->period . ' AND Oratorysignout\\Models\\TeachersSchedules.quarter = ' . $info['quarter'] . ' AND Oratorysignout\\Models\\TeachersSchedules.cycle_day = ' . $info['cycleDay'])
+            ->innerJoin('Oratorysignout\\Models\\Teachers', 'Oratorysignout\\Models\\Teachers.id = Oratorysignout\\Models\\TeachersSchedules.teacher_id')
+            ->groupBy(['Oratorysignout\\Models\\Teachers.id']);
+
+        // Iterate over students who are scheduled and determine if they are signed out or not
+        foreach ($scheduledTeachersBuilder->getQuery()->execute() as $row) {
+            $email = $row['email'];
+            $room = $row['room'];
+            if(isset($this->connectedUsers[$email])) {
+                $conn = $this->connectedUsers[$email];
+                $conn->send(json_encode(['data_type' => 'update', 'data' => ['room' => $room]]));
+            }
         }
     }
 

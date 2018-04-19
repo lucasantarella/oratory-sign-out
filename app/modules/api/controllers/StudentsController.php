@@ -17,6 +17,8 @@ use Oratorysignout\Models\Students;
 use Oratorysignout\Models\StudentsSchedules;
 use Phalcon\Filter;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
+use ZMQ;
+use ZMQContext;
 
 class StudentsController extends AuthRequiredControllerBase
 {
@@ -310,6 +312,16 @@ class StudentsController extends AuthRequiredControllerBase
 
         // Commit transaction
         $this->db->commit();
+
+        // Notify recipients
+        $context = new \ZMQContext();
+        try {
+            $socket = $context->getSocket(ZMQ::SOCKET_PUSH, 'signout_pusher');
+            $socket->connect("tcp://127.0.0.1:5555");
+            $socket->send(json_encode($log));
+        } catch (\ZMQSocketException $e) {
+            die($e->getTraceAsString());
+        }
 
         // Send response
         return $this->sendResponse($log);
