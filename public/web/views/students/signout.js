@@ -68,14 +68,5 @@ define([
       this.getChildView('modal').open();
     },
 
-    onAttach: function () {
-      $('body').addClass('oratory-blue');
-    },
-
-    onDetach: function () {
-      $('body').removeClass('oratory-blue');
-      this.socket.close();
-    }
-
   });
 });

@@ -11,14 +11,17 @@ define([
     id: 'main-wrapper',
 
     template: _.template('' +
-      '<main>' +
+      '<main class="oratory-blue">' +
       '<div id="main">' +
       '</div>' +
       '</main>' +
-      '<footer class="page-footer oratory-blue darken-4">' +
+      '<footer class="page-footer white oratory-blue-text">' +
       ' <div class="container">' +
       '   <div class="row">' +
-      '   © 2018 Copyright Luca Santarella' +
+      '   <div class="col s12 valign-wrapper">' +
+      '   <span style="width: 100%">© 2018 Copyright Luca Santarella</span>' +
+      '   <span class="right"><img class="responsive-img" src="./img/logo.svg" width="70px"/></span>' +
+      '   </div>' +
       '   </div>' +
       ' </div>' +
       '</footer>' +

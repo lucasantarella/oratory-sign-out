@@ -13,6 +13,10 @@ define([
 
     className: 'modal modal-fixed-footer',
 
+    attributes: {
+      style: 'height:50%;'
+    },
+
     template: _.template('' +
       '<div class="modal-content">' +
       '  <h4 style="text-align:center;">Signout To</h4>' +
@@ -23,8 +27,8 @@ define([
       '  </div>' +
       '  </div>' +
       '  <div class="row" style="margin-top: 60px">' +
-      '  <div class="col s4 offset-s4 center-align">' +
-      '  <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
+      '  <div class="col s10 offset-s1 m6 offset-m3 l4 offset-l4 center-align">' +
+      '  <a class="waves-effect waves-light btn-large oratory-blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
       '  </div>' +
       '  </div>' +
       '  </p>' +
@@ -92,7 +96,6 @@ define([
 
     onClickSignOut: function (event) {
       event.preventDefault();
-
       $.ajax({
         type: "POST",
         context: this,

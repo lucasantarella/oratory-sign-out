@@ -1,12 +1,14 @@
 /* Sticky Footer */
 #main-wrapper {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-}
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column; }
 
 main {
-    flex: 1 0 auto;
-}
+  flex: 1 0 auto; }
+
+span.badge {
+  border-radius: 5px;
+  font-size: 0.9rem; }
 
 /*# sourceMappingURL=main.css.map */

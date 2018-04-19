@@ -171,14 +171,17 @@ define('views/AppView',[
     id: 'main-wrapper',
 
     template: _.template('' +
-      '<main>' +
+      '<main class="oratory-blue">' +
       '<div id="main">' +
       '</div>' +
       '</main>' +
-      '<footer class="page-footer oratory-blue darken-4">' +
+      '<footer class="page-footer white oratory-blue-text">' +
       ' <div class="container">' +
       '   <div class="row">' +
-      '   © 2018 Copyright Luca Santarella' +
+      '   <div class="col s12 valign-wrapper">' +
+      '   <span style="width: 100%">© 2018 Copyright Luca Santarella</span>' +
+      '   <span class="right"><img class="responsive-img" src="./img/logo.svg" width="70px"/></span>' +
+      '   </div>' +
       '   </div>' +
       ' </div>' +
       '</footer>' +
@@ -1419,23 +1422,73 @@ define('modules/rooms',[
 
   });
 });
+// Filename: /models/log.js
+
+define('models/log',[
+  'backbone'
+], function (Backbone) {
+  return Backbone.Model.extend({
+
+
+  });
+});
 // Filename: /views/students/studentslistitem.js
 
 define('views/students/studentslistitem',[
   'underscore',
   'backbone',
   'marionette',
-], function (_, Backbone, Marionette) {
+  'models/log'
+], function (_, Backbone, Marionette, LogModel) {
   return Marionette.View.extend({
 
     tagName: 'li',
 
-    className: 'collection-item left-align',
+    className: 'collection-item left-align valign-wrapper',
 
-    template: _.template('<%- first_name %>&nbsp;<%- last_name %></td>'),
+    attributes: {
+      'style': 'padding: 0.8rem 2rem 0.8rem 2rem;'
+    },
 
-    onRender: function() {
-      switch (this.model.get('status')){
+    template: _.template('' +
+      '<span class="truncate"><%- last_name %>, <%- first_name %></span>' +
+      '&nbsp;' +
+      '<% if(status === \'signedout\') { %>' +
+      '  <span class="badge white red-text right">' +
+      '    <span class="hide-on-small-and-down">Room </span>' +
+      '    <span><%= signedout_room %></span>' +
+      '  </span>' +
+      '<% } %>' +
+      '<% if(status === \'signedin_unconfirmed\') { %>' +
+      '  <span class="badge green white-text right">' +
+      '    <a href="#" class="white-text">Accept</a>' +
+      '  </span>' +
+      '<% } %>' +
+      ''),
+
+    ui: {
+      accept: 'a'
+    },
+
+    events: {
+      'click @ui.accept': 'onClickAccept'
+    },
+
+    initialize: function(options) {
+      this.model = options.model;
+      this.model.bind('change', this.render);
+      this.model.bind('sync', this.render);
+    },
+
+    onRender: function () {
+      this.$el.removeClass();
+      this.$el.addClass(this.className);
+      switch (this.model.get('status')) {
+        case 'scheduled':
+          this.$el.addClass('grey');
+          this.$el.addClass('darken-4');
+          this.$el.addClass('white-text');
+          break;
         case 'signedin_unconfirmed':
           this.$el.addClass('orange');
           this.$el.addClass('white-text');
@@ -1449,6 +1502,14 @@ define('views/students/studentslistitem',[
           this.$el.addClass('white-text');
           break;
       }
+    },
+
+    onClickAccept: function (event) {
+      event.preventDefault();
+      let model = this.model;
+      let logModel = new LogModel({id: parseInt(this.model.get('signout_id')), confirmed: true});
+      logModel.url = '/api/students/' + parseInt(this.model.get('id')) + '/logs/' + parseInt(logModel.get('id'));
+      logModel.save();
     }
 
   });
@@ -1515,7 +1576,7 @@ define('views/students/students',[
       '<style type="text/css">' +
       '.collapsible-body {' +
       ' width: 100%;' +
-      ' padding: 0.25rem 2rem 0.25rem 2rem;' +
+      // ' padding: 0.25rem 2rem 0.25rem 2rem;' +
       '}' +
       '</style>' +
       '<div class="row">' +
@@ -1523,7 +1584,6 @@ define('views/students/students',[
       '    <div class="card-panel" style="margin-top: 50px;">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
-      '          <img class="responsive-img" src="./img/crest.svg" width="100px"/>' +
       '          <h2 style="margin-top: 0.6em;">Room <%= room %></h2>' +
       '        </div>' +
       '      </div>' +
@@ -1581,7 +1641,7 @@ define('views/students/students',[
       let collection = (options.collection) ? options.collection : new StudentsCollection();
       let socket = new WebSocket(window.socketUrl, ['teacher']);
       let context = this;
-      socket.onmessage = function(event) {
+      socket.onmessage = function (event) {
         context.onSocketMessage(event, model, collection)
       };
 
@@ -1605,7 +1665,7 @@ define('views/students/students',[
         socket.onopen = function () {
           socket.send(JSON.stringify({action: 'get', value: 'currentroom'}));
         };
-      socket.onmessage = function(event) {
+      socket.onmessage = function (event) {
         context.onSocketMessage(event, model, collection)
       };
     },
@@ -1659,15 +1719,6 @@ define('views/students/students',[
         this.collapsible.open(2);
     },
 
-    onAttach: function () {
-      $('body').addClass('oratory-blue');
-    },
-
-    onDetach: function () {
-      $('body').removeClass('oratory-blue');
-      this.socket.close();
-    }
-
   });
 });
 
@@ -1708,6 +1759,10 @@ define('views/students/signoutmodal',[
 
     className: 'modal modal-fixed-footer',
 
+    attributes: {
+      style: 'height:50%;'
+    },
+
     template: _.template('' +
       '<div class="modal-content">' +
       '  <h4 style="text-align:center;">Signout To</h4>' +
@@ -1718,8 +1773,8 @@ define('views/students/signoutmodal',[
       '  </div>' +
       '  </div>' +
       '  <div class="row" style="margin-top: 60px">' +
-      '  <div class="col s4 offset-s4 center-align">' +
-      '  <a class="waves-effect waves-light btn-large blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
+      '  <div class="col s10 offset-s1 m6 offset-m3 l4 offset-l4 center-align">' +
+      '  <a class="waves-effect waves-light btn-large oratory-blue darken-4 hidden"><i class="material-icons right">keyboard_arrow_right</i>Sign Out</a>' +
       '  </div>' +
       '  </div>' +
       '  </p>' +
@@ -1787,7 +1842,6 @@ define('views/students/signoutmodal',[
 
     onClickSignOut: function (event) {
       event.preventDefault();
-
       $.ajax({
         type: "POST",
         context: this,
@@ -1876,15 +1930,6 @@ define('views/students/signout',[
       event.preventDefault();
       this.getChildView('modal').open();
     },
-
-    onAttach: function () {
-      $('body').addClass('oratory-blue');
-    },
-
-    onDetach: function () {
-      $('body').removeClass('oratory-blue');
-      this.socket.close();
-    }
 
   });
 });
@@ -2136,4 +2181,4 @@ define("main", function(){});
 
 
 (function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})
-('.spinner {\n    margin: 100px auto;\n    width: 50px;\n    height: 40px;\n    text-align: center;\n    font-size: 10px;\n}\n\n.spinner > div {\n    background-color: #333;\n    height: 100%;\n    width: 6px;\n    display: inline-block;\n\n    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;\n    animation: sk-stretchdelay 1.2s infinite ease-in-out;\n}\n\n.spinner .rect2 {\n    -webkit-animation-delay: -1.1s;\n    animation-delay: -1.1s;\n}\n\n.spinner .rect3 {\n    -webkit-animation-delay: -1.0s;\n    animation-delay: -1.0s;\n}\n\n.spinner .rect4 {\n    -webkit-animation-delay: -0.9s;\n    animation-delay: -0.9s;\n}\n\n.spinner .rect5 {\n    -webkit-animation-delay: -0.8s;\n    animation-delay: -0.8s;\n}\n\n@-webkit-keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        -webkit-transform: scaleY(0.4)\n    }\n    20% {\n        -webkit-transform: scaleY(1.0)\n    }\n}\n\n@keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        transform: scaleY(0.4);\n        -webkit-transform: scaleY(0.4);\n    }\n    20% {\n        transform: scaleY(1.0);\n        -webkit-transform: scaleY(1.0);\n    }\n}/* Sticky Footer */\n#main-wrapper {\n    display: flex;\n    min-height: 100vh;\n    flex-direction: column;\n}\n\nmain {\n    flex: 1 0 auto;\n}\n\n/*# sourceMappingURL=main.css.map */\n');
+('.spinner {\n    margin: 100px auto;\n    width: 50px;\n    height: 40px;\n    text-align: center;\n    font-size: 10px;\n}\n\n.spinner > div {\n    background-color: #333;\n    height: 100%;\n    width: 6px;\n    display: inline-block;\n\n    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;\n    animation: sk-stretchdelay 1.2s infinite ease-in-out;\n}\n\n.spinner .rect2 {\n    -webkit-animation-delay: -1.1s;\n    animation-delay: -1.1s;\n}\n\n.spinner .rect3 {\n    -webkit-animation-delay: -1.0s;\n    animation-delay: -1.0s;\n}\n\n.spinner .rect4 {\n    -webkit-animation-delay: -0.9s;\n    animation-delay: -0.9s;\n}\n\n.spinner .rect5 {\n    -webkit-animation-delay: -0.8s;\n    animation-delay: -0.8s;\n}\n\n@-webkit-keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        -webkit-transform: scaleY(0.4)\n    }\n    20% {\n        -webkit-transform: scaleY(1.0)\n    }\n}\n\n@keyframes sk-stretchdelay {\n    0%, 40%, 100% {\n        transform: scaleY(0.4);\n        -webkit-transform: scaleY(0.4);\n    }\n    20% {\n        transform: scaleY(1.0);\n        -webkit-transform: scaleY(1.0);\n    }\n}/* Sticky Footer */\n#main-wrapper {\n  display: flex;\n  min-height: 100vh;\n  flex-direction: column; }\n\nmain {\n  flex: 1 0 auto; }\n\nspan.badge {\n  border-radius: 5px;\n  font-size: 0.9rem; }\n\n/*# sourceMappingURL=main.css.map */\n');

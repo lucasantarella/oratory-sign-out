@@ -113,6 +113,14 @@ class Module implements ModuleDefinitionInterface, ModuleRoutesDefinitionInterfa
                 ]
             ],
             [
+                'pattern' => '/students/{student_id:[0-9]+}/logs/{log_id:[0-9]+}',
+                'attr' => [
+                    'controller' => 'students',
+                    'action' => 'updateLog',
+                ],
+                'method' => 'PUT'
+            ],
+            [
                 'pattern' => '/schedule',
                 'attr' => [
                     'controller' => 'schedules',

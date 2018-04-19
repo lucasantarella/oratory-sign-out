@@ -93,7 +93,8 @@ class RoomsController extends ControllerBase
             $log = $row['oratorysignout\\Models\\LogsStudents'];
 
             $response[$student->id] = array_merge($student->jsonSerialize(), [
-                'status' => is_null($log->id) ? 'scheduled' : 'signedout',
+                'status' => ($log->id === 0) ? 'scheduled' : 'signedout',
+                'signout_id' => $log->id,
                 'signedout_room' => $log->room_to
             ]);
         }
@@ -106,7 +107,11 @@ class RoomsController extends ControllerBase
             /** @var LogsStudents $log */
             $log = $row['oratorysignout\\Models\\LogsStudents'];
 
-            $response[$student->id] = array_merge($student->jsonSerialize(), ['status' => ($log->confirmed) ? 'signedin_confirmed' : 'signedin_unconfirmed']);
+            if ($log->id > 0)
+                $response[$student->id] = array_merge($student->jsonSerialize(), [
+                    'status' => ($log->confirmed) ? 'signedin_confirmed' : 'signedin_unconfirmed',
+                    'signout_id' => (int)$log->id
+                ]);
         }
 
         return $this->sendResponse(array_values($response));

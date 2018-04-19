@@ -293,6 +293,8 @@ class StudentsController extends AuthRequiredControllerBase
         $log->timestamp = (isset($requestBody['timestamp']) ? $requestBody['timestamp'] : (int)date('YmdHis'));
         $log->room_from = $room_from->name;
         $log->room_to = $room_to->name;
+        $log->confirmed = false;
+        $log->timestamp_confirmed = null;
 
         if (!$log->create()) {
             // Revert transaction
@@ -416,6 +418,56 @@ class StudentsController extends AuthRequiredControllerBase
         }
 
         return $this->sendResponse($response);
+    }
+
+    public function updateLogAction($student_id, $log_id)
+    {
+        $requestBody = $this->request->getJsonRawBody(true);
+        $log_id = (int)$log_id;
+        $student_id = (int)$student_id;
+
+        $log = LogsStudents::findFirst($log_id);
+        if ($log->student_id !== $student_id)
+            return $this->sendNotFound();
+
+        // Begin transaction
+        $this->db->begin();
+
+        if (isset($requestBody['confirmed'])) {
+            $log->confirmed = $requestBody['confirmed'];
+            $log->timestamp_confirmed = (int)date('YmdHis');
+        }
+
+        if (!$log->update()) {
+            // Revert transaction
+            $this->db->rollback();
+            $errors = [];
+            foreach ($log->getMessages() as $message) {
+                $error = [];
+                $error['message'] = $message->getMessage();
+                $error['field'] = $message->getField();
+                $error['type'] = $message->getType();
+                array_push($errors, $error);
+            }
+            return $this->sendBadRequest([
+                "errors" => $errors
+            ]);
+        }
+
+        // Commit transaction
+        $this->db->commit();
+
+        // Notify recipients
+        $context = new \ZMQContext();
+        try {
+            $socket = $context->getSocket(ZMQ::SOCKET_PUSH, 'signout_pusher');
+            $socket->connect("tcp://127.0.0.1:5555");
+            $socket->send(json_encode($log));
+        } catch (\ZMQSocketException $e) {
+            die($e->getTraceAsString());
+        }
+
+        return $this->sendResponse($log);
     }
 
 }
