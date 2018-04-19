@@ -91,7 +91,7 @@ define([
     },
 
     onRender: function () {
-      let instance = M.Collapsible.init(this.getUI('collapsible')[0]);
+      this.collapsible = M.Collapsible.init(this.getUI('collapsible')[0], {accordion: false});
       if(this.model.get('room').length === 0) {
         this.getUI('header').html('No class scheduled!');
         this.getUI('collapsible').hide();
