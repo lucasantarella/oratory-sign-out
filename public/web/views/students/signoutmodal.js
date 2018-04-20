@@ -52,7 +52,18 @@ define([
 
       tagName: 'option',
 
-      template: _.template('<p><%= name %></p>'),
+      template: _.template('<p><%= room %></p>'),
+
+      serializeModel: function serializeModel() {
+        if (!this.model) {
+          return {};
+        }
+        let data = _.clone(this.model.attributes);
+        data.room = data.name.replace('-', ' ');
+        if (parseInt(data.name) > 0)
+          data.room = 'Room ' + data.room;
+        return data;
+      },
 
       onRender: function () {
         this.$el.attr('value', this.model.get('name'));

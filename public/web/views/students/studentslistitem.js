@@ -32,6 +32,16 @@ define([
       '<% } %>' +
       ''),
 
+    serializeModel: function serializeModel() {
+      if (!this.model) {
+        return {};
+      }
+      let data = _.clone(this.model.attributes);
+      if (data.signedout_room !== null)
+        data.signedout_room = data.signedout_room.replace('-', ' ');
+      return data;
+    },
+
     ui: {
       accept: 'a'
     },
@@ -40,7 +50,7 @@ define([
       'click @ui.accept': 'onClickAccept'
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
       this.model = options.model;
       this.model.bind('sync', this.render);
     },

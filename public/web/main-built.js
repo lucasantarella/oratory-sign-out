@@ -1466,6 +1466,16 @@ define('views/students/studentslistitem',[
       '<% } %>' +
       ''),
 
+    serializeModel: function serializeModel() {
+      if (!this.model) {
+        return {};
+      }
+      let data = _.clone(this.model.attributes);
+      if (data.signedout_room !== null)
+        data.signedout_room = data.signedout_room.replace('-', ' ');
+      return data;
+    },
+
     ui: {
       accept: 'a'
     },
@@ -1474,7 +1484,7 @@ define('views/students/studentslistitem',[
       'click @ui.accept': 'onClickAccept'
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
       this.model = options.model;
       this.model.bind('sync', this.render);
     },
@@ -1583,7 +1593,7 @@ define('views/students/students',[
       '    <div class="card-panel" style="margin-top: 50px;">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
-      '          <h2 style="margin-top: 0.6em;">Room <%= room %></h2>' +
+      '          <h2 style="margin-top: 0.6em;"><%= room %></h2>' +
       '        </div>' +
       '      </div>' +
       '      <div class="row">' +
@@ -1614,6 +1624,17 @@ define('views/students/students',[
       '  </div>' +
       '</div>' +
       ''),
+
+    serializeModel: function serializeModel() {
+      if (!this.model) {
+        return {};
+      }
+      let data = _.clone(this.model.attributes);
+      data.room = data.room.replace('-', ' ');
+      if (parseInt(data.room) > 0)
+        data.room = 'Room ' + data.room;
+      return data;
+    },
 
     ui: {
       'header': 'h2',
@@ -1797,7 +1818,18 @@ define('views/students/signoutmodal',[
 
       tagName: 'option',
 
-      template: _.template('<p><%= name %></p>'),
+      template: _.template('<p><%= room %></p>'),
+
+      serializeModel: function serializeModel() {
+        if (!this.model) {
+          return {};
+        }
+        let data = _.clone(this.model.attributes);
+        data.room = data.name.replace('-', ' ');
+        if (parseInt(data.name) > 0)
+          data.room = 'Room ' + data.room;
+        return data;
+      },
 
       onRender: function () {
         this.$el.attr('value', this.model.get('name'));
