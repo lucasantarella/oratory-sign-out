@@ -5,9 +5,10 @@ define([
   'underscore',
   'backbone',
   'marionette',
+  'moment',
   'collections/students',
   'views/students/studentslist'
-], function ($, _, Backbone, Marionette, StudentsCollection, StudentsListView) {
+], function ($, _, Backbone, Marionette, moment, StudentsCollection, StudentsListView) {
   return Marionette.View.extend({
 
     tagName: 'div',
@@ -27,6 +28,7 @@ define([
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
       '          <h2 style="margin-top: 0.6em;"><%= room %></h2>' +
+      '          <h5>Period <%= period %>: <%= start_time %> &ndash; <%= end_time %></h5>' +
       '        </div>' +
       '      </div>' +
       '      <div class="row">' +
@@ -66,6 +68,16 @@ define([
       data.room = data.room.replace('-', ' ');
       if (parseInt(data.room) > 0)
         data.room = 'Room ' + data.room;
+      if(data.period === undefined)
+        data.period = 0;
+      if(data.start_time === undefined)
+        data.start_time = '??';
+      else
+        data.start_time = moment(data.start_time, 'kkmm').format('h:mm A');
+      if(data.end_time === undefined)
+        data.end_time = 0;
+      else
+        data.end_time = moment(data.end_time, 'kkmm').format('h:mm A');
       return data;
     },
 
