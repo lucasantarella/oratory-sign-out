@@ -11,6 +11,7 @@ define([
     id: 'main-wrapper',
 
     template: _.template('' +
+      '<header></header>' +
       '<main class="oratory-blue">' +
       '<div id="main">' +
       '</div>' +
@@ -31,6 +32,11 @@ define([
 
       main: {
         el: '#main',
+        replaceElement: true
+      },
+
+      header: {
+        el: 'header',
         replaceElement: true
       }
 

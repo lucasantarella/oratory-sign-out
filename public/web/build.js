@@ -14,7 +14,7 @@
     marionette: 'vendor/backbone-marionette/backbone.marionette.min',
     cookie: 'vendor/cookie/cookie.min',
     text: 'vendor/require-text/text.min',
-    jwtdecode: 'vendor/jwt-decode/jwt-decode',
+    jwt_decode: 'vendor/jwt-decode/jwt-decode.min',
     pace: 'vendor/pace/pace.min',
 
     gapijs: "https://apis.google.com/js/platform",
