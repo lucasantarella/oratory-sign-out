@@ -179,7 +179,7 @@ define('views/AppView',[
       ' <div class="container">' +
       '   <div class="row">' +
       '   <div class="col s12 valign-wrapper">' +
-      '   <span style="width: 100%">© 2018 Copyright Luca Santarella</span>' +
+      '   <span style="width: 100%">© 2018 Copyright <a href="https://www.lucasantarella.com/">Luca Santarella</a> &mdash; All Rights Reserved.</span>' +
       '   <span class="right"><img class="responsive-img" src="./img/logo.svg" width="70px"/></span>' +
       '   </div>' +
       '   </div>' +
