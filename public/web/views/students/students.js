@@ -26,7 +26,7 @@ define([
       '    <div class="card-panel" style="margin-top: 50px;">' +
       '      <div class="row">' +
       '        <div class="col s10 offset-s1 center-align">' +
-      '          <h2 style="margin-top: 0.6em;">Room <%= room %></h2>' +
+      '          <h2 style="margin-top: 0.6em;"><%= room %></h2>' +
       '        </div>' +
       '      </div>' +
       '      <div class="row">' +
@@ -57,6 +57,17 @@ define([
       '  </div>' +
       '</div>' +
       ''),
+
+    serializeModel: function serializeModel() {
+      if (!this.model) {
+        return {};
+      }
+      let data = _.clone(this.model.attributes);
+      data.room = data.room.replace('-', ' ');
+      if (parseInt(data.room) > 0)
+        data.room = 'Room ' + data.room;
+      return data;
+    },
 
     ui: {
       'header': 'h2',
