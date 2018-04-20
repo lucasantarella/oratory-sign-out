@@ -1455,7 +1455,7 @@ define('views/students/studentslistitem',[
       '&nbsp;' +
       '<% if(status === \'signedout\') { %>' +
       '  <span class="badge white red-text right">' +
-      '    <span class="hide-on-small-and-down">Room </span>' +
+      '    <% if(parseInt(signedout_room) > 0) { %><span class="hide-on-small-and-down">Room </span><% } %>' +
       '    <span><%= signedout_room %></span>' +
       '  </span>' +
       '<% } %>' +
@@ -1476,7 +1476,6 @@ define('views/students/studentslistitem',[
 
     initialize: function(options) {
       this.model = options.model;
-      this.model.bind('change', this.render);
       this.model.bind('sync', this.render);
     },
 
