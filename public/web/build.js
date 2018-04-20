@@ -6,6 +6,7 @@
     jquery: 'vendor/jquery/jquery.min',
     underscore: 'vendor/lodash/lodash.min',
     lodash: 'vendor/lodash/lodash.min',
+    moment: 'vendor/moment/moment.min',
     backbone: 'vendor/backbone/backbone.min',
     'backbone.radio': 'vendor/backbone-radio/backbone.radio.min',
     'backbone.paginator': 'vendor/backbone-paginator/backbone.paginator.min',

@@ -6,6 +6,7 @@ require.config({
     jquery: 'vendor/jquery/jquery',
     underscore: 'vendor/lodash/lodash.min',
     lodash: 'vendor/lodash/lodash.min',
+    moment: 'vendor/moment/moment',
     backbone: 'vendor/backbone/backbone',
     'backbone.radio': 'vendor/backbone-radio/backbone.radio',
     'backbone.paginator': 'vendor/backbone-paginator/backbone.paginator',
