@@ -14,7 +14,7 @@ require.config({
     marionette: 'vendor/backbone-marionette/backbone.marionette',
     cookie: 'vendor/cookie/cookie.min',
     text: 'vendor/require-text/text',
-    jwtdecode: 'vendor/jwt-decode/jwt-decode',
+    jwt_decode: 'vendor/jwt-decode/jwt-decode',
     pace: 'vendor/pace/pace.min',
 
     gapijs: "https://apis.google.com/js/platform",
