@@ -69,7 +69,7 @@ class RoomsController extends ControllerBase
             ->where('Oratorysignout\\Models\\Rooms.name = :room:', ['room' => $room->name])
             ->innerJoin('Oratorysignout\\Models\\StudentsSchedules', 'Oratorysignout\\Models\\Rooms.name = Oratorysignout\\Models\\StudentsSchedules.room AND Oratorysignout\\Models\\StudentsSchedules.period = ' . $period->period . ' AND Oratorysignout\\Models\\StudentsSchedules.quarter = ' . $info['quarter'] . ' AND Oratorysignout\\Models\\StudentsSchedules.cycle_day = ' . $info['cycleDay'])
             ->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\StudentsSchedules.student_id')
-            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ') AND Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id AND Oratorysignout\\Models\\LogsStudents.room_from = "' . $room->name . '"')
+            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ') AND Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id AND Oratorysignout\\Models\\LogsStudents.room_from = "' . $room->name . '" AND Oratorysignout\\Models\\LogsStudents.latest = 1')
             ->groupBy(['Oratorysignout\\Models\\Students.id']);
 
         // Get users signed into a room
@@ -77,7 +77,7 @@ class RoomsController extends ControllerBase
             ->from('Oratorysignout\\Models\\Rooms')
             ->columns(['Oratorysignout\\Models\\Rooms.*', 'Oratorysignout\\Models\\Students.*', 'Oratorysignout\\Models\\LogsStudents.*'])
             ->where('Oratorysignout\\Models\\Rooms.name = :room:', ['room' => $room->name])
-            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ')  AND Oratorysignout\\Models\\LogsStudents.room_to = "' . $room->name . '"')
+            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ')  AND Oratorysignout\\Models\\LogsStudents.room_to = "' . $room->name . '" AND Oratorysignout\\Models\\LogsStudents.latest = 1')
             ->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id')
             ->groupBy(['Oratorysignout\\Models\\Students.id']);
 
@@ -92,11 +92,16 @@ class RoomsController extends ControllerBase
             /** @var LogsStudents $log */
             $log = $row['oratorysignout\\Models\\LogsStudents'];
 
-            $response[$student->id] = array_merge($student->jsonSerialize(), [
-                'status' => ($log->id === 0) ? 'scheduled' : 'signedout',
-                'signout_id' => $log->id,
-                'signedout_room' => $log->room_to
-            ]);
+            if (isset($response[$student->id]) && isset($response[$student->id]['signout_id']) && $response[$student->id]['signout_id'] < $log->id) {
+                $response[$student->id]['status'] = 'signedout';
+                $response[$student->id]['signout_id'] = $log->id;
+                $response[$student->id]['signedout_room'] = $log->room_to;
+            } else
+                $response[$student->id] = array_merge($student->jsonSerialize(), [
+                    'status' => ($log->id === 0) ? 'scheduled' : 'signedout',
+                    'signout_id' => $log->id,
+                    'signedout_room' => $log->room_to
+                ]);
         }
 
         // Iterate over students who are signed in and see if they are confirmed or not
@@ -107,7 +112,10 @@ class RoomsController extends ControllerBase
             /** @var LogsStudents $log */
             $log = $row['oratorysignout\\Models\\LogsStudents'];
 
-            if ($log->id > 0)
+            if ($log->id > 0 && isset($response[$student->id]['signout_id']) && $response[$student->id]['signout_id'] < $log->id) {
+                $response[$student->id]['status'] = ($log->confirmed) ? 'signedin_confirmed' : 'signedin_unconfirmed';
+                $response[$student->id]['signout_id'] = $log->id;
+            } else
                 $response[$student->id] = array_merge($student->jsonSerialize(), [
                     'status' => ($log->confirmed) ? 'signedin_confirmed' : 'signedin_unconfirmed',
                     'signout_id' => (int)$log->id

@@ -67,6 +67,13 @@ class LogsStudents extends \Phalcon\Mvc\Model
     public $timestamp_confirmed;
 
     /**
+     *
+     * @var bool
+     * @Column(type="int", length=1, nullable=false)
+     */
+    public $latest;
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -107,7 +114,8 @@ class LogsStudents extends \Phalcon\Mvc\Model
                 "room_from",
                 "room_to",
                 "confirmed",
-                "timestamp_confirmed"
+                "timestamp_confirmed",
+                "latest"
             ],
 
             MetaData::MODELS_PRIMARY_KEY => [
@@ -120,7 +128,8 @@ class LogsStudents extends \Phalcon\Mvc\Model
                 "room_from",
                 "room_to",
                 "confirmed",
-                "timestamp_confirmed"
+                "timestamp_confirmed",
+                "latest"
             ],
 
             // Every column that doesn't allows null values
@@ -140,7 +149,8 @@ class LogsStudents extends \Phalcon\Mvc\Model
                 "room_from" => Column::TYPE_VARCHAR,
                 "room_to" => Column::TYPE_VARCHAR,
                 "confirmed" => Column::TYPE_BOOLEAN,
-                "timestamp_confirmed" => Column::TYPE_BIGINTEGER
+                "timestamp_confirmed" => Column::TYPE_BIGINTEGER,
+                "latest" => Column::TYPE_INTEGER
             ],
 
             // The columns that have numeric data types
@@ -149,7 +159,8 @@ class LogsStudents extends \Phalcon\Mvc\Model
                 "student_id" => true,
                 "timestamp" => true,
                 "confirmed" => true,
-                "timestamp_confirmed" => true
+                "timestamp_confirmed" => true,
+                "latest" => true
             ],
 
             // The identity column, use boolean false if the model doesn't have
@@ -164,7 +175,8 @@ class LogsStudents extends \Phalcon\Mvc\Model
                 "room_from" => Column::BIND_PARAM_STR,
                 "room_to" => Column::BIND_PARAM_STR,
                 "confirmed" => Column::BIND_PARAM_BOOL,
-                "timestamp_confirmed" => Column::BIND_PARAM_INT
+                "timestamp_confirmed" => Column::BIND_PARAM_INT,
+                "latest" => Column::BIND_PARAM_BOOL
             ],
 
             // Fields that must be ignored from INSERT SQL statements
@@ -178,7 +190,8 @@ class LogsStudents extends \Phalcon\Mvc\Model
             // Default values for columns
             MetaData::MODELS_DEFAULT_VALUES => [
                 "confirmed" => false,
-                "timestamp_confirmed" => null
+                "timestamp_confirmed" => null,
+                "latest" => false
             ],
 
             // Fields that allow empty strings
