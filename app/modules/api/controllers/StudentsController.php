@@ -251,7 +251,7 @@ class StudentsController extends AuthRequiredControllerBase
             ->from('Oratorysignout\\Models\\LogsStudents')
             ->columns(['Oratorysignout\\Models\\LogsStudents.*'])
             ->where('(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN :period_start: AND :period_end:) AND Oratorysignout\\Models\\LogsStudents.student_id = :student_id:')
-            ->orderBy('Oratorysignout\\Models\\LogsStudents.timestamp DESC')
+            ->orderBy('Oratorysignout\\Models\\LogsStudents.id DESC')
             ->limit(1);
 
         $params = [
@@ -288,6 +288,20 @@ class StudentsController extends AuthRequiredControllerBase
         // Begin transaction
         $this->db->begin();
 
+        // Set all others to not latest
+        $this->modelsManager->createQuery("
+            UPDATE Oratorysignout\\Models\\LogsStudents 
+            SET Oratorysignout\\Models\\LogsStudents.latest = 0 
+            WHERE 
+            (Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN :period_start: AND :period_end:) AND
+            Oratorysignout\\Models\\LogsStudents.student_id = :student_id: 
+            ")
+            ->execute([
+                'student_id' => $student->id,
+                'period_start' => strval($date) . $period->start_time . '00',
+                'period_end' => strval($date) . $period->end_time . '00'
+            ]);
+
         $log = new LogsStudents();
         $log->student_id = $student->id;
         $log->timestamp = (isset($requestBody['timestamp']) ? $requestBody['timestamp'] : (int)date('YmdHis'));
@@ -295,6 +309,7 @@ class StudentsController extends AuthRequiredControllerBase
         $log->room_to = $room_to->name;
         $log->confirmed = false;
         $log->timestamp_confirmed = null;
+        $log->latest = true;
 
         if (!$log->create()) {
             // Revert transaction
