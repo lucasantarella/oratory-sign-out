@@ -75,7 +75,7 @@ define([
       else
         data.start_time = moment(data.start_time, 'kkmm').format('h:mm A');
       if(data.end_time === undefined)
-        data.end_time = 0;
+        data.end_time = '??';
       else
         data.end_time = moment(data.end_time, 'kkmm').format('h:mm A');
       return data;
@@ -83,6 +83,7 @@ define([
 
     ui: {
       'header': 'h2',
+      'periodtime': 'h5',
       'collapsible': '.collapsible'
     },
 
@@ -156,10 +157,12 @@ define([
       if (this.model.get('room').length === 0) {
         this.getUI('header').html('No class scheduled!');
         this.getUI('collapsible').hide();
+        this.getUI('periodtime').hide();
         return;
       }
 
       this.getUI('collapsible').show();
+      this.getUI('periodtime').show();
 
       this.showChildView('scheduledStudents', new StudentsListView({
         collection: this.collection,
