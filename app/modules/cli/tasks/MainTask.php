@@ -26,7 +26,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
 {
     /** @var \SplObjectStorage $clients */
     private $clients;
-    
+
     /** @var ConnectionInterface[] */
     private $connectedUsers = [];
 
@@ -87,7 +87,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
 
         $this->clients->attach($conn, ['email' => $conn->user['email']]);
         $this->connectedUsers[$conn->user['email']] = $conn;
-        
+
         echo "User " . $conn->user['email'] . " connected" . PHP_EOL;
     }
 
@@ -270,7 +270,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
         $periodStartTime = (int)(substr($date, 0, 8) . $period->start_time . '00');
         $periodEndTime = (int)(substr($date, 0, 8) . $period->end_time . '00');
 
-        // Get users in room, minus those that are signed out
+        // Get the teachers that are in the room
         $scheduledTeachersBuilder = $this->modelsManager->createBuilder()
             ->from('Oratorysignout\\Models\\Rooms')
             ->columns(['Oratorysignout\\Models\\Teachers.email', 'Oratorysignout\\Models\\TeachersSchedules.room'])
@@ -279,13 +279,44 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
             ->innerJoin('Oratorysignout\\Models\\Teachers', 'Oratorysignout\\Models\\Teachers.id = Oratorysignout\\Models\\TeachersSchedules.teacher_id')
             ->groupBy(['Oratorysignout\\Models\\Teachers.id']);
 
-        // Iterate over students who are scheduled and determine if they are signed out or not
+        // Iterate over teachers who are scheduled and send them notifications
         foreach ($scheduledTeachersBuilder->getQuery()->execute() as $row) {
             $email = $row['email'];
             $room = $row['room'];
-            if(isset($this->connectedUsers[$email])) {
+            if (isset($this->connectedUsers[$email])) {
                 $conn = $this->connectedUsers[$email];
                 $conn->send(json_encode(['data_type' => 'update', 'data' => ['room' => $room]]));
+            }
+        }
+
+        // Get the teacher for the room the student is scheduled for to update current location
+        $builder = $this->modelsManager->createBuilder()
+            ->from('Oratorysignout\\Models\\StudentsSchedules')
+            ->columns(['Oratorysignout\\Models\\StudentsSchedules.*', 'Oratorysignout\\Models\\Teachers.*'])
+            ->where('Oratorysignout\\Models\\StudentsSchedules.period = :period:')
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.student_id = :student_id:')
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.quarter = :quarter:')
+            ->andWhere('Oratorysignout\\Models\\StudentsSchedules.cycle_day = :cycle_day:')
+            ->innerJoin('Oratorysignout\\Models\\TeachersSchedules', 'Oratorysignout\\Models\\StudentsSchedules.room = Oratorysignout\\Models\\TeachersSchedules.room AND Oratorysignout\\Models\\TeachersSchedules.period = ' . $period->period . ' AND Oratorysignout\\Models\\TeachersSchedules.quarter = ' . $info['quarter'] . ' AND Oratorysignout\\Models\\TeachersSchedules.cycle_day = ' . $info['cycleDay'])
+            ->innerJoin('Oratorysignout\\Models\\Teachers', 'Oratorysignout\\Models\\Teachers.id = Oratorysignout\\Models\\TeachersSchedules.teacher_id');
+
+        $query = $builder->getQuery()->execute([
+            'student_id' => $log->student_id,
+            'quarter' => $info['quarter'],
+            'cycle_day' => $info['cycleDay'],
+            'period' => $period->period
+        ]);
+
+        foreach ($query as $row) {
+            /** @var StudentsSchedules $studentSchedule */
+            $studentSchedule = $row['oratorysignout\\Models\\StudentsSchedules'];
+
+            /** @var Teachers $teacher */
+            $teacher = $row['oratorysignout\\Models\\Teachers'];
+
+            if (isset($this->connectedUsers[$teacher->email])) {
+                $conn = $this->connectedUsers[$teacher->email];
+                $conn->send(json_encode(['data_type' => 'update', 'data' => ['room' => $studentSchedule->room]]));
             }
         }
     }

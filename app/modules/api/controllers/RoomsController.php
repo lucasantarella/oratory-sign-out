@@ -69,7 +69,7 @@ class RoomsController extends ControllerBase
             ->where('Oratorysignout\\Models\\Rooms.name = :room:', ['room' => $room->name])
             ->innerJoin('Oratorysignout\\Models\\StudentsSchedules', 'Oratorysignout\\Models\\Rooms.name = Oratorysignout\\Models\\StudentsSchedules.room AND Oratorysignout\\Models\\StudentsSchedules.period = ' . $period->period . ' AND Oratorysignout\\Models\\StudentsSchedules.quarter = ' . $info['quarter'] . ' AND Oratorysignout\\Models\\StudentsSchedules.cycle_day = ' . $info['cycleDay'])
             ->innerJoin('Oratorysignout\\Models\\Students', 'Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\StudentsSchedules.student_id')
-            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ') AND Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id AND Oratorysignout\\Models\\LogsStudents.room_from = "' . $room->name . '" AND Oratorysignout\\Models\\LogsStudents.latest = 1')
+            ->leftJoin('Oratorysignout\\Models\\LogsStudents', '(Oratorysignout\\Models\\LogsStudents.timestamp BETWEEN ' . $periodStartTime . ' AND ' . $periodEndTime . ') AND Oratorysignout\\Models\\Students.id = Oratorysignout\\Models\\LogsStudents.student_id AND Oratorysignout\\Models\\LogsStudents.latest = 1')
             ->groupBy(['Oratorysignout\\Models\\Students.id']);
 
         // Get users signed into a room
