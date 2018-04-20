@@ -37,8 +37,10 @@ define([
         return {};
       }
       let data = _.clone(this.model.attributes);
-      if (data.signedout_room !== null)
+      if (data.signedout_room !== undefined && data.signedout_room !== null && data.signedout_room.length > 0)
         data.signedout_room = data.signedout_room.replace('-', ' ');
+      else
+        data.signedout_room = '';
       return data;
     },
 
