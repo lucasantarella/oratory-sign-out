@@ -88,7 +88,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
         $this->clients->attach($conn, ['email' => $conn->user['email']]);
         $this->connectedUsers[$conn->user['email']] = $conn;
 
-        echo "User " . $conn->user['email'] . " connected" . PHP_EOL;
+        echo "[" . date('YmdHis') . "] User " . $conn->user['email'] . " connected" . PHP_EOL;
     }
 
     /**
@@ -98,7 +98,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
      */
     function onClose(ConnectionInterface $conn)
     {
-        echo "Connection Closed" . PHP_EOL;
+        echo "[" . date('YmdHis') . "] Connection Closed" . PHP_EOL;
     }
 
     /**
@@ -307,6 +307,8 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
             'period' => $period->period
         ]);
 
+        echo "[" . date('YmdHis') . "] User " . $log->getStudent()->email . " signed out to: " . $log->room_to . " from " . $log->room_from . PHP_EOL;
+
         foreach ($query as $row) {
             /** @var StudentsSchedules $studentSchedule */
             $studentSchedule = $row['oratorysignout\\Models\\StudentsSchedules'];
@@ -316,6 +318,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
 
             if (isset($this->connectedUsers[$teacher->email])) {
                 $conn = $this->connectedUsers[$teacher->email];
+                echo "[" . date('YmdHis') . "] Teacher " . $teacher->email . " alerted" . PHP_EOL;
                 $conn->send(json_encode(['data_type' => 'update', 'data' => ['room' => $studentSchedule->room]]));
             }
         }
