@@ -1257,10 +1257,13 @@ define('views/students/studentslistitem',[
     template: _.template('' +
       '<span class="truncate"><%- last_name %>, <%- first_name %></span>' +
       '&nbsp;' +
-      '<% if(status === \'signedout\') { %>' +
+      '<% if(status === \'signedout_unconfirmed\' || status === \'signedout_confirmed\') { %>' +
       '  <span class="badge white red-text right">' +
       '    <% if(parseInt(signedout_room) > 0) { %><span class="hide-on-small-and-down">Room </span><% } %>' +
-      '    <span><%= signedout_room %></span>' +
+      '    <span>' +
+      '      <%= signedout_room %>' +
+      '      <% if(status === \'signedout_confirmed\') { %><span class="green-text">&check;</span><% } else { %>&times;<% } %>' +
+      '    </span>' +
       '  </span>' +
       '<% } %>' +
       '<% if(status === \'signedin_unconfirmed\') { %>' +
@@ -1312,7 +1315,8 @@ define('views/students/studentslistitem',[
           this.$el.addClass('green');
           this.$el.addClass('white-text');
           break;
-        case 'signedout':
+        case 'signedout_unconfirmed':
+        case 'signedout_confirmed':
           this.$el.addClass('red');
           this.$el.addClass('white-text');
           break;
@@ -1557,11 +1561,14 @@ define('views/students/students',[
       else
         this.showChildView('signedoutStudents', new StudentsListView({
           collection: this.collection,
-          filters: ['signedout']
+          filters: [
+            'signedout_confirmed',
+            'signedout_unconfirmed'
+          ]
         }));
 
 
-      if (this.collection.where({status: 'signedout'}).length > 0)
+      if (this.collection.where({status: 'signedout_unconfirmed'}).length > 0 || this.collection.where({status: 'signedout_confirmed'}).length > 0)
         this.collapsible.open(0);
 
       if (this.collection.where({status: 'signedin_unconfirmed'}).length > 0 || this.collection.where({status: 'signedin_confirmed'}).length > 0)
