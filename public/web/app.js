@@ -9,6 +9,7 @@ define(function (require) {
   const jwt_decode = require('jwt_decode');
   const SignInView = require('views/signin/signin');
   const Cookies = require('cookie');
+  const Socket = require('socket');
 
   // Modules
   const AuthModule = require('modules/auth');
@@ -84,7 +85,7 @@ define(function (require) {
       this.showView(new AppView());
 
       window.socketUrl = ((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090');
-      this.connection = new WebSocket(window.socketUrl, window.OratoryUserType);
+      this.connection = new Socket({url: window.socketUrl, protocols: window.OratoryUserType});
 
       // Init modules
       new RoomsModule({app: this});

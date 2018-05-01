@@ -60,9 +60,13 @@ require([
   'css!styles/main.css'
 ], function ($, Backbone, App, pace) {
 
-  pace.start({
+  window.paceOptions = {
     document: true,
-  });
+    ignoreURLs: ['signalr', '__browserLink', 'browserLinkSignalR'],
+    trackWebSockets: false
+  };
+
+  pace.start(window.paceOptions);
 
   $(document).ajaxStart(function () {
     pace.restart();
