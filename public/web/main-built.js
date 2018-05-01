@@ -362,6 +362,51 @@ define('views/signin/signin',[
   });
 });
 
+define('socket',[
+  'marionette'
+], function (Marionette) {
+  return Marionette.Object.extend({
+
+    initialize: function (options) {
+      this.url = (options.url) ? options.url : '';
+      this.protocols = (options.protocols) ? options.protocols : [];
+      this.socket = null;
+      this.open();
+    },
+
+    isOpen: function () {
+      return this.socket !== null && this.socket.readyState === this.socket.OPEN;
+    },
+
+    getState: function () {
+      return this.socket.readyState
+    },
+
+    open: function () {
+      this.socket = new WebSocket(this.url, this.protocols);
+      let context = this;
+      this.socket.onopen = function () {
+        context.triggerMethod('open');
+      };
+      this.socket.onmessage = function (event) {
+        context.triggerMethod('message', event)
+      };
+    },
+
+    close: function () {
+      this.socket.close();
+      this.socket = null;
+    },
+
+    send: function (data) {
+      if (this.isOpen())
+        return this.socket.send(JSON.stringify(data));
+      else
+        return false;
+    }
+
+  })
+});
 // Filename: /views/import.js
 
 define('views/import',[
@@ -1396,13 +1441,13 @@ define('views/students/students',[
       data.room = data.room.replace('-', ' ');
       if (parseInt(data.room) > 0)
         data.room = 'Room ' + data.room;
-      if(data.period === undefined)
+      if (data.period === undefined)
         data.period = 0;
-      if(data.start_time === undefined)
+      if (data.start_time === undefined)
         data.start_time = '??';
       else
         data.start_time = moment(data.start_time, 'kkmm').format('h:mm A');
-      if(data.end_time === undefined)
+      if (data.end_time === undefined)
         data.end_time = '??';
       else
         data.end_time = moment(data.end_time, 'kkmm').format('h:mm A');
@@ -1432,46 +1477,38 @@ define('views/students/students',[
 
     initialize: function (options) {
       let model = (options.model) ? options.model : new Backbone.Model({room: ''});
+      model.url = '/api/teachers/me/schedules/now';
       let collection = (options.collection) ? options.collection : new StudentsCollection();
-      let socket = new WebSocket(window.socketUrl, ['teacher']);
+      let app = options.app;
       let context = this;
-      socket.onmessage = function (event) {
-        context.onSocketMessage(event, model, collection)
-      };
+      let socket = app.connection;
 
+      socket.on('message', function (event) {
+        context.onSocketMessage(event, model, collection)
+      });
+
+      this.app = app;
       this.model = model;
-      this.model.bind('change', this.render);
+      this.model.bind('change', function () {
+        context.render.call(context);
+      });
       this.collection = collection;
-      this.collection.bind('sync', this.render);
+      this.collection.bind('sync', function () {
+        context.renderChildren.call(context);
+      });
       this.socket = socket;
 
-      this.updateRoomAndStudents(socket, model, collection, this);
-    },
-
-    updateRoomAndStudents: function (socket, model, collection, context) {
-      context = (context) ? context : this;
-      model = (model) ? model : (context.model) ? context.model : new Backbone.Model({room: ''});
-      collection = (collection) ? collection : (context.collection) ? context.collection : new StudentsCollection();
-      socket = (socket) ? socket : (context.socket) ? context.socket : new WebSocket(window.socketUrl, ['teacher']);
-      if (socket.readyState === socket.OPEN)
-        socket.send(JSON.stringify({action: 'get', value: 'currentroom'}));
-      else
-        socket.onopen = function () {
-          socket.send(JSON.stringify({action: 'get', value: 'currentroom'}));
-        };
-      socket.onmessage = function (event) {
-        context.onSocketMessage(event, model, collection)
-      };
+      model.fetch();
+      model.on('sync', function () {
+        collection.url = '/api/rooms/' + model.get('room') + '/students';
+        collection.fetch();
+        model.off('sync', this);
+      });
     },
 
     onSocketMessage: function (event, model, collection) {
       var jsonObject = JSON.parse(event.data);
       switch (jsonObject.data_type) {
-        case 'room':
-          model.set(jsonObject.data);
-          collection.url = '/api/rooms/' + model.get('room') + '/students';
-          collection.fetch();
-          break;
         case 'update':
           model.set('name', jsonObject.data.room);
           collection.url = '/api/rooms/' + model.get('room') + '/students';
@@ -1492,28 +1529,44 @@ define('views/students/students',[
       this.getUI('collapsible').show();
       this.getUI('periodtime').show();
 
-      this.showChildView('scheduledStudents', new StudentsListView({
-        collection: this.collection,
-        filters: ['scheduled']
-      }));
-      this.showChildView('signedinStudents', new StudentsListView({
-        collection: this.collection,
-        filters: [
-          'signedin_confirmed',
-          'signedin_unconfirmed'
-        ]
-      }));
-      this.showChildView('signedoutStudents', new StudentsListView({
-        collection: this.collection,
-        filters: ['signedout']
-      }));
+      this.renderChildren();
+    },
+
+    renderChildren: function () {
+      if (this.getChildView('scheduledStudents') !== null && this.getChildView('scheduledStudents') !== undefined)
+        this.getChildView('scheduledStudents').render();
+      else
+        this.showChildView('scheduledStudents', new StudentsListView({
+          collection: this.collection,
+          filters: ['scheduled']
+        }));
+
+      if (this.getChildView('signedinStudents') !== null && this.getChildView('signedinStudents') !== undefined)
+        this.getChildView('signedinStudents').render();
+      else
+        this.showChildView('signedinStudents', new StudentsListView({
+          collection: this.collection,
+          filters: [
+            'signedin_confirmed',
+            'signedin_unconfirmed'
+          ]
+        }));
+
+      if (this.getChildView('signedoutStudents') !== null && this.getChildView('signedoutStudents') !== undefined)
+        this.getChildView('signedoutStudents').render();
+      else
+        this.showChildView('signedoutStudents', new StudentsListView({
+          collection: this.collection,
+          filters: ['signedout']
+        }));
+
 
       if (this.collection.where({status: 'signedout'}).length > 0)
         this.collapsible.open(0);
 
       if (this.collection.where({status: 'signedin_unconfirmed'}).length > 0 || this.collection.where({status: 'signedin_confirmed'}).length > 0)
         this.collapsible.open(2);
-    },
+    }
 
   });
 });
@@ -1768,7 +1821,7 @@ define('modules/students',[
     },
 
     listStudents: function () {
-      let view = new StudentsView({collection: this.students, model: this.currentRoomModel});
+      let view = new StudentsView({app: this.app, collection: this.students, model: this.currentRoomModel});
       this.app.getView().showChildView('main', view);
       this.app.getView().showChildView('header', new NavBarView({app: this.app, model: this.app.session}));
     },
@@ -1783,7 +1836,7 @@ define('modules/students',[
 });
 // Filename: app.js
 
-define('app',['require','jquery','backbone','marionette','views/AppView','jwt_decode','views/signin/signin','cookie','modules/auth','modules/rooms','modules/students'],function (require) {
+define('app',['require','jquery','backbone','marionette','views/AppView','jwt_decode','views/signin/signin','cookie','socket','modules/auth','modules/rooms','modules/students'],function (require) {
 
   const $ = require('jquery');
   const Backbone = require('backbone');
@@ -1792,6 +1845,7 @@ define('app',['require','jquery','backbone','marionette','views/AppView','jwt_de
   const jwt_decode = require('jwt_decode');
   const SignInView = require('views/signin/signin');
   const Cookies = require('cookie');
+  const Socket = require('socket');
 
   // Modules
   const AuthModule = require('modules/auth');
@@ -1867,7 +1921,7 @@ define('app',['require','jquery','backbone','marionette','views/AppView','jwt_de
       this.showView(new AppView());
 
       window.socketUrl = ((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090');
-      this.connection = new WebSocket(window.socketUrl, window.OratoryUserType);
+      this.connection = new Socket({url: window.socketUrl, protocols: window.OratoryUserType});
 
       // Init modules
       new RoomsModule({app: this});
@@ -2278,9 +2332,13 @@ require([
   'css!styles/main.css'
 ], function ($, Backbone, App, pace) {
 
-  pace.start({
+  window.paceOptions = {
     document: true,
-  });
+    ignoreURLs: ['signalr', '__browserLink', 'browserLinkSignalR'],
+    trackWebSockets: false
+  };
+
+  pace.start(window.paceOptions);
 
   $(document).ajaxStart(function () {
     pace.restart();
@@ -2296,4 +2354,4 @@ define("main", function(){});
 
 
 (function(c){var d=document,a='appendChild',i='styleSheet',s=d.createElement('style');s.type='text/css';d.getElementsByTagName('head')[0][a](s);s[i]?s[i].cssText=c:s[a](d.createTextNode(c));})
-('/* Sticky Footer */\n#main-wrapper {\n  display: flex;\n  min-height: 100vh;\n  flex-direction: column; }\n\nmain {\n  flex: 1 0 auto; }\n\nspan.badge {\n  border-radius: 5px;\n  font-size: 0.9rem; }\n\n/*# sourceMappingURL=main.css.map */\n');
+('@font-face {\n  font-family: \'Material Icons\';\n  font-style: normal;\n  font-weight: 400;\n  src: url(styles/material-icons.woff2) format(\"woff2\"); }\n.material-icons {\n  font-family: \'Material Icons\';\n  font-weight: normal;\n  font-style: normal;\n  font-size: 24px;\n  line-height: 1;\n  letter-spacing: normal;\n  text-transform: none;\n  display: inline-block;\n  white-space: nowrap;\n  word-wrap: normal;\n  direction: ltr;\n  -webkit-font-feature-settings: \'liga\';\n  -webkit-font-smoothing: antialiased; }\n\n/* Sticky Footer */\n#main-wrapper {\n  display: flex;\n  min-height: 100vh;\n  flex-direction: column; }\n\nmain {\n  flex: 1 0 auto; }\n\nspan.badge {\n  border-radius: 5px;\n  font-size: 0.9rem; }\n\n/*# sourceMappingURL=main.css.map */\n');

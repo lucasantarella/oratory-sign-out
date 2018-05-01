@@ -33,7 +33,7 @@ class RoomsController extends ControllerBase
         if (strlen($name) == 0)
             return $this->sendNotFound();
 
-        $room = Rooms::findFirst($name);
+        $room = Rooms::findFirst("name = '{$name}'");
         if ($room === false)
             return $this->sendNotFound();
         else

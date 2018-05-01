@@ -25,7 +25,7 @@ define([
     },
 
     listStudents: function () {
-      let view = new StudentsView({collection: this.students, model: this.currentRoomModel});
+      let view = new StudentsView({app: this.app, collection: this.students, model: this.currentRoomModel});
       this.app.getView().showChildView('main', view);
       this.app.getView().showChildView('header', new NavBarView({app: this.app, model: this.app.session}));
     },
