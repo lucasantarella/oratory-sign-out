@@ -19,10 +19,13 @@ define([
     template: _.template('' +
       '<span class="truncate"><%- last_name %>, <%- first_name %></span>' +
       '&nbsp;' +
-      '<% if(status === \'signedout\') { %>' +
+      '<% if(status === \'signedout_unconfirmed\' || status === \'signedout_confirmed\') { %>' +
       '  <span class="badge white red-text right">' +
       '    <% if(parseInt(signedout_room) > 0) { %><span class="hide-on-small-and-down">Room </span><% } %>' +
-      '    <span><%= signedout_room %></span>' +
+      '    <span>' +
+      '      <%= signedout_room %>' +
+      '      <% if(status === \'signedout_confirmed\') { %><span class="green-text">&check;</span><% } else { %>&times;<% } %>' +
+      '    </span>' +
       '  </span>' +
       '<% } %>' +
       '<% if(status === \'signedin_unconfirmed\') { %>' +
@@ -74,7 +77,8 @@ define([
           this.$el.addClass('green');
           this.$el.addClass('white-text');
           break;
-        case 'signedout':
+        case 'signedout_unconfirmed':
+        case 'signedout_confirmed':
           this.$el.addClass('red');
           this.$el.addClass('white-text');
           break;

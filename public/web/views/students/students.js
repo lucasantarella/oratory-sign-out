@@ -184,11 +184,14 @@ define([
       else
         this.showChildView('signedoutStudents', new StudentsListView({
           collection: this.collection,
-          filters: ['signedout']
+          filters: [
+            'signedout_confirmed',
+            'signedout_unconfirmed'
+          ]
         }));
 
 
-      if (this.collection.where({status: 'signedout'}).length > 0)
+      if (this.collection.where({status: 'signedout_unconfirmed'}).length > 0 || this.collection.where({status: 'signedout_confirmed'}).length > 0)
         this.collapsible.open(0);
 
       if (this.collection.where({status: 'signedin_unconfirmed'}).length > 0 || this.collection.where({status: 'signedin_confirmed'}).length > 0)
