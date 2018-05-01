@@ -335,7 +335,7 @@ class StudentsController extends AuthRequiredControllerBase
         try {
             $socket = $context->getSocket(ZMQ::SOCKET_PUSH, 'signout_pusher');
             $socket->connect("tcp://127.0.0.1:5555");
-            $socket->send(json_encode($log));
+            $socket->send(serialize(['handler' => 'onSignOut', 'data' => $log]));
         } catch (\ZMQSocketException $e) {
             die($e->getTraceAsString());
         }
