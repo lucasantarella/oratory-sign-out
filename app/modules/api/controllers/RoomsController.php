@@ -33,7 +33,7 @@ class RoomsController extends ControllerBase
         if (strlen($name) == 0)
             return $this->sendNotFound();
 
-        $room = Rooms::findFirst($name);
+        $room = Rooms::findFirst("name = '{$name}'");
         if ($room === false)
             return $this->sendNotFound();
         else
@@ -98,7 +98,7 @@ class RoomsController extends ControllerBase
                 $response[$student->id]['signedout_room'] = $log->room_to;
             } else
                 $response[$student->id] = array_merge($student->jsonSerialize(), [
-                    'status' => ($log->id === 0) ? 'scheduled' : 'signedout',
+                    'status' => ($log->id === 0) ? 'scheduled' : (($log->confirmed) ? 'signedout_confirmed' : 'signedout_unconfirmed'),
                     'signout_id' => $log->id,
                     'signedout_room' => $log->room_to
                 ]);

@@ -68,14 +68,14 @@ define([
       data.room = data.room.replace('-', ' ');
       if (parseInt(data.room) > 0)
         data.room = 'Room ' + data.room;
-      if(data.period === undefined)
+      if (data.period === undefined)
         data.period = 0;
-      if(data.start_time === undefined)
+      if (data.start_time === undefined)
         data.start_time = '??';
       else
         data.start_time = moment(data.start_time, 'kkmm').format('h:mm A');
-      if(data.end_time === undefined)
-        data.end_time = 0;
+      if (data.end_time === undefined)
+        data.end_time = '??';
       else
         data.end_time = moment(data.end_time, 'kkmm').format('h:mm A');
       return data;
@@ -83,6 +83,7 @@ define([
 
     ui: {
       'header': 'h2',
+      'periodtime': 'h5',
       'collapsible': '.collapsible'
     },
 
@@ -103,46 +104,38 @@ define([
 
     initialize: function (options) {
       let model = (options.model) ? options.model : new Backbone.Model({room: ''});
+      model.url = '/api/teachers/me/schedules/now';
       let collection = (options.collection) ? options.collection : new StudentsCollection();
-      let socket = new WebSocket(window.socketUrl, ['teacher']);
+      let app = options.app;
       let context = this;
-      socket.onmessage = function (event) {
-        context.onSocketMessage(event, model, collection)
-      };
+      let socket = app.connection;
 
+      socket.on('message', function (event) {
+        context.onSocketMessage(event, model, collection)
+      });
+
+      this.app = app;
       this.model = model;
-      this.model.bind('change', this.render);
+      this.model.bind('change', function () {
+        context.render.call(context);
+      });
       this.collection = collection;
-      this.collection.bind('sync', this.render);
+      this.collection.bind('sync', function () {
+        context.renderChildren.call(context);
+      });
       this.socket = socket;
 
-      this.updateRoomAndStudents(socket, model, collection, this);
-    },
-
-    updateRoomAndStudents: function (socket, model, collection, context) {
-      context = (context) ? context : this;
-      model = (model) ? model : (context.model) ? context.model : new Backbone.Model({room: ''});
-      collection = (collection) ? collection : (context.collection) ? context.collection : new StudentsCollection();
-      socket = (socket) ? socket : (context.socket) ? context.socket : new WebSocket(window.socketUrl, ['teacher']);
-      if (socket.readyState === socket.OPEN)
-        socket.send(JSON.stringify({action: 'get', value: 'currentroom'}));
-      else
-        socket.onopen = function () {
-          socket.send(JSON.stringify({action: 'get', value: 'currentroom'}));
-        };
-      socket.onmessage = function (event) {
-        context.onSocketMessage(event, model, collection)
-      };
+      model.fetch();
+      model.on('sync', function () {
+        collection.url = '/api/rooms/' + model.get('room') + '/students';
+        collection.fetch();
+        model.off('sync', this);
+      });
     },
 
     onSocketMessage: function (event, model, collection) {
       var jsonObject = JSON.parse(event.data);
       switch (jsonObject.data_type) {
-        case 'room':
-          model.set(jsonObject.data);
-          collection.url = '/api/rooms/' + model.get('room') + '/students';
-          collection.fetch();
-          break;
         case 'update':
           model.set('name', jsonObject.data.room);
           collection.url = '/api/rooms/' + model.get('room') + '/students';
@@ -156,33 +149,54 @@ define([
       if (this.model.get('room').length === 0) {
         this.getUI('header').html('No class scheduled!');
         this.getUI('collapsible').hide();
+        this.getUI('periodtime').hide();
         return;
       }
 
       this.getUI('collapsible').show();
+      this.getUI('periodtime').show();
 
-      this.showChildView('scheduledStudents', new StudentsListView({
-        collection: this.collection,
-        filters: ['scheduled']
-      }));
-      this.showChildView('signedinStudents', new StudentsListView({
-        collection: this.collection,
-        filters: [
-          'signedin_confirmed',
-          'signedin_unconfirmed'
-        ]
-      }));
-      this.showChildView('signedoutStudents', new StudentsListView({
-        collection: this.collection,
-        filters: ['signedout']
-      }));
+      this.renderChildren();
+    },
 
-      if (this.collection.where({status: 'signedout'}).length > 0)
+    renderChildren: function () {
+      if (this.getChildView('scheduledStudents') !== null && this.getChildView('scheduledStudents') !== undefined)
+        this.getChildView('scheduledStudents').render();
+      else
+        this.showChildView('scheduledStudents', new StudentsListView({
+          collection: this.collection,
+          filters: ['scheduled']
+        }));
+
+      if (this.getChildView('signedinStudents') !== null && this.getChildView('signedinStudents') !== undefined)
+        this.getChildView('signedinStudents').render();
+      else
+        this.showChildView('signedinStudents', new StudentsListView({
+          collection: this.collection,
+          filters: [
+            'signedin_confirmed',
+            'signedin_unconfirmed'
+          ]
+        }));
+
+      if (this.getChildView('signedoutStudents') !== null && this.getChildView('signedoutStudents') !== undefined)
+        this.getChildView('signedoutStudents').render();
+      else
+        this.showChildView('signedoutStudents', new StudentsListView({
+          collection: this.collection,
+          filters: [
+            'signedout_confirmed',
+            'signedout_unconfirmed'
+          ]
+        }));
+
+
+      if (this.collection.where({status: 'signedout_unconfirmed'}).length > 0 || this.collection.where({status: 'signedout_confirmed'}).length > 0)
         this.collapsible.open(0);
 
       if (this.collection.where({status: 'signedin_unconfirmed'}).length > 0 || this.collection.where({status: 'signedin_confirmed'}).length > 0)
         this.collapsible.open(2);
-    },
+    }
 
   });
 });

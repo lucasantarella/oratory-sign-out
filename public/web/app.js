@@ -6,9 +6,10 @@ define(function (require) {
   const Backbone = require('backbone');
   const Marionette = require('marionette');
   const AppView = require('views/AppView');
-  const SpinnerView = require('views/spinnerview');
+  const jwt_decode = require('jwt_decode');
   const SignInView = require('views/signin/signin');
   const Cookies = require('cookie');
+  const Socket = require('socket');
 
   // Modules
   const AuthModule = require('modules/auth');
@@ -63,6 +64,7 @@ define(function (require) {
               if (response.error_description === undefined) {
                 this.signedIn = true;
                 window.OratoryUserType = (response.email.indexOf(".student") >= 1) ? "student" : "teacher";
+                this.session.set('guser', response);
                 this.start();
               }
             },
@@ -83,7 +85,7 @@ define(function (require) {
       this.showView(new AppView());
 
       window.socketUrl = ((location.protocol == 'https:') ? 'wss' : 'ws') + '://' + window.location.hostname + ':' + ((location.protocol == 'https:') ? '9443' : '9090');
-      this.connection = new WebSocket(window.socketUrl, window.OratoryUserType);
+      this.connection = new Socket({url: window.socketUrl, protocols: window.OratoryUserType});
 
       // Init modules
       new RoomsModule({app: this});
@@ -101,7 +103,7 @@ define(function (require) {
 
     initializeSession: function (googleUser, appContext) {
       appContext = (appContext) ? appContext : this;
-      appContext.session.set('gauth', googleUser);
+      appContext.session.set('guser', jwt_decode(googleUser.getAuthResponse().id_token));
       appContext.session.set('gtoken', googleUser.getAuthResponse().id_token);
       window.localStorage.setItem('gauth', btoa(JSON.stringify(appContext.session.get('gauth'))));
       Cookies.set('gtoken', btoa(appContext.session.get('gtoken')));

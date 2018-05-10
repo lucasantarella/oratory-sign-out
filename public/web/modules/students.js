@@ -3,11 +3,12 @@
 define([
   'backbone',
   'marionette',
+  'views/NavBar',
   'views/students/students',
   'views/students/signout',
   'models/student',
   'collections/students',
-], function (Backbone, Marionette, StudentsView, SignoutView, StudentModel, StudentsCollection) {
+], function (Backbone, Marionette, NavBarView, StudentsView, SignoutView, StudentModel, StudentsCollection) {
 
   return Marionette.AppRouter.extend({
 
@@ -20,18 +21,19 @@ define([
 
     routes: {
       'students': 'listStudents',
-      'signout': 'studentSignOut',
-      // 'students/:student',
+      'signout': 'studentSignOut'
     },
 
-    listStudents: function (student) {
-      let view = new StudentsView({collection: this.students, model: this.currentRoomModel});
+    listStudents: function () {
+      let view = new StudentsView({app: this.app, collection: this.students, model: this.currentRoomModel});
       this.app.getView().showChildView('main', view);
+      this.app.getView().showChildView('header', new NavBarView({app: this.app, model: this.app.session}));
     },
 
     studentSignOut: function () {
       let view = new SignoutView({collection: this.students});
       this.app.getView().showChildView('main', view);
+      this.app.getView().showChildView('header', new NavBarView({app: this.app, model: this.app.session}));
     },
 
   });

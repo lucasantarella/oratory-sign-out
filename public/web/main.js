@@ -14,7 +14,7 @@ require.config({
     marionette: 'vendor/backbone-marionette/backbone.marionette',
     cookie: 'vendor/cookie/cookie.min',
     text: 'vendor/require-text/text',
-    jwtdecode: 'vendor/jwt-decode/jwt-decode',
+    jwt_decode: 'vendor/jwt-decode/jwt-decode',
     pace: 'vendor/pace/pace.min',
 
     gapijs: "https://apis.google.com/js/platform",
@@ -60,9 +60,13 @@ require([
   'css!styles/main.css'
 ], function ($, Backbone, App, pace) {
 
-  pace.start({
+  window.paceOptions = {
     document: true,
-  });
+    ignoreURLs: ['signalr', '__browserLink', 'browserLinkSignalR'],
+    trackWebSockets: false
+  };
+
+  pace.start(window.paceOptions);
 
   $(document).ajaxStart(function () {
     pace.restart();

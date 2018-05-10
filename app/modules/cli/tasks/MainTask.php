@@ -11,6 +11,7 @@ use Oratorysignout\Models\Students;
 use Oratorysignout\Models\StudentsSchedules;
 use Oratorysignout\Models\Teachers;
 use Oratorysignout\Models\TeachersSchedules;
+use Phalcon\Filter;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
@@ -43,7 +44,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
         $context = new \React\ZMQ\Context($loop);
         $pull = $context->getSocket(ZMQ::SOCKET_PULL);
         $pull->bind('tcp://127.0.0.1:5555'); // Binding to 127.0.0.1 means the only client that can connect is itself
-        $pull->on('message', array($this, 'onSignOut'));
+        $pull->on('message', array($this, 'handleMessage'));
 
         $webSock = new \React\Socket\Server('0.0.0.0:9090', $loop); // Binding to 0.0.0.0 means remotes can connect
         $webServer = new \Ratchet\Server\IoServer(
@@ -88,7 +89,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
         $this->clients->attach($conn, ['email' => $conn->user['email']]);
         $this->connectedUsers[$conn->user['email']] = $conn;
 
-        echo "User " . $conn->user['email'] . " connected" . PHP_EOL;
+        echo "[" . date('YmdHis') . "] User " . $conn->user['email'] . " connected" . PHP_EOL;
     }
 
     /**
@@ -98,7 +99,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
      */
     function onClose(ConnectionInterface $conn)
     {
-        echo "Connection Closed" . PHP_EOL;
+        echo "[" . date('YmdHis') . "] Connection Closed" . PHP_EOL;
     }
 
     /**
@@ -249,13 +250,28 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
         }
     }
 
-    /**
-     * @param string $logString
-     */
-    public function onSignOut($logString)
+    public function handleMessage($payload)
     {
-        $log = new LogsStudents(json_decode($logString, true));
+        $obj = unserialize($payload);
+        if (is_array($obj) && array_key_exists('handler', $obj) && array_key_exists('data', $obj)) {
+            $handler = $this->di->getShared('filter')->sanitize($obj['handler'], Filter::FILTER_ALPHANUM);
+            if (isset($handler) && isset($obj['data']) && method_exists($this, $handler))
+                try {
+                    echo "Calling method \$this->{$handler} with data: " . PHP_EOL;
+                    var_dump($obj['data']);
+                    echo PHP_EOL;
+                    $this->{$handler}($obj['data']);
+                } catch (\Exception $e) {
+                    echo $e->getTraceAsString() . PHP_EOL;
+                };
+        }
+    }
 
+    /**
+     * @param LogsStudents $log
+     */
+    public function onSignOut($log)
+    {
         $from_room = $log->getRoomFrom();
         $to_room = $log->getRoomTo();
 
@@ -307,6 +323,8 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
             'period' => $period->period
         ]);
 
+        echo "[" . date('YmdHis') . "] User " . $log->getStudent()->email . " signed out to: " . $log->room_to . " from " . $log->room_from . PHP_EOL;
+
         foreach ($query as $row) {
             /** @var StudentsSchedules $studentSchedule */
             $studentSchedule = $row['oratorysignout\\Models\\StudentsSchedules'];
@@ -316,6 +334,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
 
             if (isset($this->connectedUsers[$teacher->email])) {
                 $conn = $this->connectedUsers[$teacher->email];
+                echo "[" . date('YmdHis') . "] Teacher " . $teacher->email . " alerted" . PHP_EOL;
                 $conn->send(json_encode(['data_type' => 'update', 'data' => ['room' => $studentSchedule->room]]));
             }
         }
