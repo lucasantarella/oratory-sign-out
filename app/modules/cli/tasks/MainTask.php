@@ -258,7 +258,7 @@ class MainTask extends \Phalcon\Cli\Task implements MessageComponentInterface, W
             if (isset($handler) && isset($obj['data']) && method_exists($this, $handler))
                 try {
                     echo "Calling method \$this->{$handler} with data: " . PHP_EOL;
-                    var_dump($obj['data']);
+                    // var_dump($obj['data']);
                     echo PHP_EOL;
                     $this->{$handler}($obj['data']);
                 } catch (\Exception $e) {
